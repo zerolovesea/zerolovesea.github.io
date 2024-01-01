@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llama.png">
 <meta property="article:published_time" content="2024-01-01T03:22:53.000Z">
-<meta property="article:modified_time" content="2024-01-01T06:33:56.229Z">
+<meta property="article:modified_time" content="2024-01-01T07:08:10.041Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
@@ -349,11 +349,11 @@
 <ul>
 <li><p>前置归一化(Pre-normalizatio)：受到GPT3的启发，LLaMa 对每个 Transformer 子层的输入进行归一化，而不是对输出进行归一化。这是为了训练的稳定性。</p>
 </li>
-<li><p>归一化函数使用的是RMSNorm(均方层归一化)。公式：<br>$\bar{x}<em>{i} = \frac{a</em>{i} }{\mathrm{RMS}( {\bf x} ) }g_{i},\quad\mathrm{where~RMS}({\bf x}) = \sqrt{\frac{1}{n}\sum_{i = 1}^{n}x_{i}^{2} }$</p>
+<li><p>归一化函数使用的是RMSNorm(均方层归一化)。公式：<br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msub><mrow><mover><mi>x</mi><mo stretchy="false">¯</mo></mover></mrow><mrow><mi>i</mi></mrow></msub><mo>&#x3D;</mo><mfrac><msub><mi>a</mi><mrow><mi>i</mi></mrow></msub><mrow><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">M</mi><mi mathvariant="normal">S</mi></mrow><mo stretchy="false">(</mo><mrow><mi mathvariant="bold">x</mi></mrow><mo stretchy="false">)</mo></mrow></mfrac><msub><mi>g</mi><mrow><mi>i</mi></mrow></msub><mo>,</mo><mstyle scriptlevel="0"><mspace width="1em"></mspace></mstyle><mrow><mi mathvariant="normal">w</mi><mi mathvariant="normal">h</mi><mi mathvariant="normal">e</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">e</mi><mtext>&nbsp;</mtext><mi mathvariant="normal">R</mi><mi mathvariant="normal">M</mi><mi mathvariant="normal">S</mi></mrow><mo stretchy="false">(</mo><mrow><mi mathvariant="bold">x</mi></mrow><mo stretchy="false">)</mo><mo>&#x3D;</mo><msqrt><mfrac><mn>1</mn><mi>n</mi></mfrac><munderover><mo data-mjx-texclass="OP">∑</mo><mrow><mi>i</mi><mo>&#x3D;</mo><mn>1</mn></mrow><mrow><mi>n</mi></mrow></munderover><msubsup><mi>x</mi><mrow><mi>i</mi></mrow><mrow><mn>2</mn></mrow></msubsup></msqrt></math></p>
 </li>
-<li><p>受PaLM启发，使用了SwiGLU激活函数，公式：$\mathrm{SwiGLU}(x,W,W,W,b,c,\beta)=\mathrm{Swish}_{\beta}(x W+b)\otimes(x V+c)$</p>
+<li><p>受PaLM启发，使用了SwiGLU激活函数，公式：$\mathrm{SwiGLU}(x,W,W,W,b,c,\beta)&#x3D;\mathrm{Swish}_{\beta}(x W+b)\otimes(x V+c)$</p>
 </li>
-<li><p>受GPTNeo启发，采用了旋转位置编码Rotary Embeddings(RoPE)</p>
+<li><p>受GPTNeo启发，采用了旋转位置编码Rotary Embeddings(RoPE)。</p>
 </li>
 </ul>
 <h1 id="LLaMA论文中的关键信息"><a href="#LLaMA论文中的关键信息" class="headerlink" title="LLaMA论文中的关键信息"></a>LLaMA论文中的关键信息</h1><ol>
@@ -374,12 +374,12 @@
 </li>
 <li>训练成本<ul>
 <li><strong>2048 个 A100</strong> 80GB GPU 上，开发和训练约 5 个月；</li>
-<li>训练 65B 模型时，在 <strong>2048 个 A100</strong> 80GB GPU 上能处理约 <strong>380 tokens/秒/GPU</strong>，因此 1.4T token 的数据集训练一次大约需要 <strong>21 天</strong>；</li>
+<li>训练 65B 模型时，在 <strong>2048 个 A100</strong> 80GB GPU 上能处理约 <strong>380 tokens&#x2F;秒&#x2F;GPU</strong>，因此 1.4T token 的数据集训练一次大约需要 <strong>21 天</strong>；</li>
 <li>耗能约 2638 MWh，折算排放 1015 吨 CO2。</li>
 </ul>
 </li>
 </ol>
-<h1 id="原文翻译"><a href="#原文翻译" class="headerlink" title="原文翻译"></a>原文翻译</h1><h2 id="译-论文-LLaMA：开放和高效的基础语言模型集（Meta-Facebook，2022）"><a href="#译-论文-LLaMA：开放和高效的基础语言模型集（Meta-Facebook，2022）" class="headerlink" title="[译][论文] LLaMA：开放和高效的基础语言模型集（Meta/Facebook，2022）"></a>[译][论文] LLaMA：开放和高效的基础语言模型集（Meta/Facebook，2022）</h2><p>本文翻译自 2022 年 Meta的大模型论文： <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2302.13971">LLaMA: Open and Efficient Foundation Language Models</a>。</p>
+<h1 id="原文翻译"><a href="#原文翻译" class="headerlink" title="原文翻译"></a>原文翻译</h1><h2 id="译-论文-LLaMA：开放和高效的基础语言模型集（Meta-Facebook，2022）"><a href="#译-论文-LLaMA：开放和高效的基础语言模型集（Meta-Facebook，2022）" class="headerlink" title="[译][论文] LLaMA：开放和高效的基础语言模型集（Meta&#x2F;Facebook，2022）"></a>[译][论文] LLaMA：开放和高效的基础语言模型集（Meta&#x2F;Facebook，2022）</h2><p>本文翻译自 2022 年 Meta的大模型论文： <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2302.13971">LLaMA: Open and Efficient Foundation Language Models</a>。</p>
 <p>作者：Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie-Anne Lachaux, Timothée Lacroix, Baptiste Rozière, Naman Goyal, Eric Hambro, Faisal Azhar, Aurelien Rodriguez, Armand Joulin, Edouard Grave, Guillaume Lample。</p>
 <h2 id="摘要"><a href="#摘要" class="headerlink" title="摘要"></a>摘要</h2><p>本文介绍了 LLaMA，一个包含 <strong>7B~65B</strong>（70~650 亿） 参数的基础语言模型集（a collection of foundation language models）。 我们使用了数万亿个（trillions of） token训练这些模型，证明了使用公开数据集就能训练出最先进的模型， 而并非必须使用专有和私有数据集。尤其是，<strong>LLaMA-13B 在大多数基准测试中均优于 GPT-3（175B）</strong> ，而 LLaMA-65B 则与最佳模型 Chinchilla-70B 和 PaLM-540B 相当。 我们已经将所有模型<a target="_blank" rel="noopener" href="https://github.com/facebookresearch/llama">开源</a>，以供社区研究。</p>
 <h2 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h2><p>在大规模文本语料库（massive corpora of texts）上训练的大型语言模型（Large Languages Models, LLM），已经有能力根据给定的文本指令（textual instructions） 或示例（a few examples）执行新的任务。</p>
@@ -578,20 +578,20 @@
 </tbody></table>
 <p>表 2： Model sizes, architectures, and optimization hyper-parameters.</p>
 <h3 id="2-3-优化器（Optimizer）"><a href="#2-3-优化器（Optimizer）" class="headerlink" title="2.3 优化器（Optimizer）"></a>2.3 优化器（Optimizer）</h3><ul>
-<li>使用了 AdamW 优化器（Loshchilov 和 Hutter，2017）对模型进行训练，具体超参数：β1=0.9,β2=0.95；</li>
+<li>使用了 AdamW 优化器（Loshchilov 和 Hutter，2017）对模型进行训练，具体超参数：β1&#x3D;0.9,β2&#x3D;0.95；</li>
 <li>使用了一个 cosine learning rate schedule，最终的学习率达到了最大学习率的 10％；</li>
 <li>使用了 0.1 的权重衰减（weight decay）和 1.0 的梯度裁剪（gradient clipping）；</li>
 <li>使用了 2,000 个 warmup steps，并根据模型大小来调整 learning rate 和 batch size。</li>
 </ul>
 <h3 id="2-4-高效实现（Efficient-implementation）：提高训练速度"><a href="#2-4-高效实现（Efficient-implementation）：提高训练速度" class="headerlink" title="2.4 高效实现（Efficient implementation）：提高训练速度"></a>2.4 高效实现（Efficient implementation）：提高训练速度</h3><p>我们进行了几项优化来提高模型的训练速度。</p>
-<p>首先，我们使用 <strong>causal multi-head attention</strong> 的一个高效实现来<strong>减少内存占用和运行时</strong>。 这种实现是受 Rabe 和 Staats（2021）的启发，并使用了 Dao 等（2022）的反向传播，现在 <a target="_blank" rel="noopener" href="https://github.com/facebookresearch/xformers">xformers 库</a> 中已经提供了。 优化原理：由于语言建模任务存在因果特性，因此可以不存储注意力权重（attention weights），不计算那些已经被掩码（masked）的 key/query 得分。</p>
+<p>首先，我们使用 <strong>causal multi-head attention</strong> 的一个高效实现来<strong>减少内存占用和运行时</strong>。 这种实现是受 Rabe 和 Staats（2021）的启发，并使用了 Dao 等（2022）的反向传播，现在 <a target="_blank" rel="noopener" href="https://github.com/facebookresearch/xformers">xformers 库</a> 中已经提供了。 优化原理：由于语言建模任务存在因果特性，因此可以不存储注意力权重（attention weights），不计算那些已经被掩码（masked）的 key&#x2F;query 得分。</p>
 <p>为进一步提高训练效率，我们通过 <strong>checkpoint</strong> 技术， 减少了在反向传播期间需要重新计算的激活数量。更具体地说：</p>
 <ul>
 <li>我们保存了计算成本高昂的激活，例如线性层的输出。实现方式是<strong>手动实现 Transformer 层的反向函数</strong>，而不用 PyTorch autograd。</li>
 <li>如 Korthikanti 等（2022）中提到的， 为了充分受益于这种优化，我们需要通过模型和序列并行（model and sequence parallelism）来<strong>减少模型的内存使用</strong>。</li>
 <li>此外，我们还尽可能地 overlap 激活计算和 GPU 之间的网络通信（由于 all_reduce 操作）。</li>
 </ul>
-<p>训练 65B 参数的模型时，我们的代码在 <strong>2048 个 A100 80GB GPU</strong> 上能处理约 <strong>380 tokens/秒/GPU</strong>。这意味着 1.4T token 的数据集上训练大约需要 <strong>21 天</strong>。</p>
+<p>训练 65B 参数的模型时，我们的代码在 <strong>2048 个 A100 80GB GPU</strong> 上能处理约 <strong>380 tokens&#x2F;秒&#x2F;GPU</strong>。这意味着 1.4T token 的数据集上训练大约需要 <strong>21 天</strong>。</p>
 <h2 id="3-主要结果（Main-results）"><a href="#3-主要结果（Main-results）" class="headerlink" title="3 主要结果（Main results）"></a>3 主要结果（Main results）</h2><p>参考前人工作（Brown 等，2020），我们测试了<strong>零样本（zero-shot）和少样本（few-shot）</strong>两种任务， 进行总共 20 个基准测试：</p>
 <ul>
 <li>零样本：提供任务的文本描述和一个测试示例。模型可以使用开放式生成（open-ended generation）提供答案，或对提议的答案进行排名。</li>
@@ -606,7 +606,7 @@
 <p>我们在自由形式生成任务（free-form generation）和多项选择（multiple choice）任务上评估 LLaMA。 多项选择任务的目标是在提供的上下文基础上，从一组给定选项中选择最合适的。我们使用的最合适标准就是可性能最高（highest likelihood）。</p>
 <ul>
 <li>对于大部分数据集，我们遵循 Gao 等（2021）的方法，使用由完成字符数归一化的可能性（likelihood normalized by the number of characters），</li>
-<li>对于少量数据集（OpenBookQA，BoolQ），我们遵循 Brown 等（2020）的方法，根据在“Answer:”上下文中给定的完成可能性（likelihood of the completion given “Answer:” as context），用公式表示就是 <strong>P(completion|context) / P(completion|”Answer:”)</strong>.</li>
+<li>对于少量数据集（OpenBookQA，BoolQ），我们遵循 Brown 等（2020）的方法，根据在“Answer:”上下文中给定的完成可能性（likelihood of the completion given “Answer:” as context），用公式表示就是 <strong>P(completion|context) &#x2F; P(completion|”Answer:”)</strong>.</li>
 </ul>
 <h3 id="3-1-常识推理（Common-Sense-Reasoning）"><a href="#3-1-常识推理（Common-Sense-Reasoning）" class="headerlink" title="3.1 常识推理（Common Sense Reasoning）"></a>3.1 常识推理（Common Sense Reasoning）</h3><p>使用下面八个标准的常识推理基准测试：</p>
 <ol>
@@ -666,7 +666,7 @@
 <li>LLaMA 65B 也优于 PaLM 62B，即使它的训练时间更长。</li>
 </ul>
 <blockquote>
-<p>本表中 pass@1 结果是通过 temperature=0.1 采样得到的。 pass@100 和 pass@80 指标是通过 temperature=0.8 获得的。 我们使用与 Chen 等（2021）相同的方法来获得 pass@k 的无偏估计。</p>
+<p>本表中 pass@1 结果是通过 temperature&#x3D;0.1 采样得到的。 pass@100 和 pass@80 指标是通过 temperature&#x3D;0.8 获得的。 我们使用与 Chen 等（2021）相同的方法来获得 pass@k 的无偏估计。</p>
 </blockquote>
 <p>通过在代码特定 token 上进行微调，可以提高生成代码的性能。例如，</p>
 <ul>
@@ -696,7 +696,7 @@
 <p>对于这100k个提示中的每一个，我们使用我们的模型贪婪地生成结果，并测量其毒性得分。每个提示的得分范围从0（非有毒）到1（有毒）。在表11中，我们报告了我们在RealToxicityPrompts的基础和尊重提示类别上的平均得分。这些得分与我们在文献中观察到的是“可比较的”（例如，Chinchilla为0.087），但这些工作和我们的方法（在采样策略、提示数量和API时间方面）存在差异。</p>
 <p><img src="/images/134725.png" srcset="/img/loading.gif" lazyload alt="表11：RealToxicityPrompts"></p>
 <p>我们观察到，随着模型大小的增加，哪怕是对于要求尊重的提示，毒性也会增加。这也在之前的研究中观察到（Zhang等，2022），但Hoffmann等人（2022）是一个显著的例外，他们并未观察到Chinchilla和Gopher之间有任何差异，尽管大小不同。这可能是由于更大的模型Gopher的性能比Chinchilla差，表明毒性与模型大小之间的关系可能只适用于同一模型系列内。</p>
-<h3 id="5-2-CrowS-Pairs"><a href="#5-2-CrowS-Pairs" class="headerlink" title="5.2 CrowS-Pairs"></a>5.2 CrowS-Pairs</h3><p>我们在CrowS-Pairs（Nangia等，2020）上评估我们模型的偏见。这个数据集允许在9个类别中测量偏见：性别、宗教、种族/肤色、性取向、年龄、国籍、残疾、外貌和社会经济地位。每个示例由一个刻板印象和一个反刻板印象组成，我们使用zero-shot设置中两个句子的困惑度来测量模型对刻板句子的偏好。因此，较高的分数表示较高的偏见。</p>
+<h3 id="5-2-CrowS-Pairs"><a href="#5-2-CrowS-Pairs" class="headerlink" title="5.2 CrowS-Pairs"></a>5.2 CrowS-Pairs</h3><p>我们在CrowS-Pairs（Nangia等，2020）上评估我们模型的偏见。这个数据集允许在9个类别中测量偏见：性别、宗教、种族&#x2F;肤色、性取向、年龄、国籍、残疾、外貌和社会经济地位。每个示例由一个刻板印象和一个反刻板印象组成，我们使用zero-shot设置中两个句子的困惑度来测量模型对刻板句子的偏好。因此，较高的分数表示较高的偏见。</p>
 <p>我们在表12中与GPT-3和OPT-175B进行比较。平均而言，LLaMA与这两个模型相比略有优势。我们的模型在宗教类别中尤其偏见明显（与OPT-175B相比增加了+10%），其次是年龄和性别。我们预计这些偏见来自CommonCrawl，尽管经过了多个过滤步骤。</p>
 <p><img src="/images/134901.png" srcset="/img/loading.gif" lazyload alt="表12：CrowS-Pairs。我们将LLaMA-65B、OPT-175B和GPT-3-175B中包含的偏见水平进行了比较。得分越高表示偏见越大。"></p>
 <h3 id="5-3-WinoGender"><a href="#5-3-WinoGender" class="headerlink" title="5.3 WinoGender"></a>5.3 WinoGender</h3><p>为了进一步研究我们模型在性别类别上的偏见，我们查看了WinoGender基准测试（Rudinger等，2018），这是一个共指解析数据集。WinoGender由Winograd模式组成，通过确定模型的共指解析性能是否受到代词性别的影响来评估偏见。</p>
@@ -704,10 +704,10 @@
 <p>人们为了避免重复，习惯用代词、称谓和缩略语来指代前面提到的实体全称。 例如，在文章开始处会写“哈尔滨工业大学”，后面可能会说“哈工大”、“工大”等，还会提到“这所大学”、“她”等。 这种现象称为共指现象。共指解析的目的就在于自动识别表示同一个实体的名词短语或代词，并将他们归类。</p>
 </blockquote>
 <p>更具体地说，每个句子都有三个提及：一个“职业”、“参与者”和一个“代词”，其中代词要么指代职业，要么指代参与者。我们提示模型确定共指关系，并根据句子的上下文测量它是否正确地这样做。目标是揭示模型是否捕捉到了与职业相关的社会偏见。</p>
-<p>例如，WinoGender数据集中的一个句子是：“护士通知病人，他的班次将在一个小时后结束。”，接着是指的是“His”。然后，我们比较护士和病人与模型进行共指解析的续集的困惑度。我们使用3个代词评估性能：“her/her/she”、“his/him/he”和“their/them/someone”（不同的选择对应于代词的语法功能）。</p>
-<p>在表13中，我们报告了数据集中包含的三种不同代词的共指得分。我们观察到，我们的模型在为“their/them/someone”代词执行共指解析时明显优于“her/her/she”和“his/him/he”代词。之前的工作（Rae等，2021年；Hoffmann等，2022）也有类似的观察，并可能表明存在性别偏见。</p>
-<p>确实，在“her/her/she”和“his/him/he”代词的情况下，模型可能使用职业的大多数性别进行共指解析，而不是使用句子的证据。为了进一步研究这一假设，我们查看了WinoGender数据集中“her/her/she”和“his/him/he”代词的“gotcha”案例集。这些案例对应于代词不匹配职业的大多数性别的句子，而职业是正确答案。</p>
-<p>在表13中，我们观察到我们的模型LLaMA-65B在“gotcha”示例上的错误更多，明确显示它捕捉到了与性别和职业相关的社会偏见。无论性别如何，我们的模型在“her/her/she”和“his/him/he”代词上的性能下降，这表明存在偏见。</p>
+<p>例如，WinoGender数据集中的一个句子是：“护士通知病人，他的班次将在一个小时后结束。”，接着是指的是“His”。然后，我们比较护士和病人与模型进行共指解析的续集的困惑度。我们使用3个代词评估性能：“her&#x2F;her&#x2F;she”、“his&#x2F;him&#x2F;he”和“their&#x2F;them&#x2F;someone”（不同的选择对应于代词的语法功能）。</p>
+<p>在表13中，我们报告了数据集中包含的三种不同代词的共指得分。我们观察到，我们的模型在为“their&#x2F;them&#x2F;someone”代词执行共指解析时明显优于“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词。之前的工作（Rae等，2021年；Hoffmann等，2022）也有类似的观察，并可能表明存在性别偏见。</p>
+<p>确实，在“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词的情况下，模型可能使用职业的大多数性别进行共指解析，而不是使用句子的证据。为了进一步研究这一假设，我们查看了WinoGender数据集中“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词的“gotcha”案例集。这些案例对应于代词不匹配职业的大多数性别的句子，而职业是正确答案。</p>
+<p>在表13中，我们观察到我们的模型LLaMA-65B在“gotcha”示例上的错误更多，明确显示它捕捉到了与性别和职业相关的社会偏见。无论性别如何，我们的模型在“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词上的性能下降，这表明存在偏见。</p>
 <p><img src="/images/135040.png" srcset="/img/loading.gif" lazyload alt="表13：WinoGender"></p>
 <p>在表14中，我们报告了我们模型在两个问题上的性能，以测量真实模型和真实性和信息性的交集。与GPT-3相比，我们的模型在两个类别中得分更高，但正确答案的比率仍然很低，显示我们的模型可能会产生错误答案。</p>
 <p><img src="/images/135147.png" srcset="/img/loading.gif" lazyload alt="表14：Truthful QA"></p>
@@ -719,10 +719,10 @@
 
 <p>其中，我们的功率使用效率（PUE）为 1.1。 产生的碳排放量取决于用于训练所在的数据中心的位置。例如，</p>
 <ul>
-<li>BLOOM 使用排放 0.057kg CO2eq/KWh 的电网，产生 27吨CO2eq 的排放量，</li>
-<li>OPT 使用排放 0.231kg CO2eq/KWh 的电网，导致 82吨CO2eq 的排放量。</li>
+<li>BLOOM 使用排放 0.057kg CO2eq&#x2F;KWh 的电网，产生 27吨CO2eq 的排放量，</li>
+<li>OPT 使用排放 0.231kg CO2eq&#x2F;KWh 的电网，导致 82吨CO2eq 的排放量。</li>
 </ul>
-<p>在本研究中，我们感兴趣的是在同一个数据中心的情况下，不同模型训练的碳排放成本。 因此，我们不考虑数据中心的位置，并使用美国国家平均碳强度系数（carbon intensity factor） 0.385kg CO2eq/KWh。 那么此时就有：</p>
+<p>在本研究中，我们感兴趣的是在同一个数据中心的情况下，不同模型训练的碳排放成本。 因此，我们不考虑数据中心的位置，并使用美国国家平均碳强度系数（carbon intensity factor） 0.385kg CO2eq&#x2F;KWh。 那么此时就有：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">tCO2eq</span> = MWh * <span class="hljs-number">0</span>:<span class="hljs-number">385</span><br></code></pre></td></tr></table></figure>
 
 <p>我们对 OPT 和 BLOOM 采用相同的公式进行公平比较。</p>
@@ -742,6 +742,7 @@
 <h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8 总结"></a>8 总结</h2><p>在本文中，我们介绍了一系列公开发布的语言模型，并与最先进的基础模型竞争。尤其值得注意的是，LLaMA-13B的性能超过了GPT-3，而其大小只有GPT-3的十分之一多。而LLaMA-65B与Chinchilla-70B和PaLM-540B处于竞争地位。</p>
 <p>与之前的研究不同，我们展示了仅使用公开可用的数据进行训练即可实现最先进的性能，而无需求助于专有数据集。我们希望将这些模型发布给研究社区，这将加速大型语言模型的发展，并帮助改进其稳健性以及缓解已知问题，如毒性和偏见。</p>
 <p>此外，我们观察到，与Chung等人（2022年）类似，对这些模型进行指令微调会带来有希望的结果，我们计划在未来的工作中进一步研究这一点。最后，鉴于我们在规模化过程中不断提高性能，我们计划在未来发布使用更大的预训练语料库训练的更大型的模型。</p>
+<p>2024&#x2F;1&#x2F;1 于苏州家中</p>
 
                 
               </div>
