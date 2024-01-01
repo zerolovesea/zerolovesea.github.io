@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llama.png">
 <meta property="article:published_time" content="2024-01-01T03:22:53.000Z">
-<meta property="article:modified_time" content="2024-01-01T04:32:40.136Z">
+<meta property="article:modified_time" content="2024-01-01T05:41:46.985Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
@@ -253,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.5k 字
+          8.2k 字
         
       </span>
     
@@ -264,7 +264,7 @@
         
         
         
-          63 分钟
+          69 分钟
         
       </span>
     
@@ -679,7 +679,7 @@
 <p>在表13中，我们观察到我们的模型LLaMA-65B在“gotcha”示例上的错误更多，明确显示它捕捉到了与性别和职业相关的社会偏见。无论性别如何，我们的模型在“her/her/she”和“his/him/he”代词上的性能下降，这表明存在偏见。</p>
 <p>在表14中，我们报告了我们模型在两个问题上的性能，以测量真实模型和真实性和信息性的交集。与GPT-3相比，我们的模型在两个类别中得分更高，但正确答案的比率仍然很低，显示我们的模型可能会产生错误答案。</p>
 <h3 id="5-4-TruthfulQA"><a href="#5-4-TruthfulQA" class="headerlink" title="5.4 TruthfulQA"></a>5.4 TruthfulQA</h3><p>TruthfulQA（Lin等，2021）旨在衡量模型的真实性，即其识别某个声明是否真实的能力。Lin等人（2021）考虑了“真实”在“实际世界的字面真实”意义上的定义，而不是只在信仰系统或传统背景下为真的声明。这个基准测试可以评估模型生成错误信息或错误声明的风险。这些问题以多种风格编写，涵盖了38个类别，并且旨在具有对抗性。</p>
-<h2 id="6-碳足迹（Carbon-footprint）"><a href="#6-碳足迹（Carbon-footprint）" class="headerlink" title="6 碳足迹（Carbon footprint）"></a>6 碳足迹（Carbon footprint）</h2><p>训练 LLaMA 消耗了大量能源，排放了很多二氧化碳。我们遵循最近的文献，将总能耗和产生的碳足迹分解在表 15 中，</p>
+<h2 id="6-碳足迹（Carbon-footprint）"><a href="#6-碳足迹（Carbon-footprint）" class="headerlink" title="6 碳足迹（Carbon footprint）"></a>6 碳足迹（Carbon footprint）</h2><p>训练 LLaMA 消耗了大量能源，排放了很多二氧化碳。我们遵循最近的文献，将总能耗和产生的碳足迹分解在表 15 中：</p>
 <p><img src="https://arthurchiao.art/assets/img/llama-paper/table-15.png" srcset="/img/loading.gif" lazyload alt="表15：同一数据中心训练不同模型的碳足迹"></p>
 <p>我们采用 Wu 等(2022)的公式来估算训练模型所需的瓦时数（Watt-hour, Wh）和碳排放量（carbon emissions）。 对于瓦时数，我们使用以下公式：</p>
 <figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf"><span class="hljs-attribute">Wh</span> <span class="hljs-operator">=</span> GPU-h * (GPU power consumption) * PUE<br></code></pre></td></tr></table></figure>
@@ -698,12 +698,17 @@
 <li>我们在 <strong>2048 个 A100 80GB 上，用了约 5 个月</strong>时间来开发 LLaMA。 根据前面的公式，计算得到 LLaMA 的训练成本约为 2638 MWh，总排放量为 1015 tCO2eq。</li>
 </ul>
 <p>我们希望 LLaMA 的发布有助于减少未来的碳排放，因为它训练已经完成（很多情况下大家直接用或者进行微调就行了）: 而且其中一些小参数模型可以在单个 GPU 上运行。</p>
-<h2 id="7-相关工作（Related-work）"><a href="#7-相关工作（Related-work）" class="headerlink" title="7 相关工作（Related work）"></a>7 相关工作（Related work）</h2><p><strong>语言模型</strong>是单词、 token 或字符组成的<strong>序列的概率分布</strong> （probability distributions over sequences of words, tokens or characters）(Shannon, 1948, 1951)。</p>
+<h2 id="7-相关工作（Related-work）"><a href="#7-相关工作（Related-work）" class="headerlink" title="7 相关工作（Related work）"></a>7 相关工作（Related work）</h2><p><strong>语言模型</strong>是单词、 token 或字符组成的序列的概率分布（probability distributions over sequences of words, tokens or characters）(Shannon, 1948, 1951)。</p>
 <p>这个任务通常被描述为<strong>对下一个 token 的预测</strong>，在自然语言处理（Bahl 等，1983；Brown 等，1990）中很早就是一个核心问题了。 Turing（1950）提出通过<strong>“模仿游戏”</strong>（imitation game），使用语言来衡量机器智能， 因此<strong>语言建模</strong>（language modeling）成为了<strong>衡量人工智能进展的基准</strong>（Mahoney，1999）。</p>
-<h3 id="7-1-Architecture"><a href="#7-1-Architecture" class="headerlink" title="7.1 Architecture"></a>7.1 Architecture</h3><p>Traditionally, language models were based on n-gram count statistics (Bahl et al., 1983), and various smoothing techniques were proposed to improve the estimation of rare events (Katz, 1987; Kneser and Ney, 1995). In the past two decades, neural networks have been successfully applied to the language modelling task, starting from feed forward models (Bengio et al., 2000), recurrent neural networks (Elman, 1990; Mikolov et al., 2010) and LSTMs (Hochreiter and Schmidhuber, 1997; Graves, 2013). More recently, transformer networks, based on self-attention, have led to important improvements, especially for capturing long range dependencies (Vaswani et al., 2017; Radford et al., 2018; Dai et al., 2019).</p>
-<h3 id="7-2-Scaling"><a href="#7-2-Scaling" class="headerlink" title="7.2 Scaling"></a>7.2 Scaling</h3><p>There is a long history of scaling for language models, for both the model and dataset sizes. Brants et al. (2007) showed the benefits of using language models trained on 2 trillion tokens, resulting in 300 billion n-grams, on the quality of machine translation. While this work relied on a simple smoothing technique, called Stupid Backoff, Heafield et al. (2013) later showed how to scale Kneser-Ney smoothing to Web-scale data. This allowed to train a 5-gram model on 975 billions tokens from CommonCrawl, resulting in a model with 500 billions n-grams (Buck et al., 2014). Chelba et al. (2013) introduced the One Billion Word benchmark, a large scale training dataset to measure the progress of language models.</p>
-<p>In the context of neural language models, Jozefowicz et al. (2016) obtained state-of-the-art results on the Billion Word benchmark by scaling LSTMs to 1 billion parameters. Later, scaling transformers lead to improvement on many NLP tasks. Notable models include BERT (Devlin et al., 2018), GPT-2 (Radford et al., 2019), Megatron- LM (Shoeybi et al., 2019), and T5 (Raffel et al., 2020). A significant breakthrough was obtained with GPT-3 (Brown et al., 2020), a model with 175 billion parameters. This lead to a series of Large Language Models, such as Jurassic-1 (Lieber et al., 2021), Megatron-Turing NLG (Smith et al., 2022), Gopher (Rae et al., 2021), Chinchilla (Hoffmann et al., 2022), PaLM (Chowdhery et al., 2022), OPT (Zhang et al., 2022), and GLM (Zeng et al., 2022). Hestness et al. (2017) and Rosenfeld et al. (2019) studied the impact of scaling on the performance of deep learning models, showing the existence of power laws between the model and dataset sizes and the performance of the system. Kaplan et al. (2020) derived power laws specifically for transformer based language models, which were later refined by Hoffmann et al. (2022), by adapting the learning rate schedule when scaling datasets. Finally, Wei et al. (2022) studied the effect of scaling on the abilities of large language models.</p>
-<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8 总结"></a>8 总结</h2><p>In this paper, we presented a series of language models that are released openly, and competitive with state-of-the-art foundation models. Most notably, LLaMA-13B outperforms GPT-3 while being more than 10 smaller, and LLaMA-65B is competitive with Chinchilla-70B and PaLM-540B. Unlike previous studies, we show that it is possible to achieve state-of-the-art performance by training exclusively on publicly available data, without resorting to proprietary datasets. We hope that releasing these models to the research community will accelerate the development of large language models, and help efforts to improve their robustness and mitigate known issues such as toxicity and bias. Additionally, we observed like Chung et al. (2022) that finetuning these models on instructions lead to promising results, and we plan to further investigate this in future work. Finally, we plan to release larger models trained on larger pretraining corpora in the future, since we have seen a constant improvement in performance as we were scaling.</p>
+<h3 id="7-1-架构"><a href="#7-1-架构" class="headerlink" title="7.1 架构"></a>7.1 架构</h3><p>传统上，语言模型基于n-gram计数统计（Bahl等，1983），并提出了各种平滑技术来改善对稀有事件的估计（Katz，1987；Kneser和Ney，1995）。在过去的两十年中，神经网络已成功应用于语言建模任务，从前馈模型（Bengio等，2000）、循环神经网络（Elman，1990；Mikolov等，2010）到长短时记忆网络（LSTMs）（Hochreiter和Schmidhuber，1997；Graves，2013）。最近，基于自注意力的Transformer网络带来了重大的改进，尤其是对于捕获长距离依赖关系（Vaswani等，2017；Radford等，2018；Dai等，2019）。</p>
+<h3 id="7-2-规模化"><a href="#7-2-规模化" class="headerlink" title="7.2 规模化"></a>7.2 规模化</h3><p>对于语言模型的规模化，无论是模型还是数据集的大小，都有着悠久的历史。Brants等（2007）展示了使用训练有2万亿(2 trillion)Token后得到的3000亿n-gram的语言模型对机器翻译质量的好处。</p>
+<p>虽然这项工作依赖于一个简单的平滑技术，称为Stupid Backoff，但Heafield等（2013）后来展示了如何将Kneser-Ney平滑技术扩展到Web规模的数据。这使得可以从CommonCrawl的9750亿Token中训练一个5-gram模型，从而得到一个有5000亿n-gram的模型（Buck等，2014）。Chelba等（2013）引入了一个名为One Billion Word的基准测试，这是一个大规模的训练数据集，用于衡量语言模型的进展。</p>
+<p>在神经语言模型的背景下，Jozefowicz等（2016）通过将LSTMs扩展到10亿参数，在Billion Word基准测试上获得了最新的结果。随后，基于Transformers的扩展模型在许多NLP任务上都有所改进。值得注意的模型包括BERT（Devlin等，2018）、GPT-2（Radford，2019）、Megatron-LM（Shoeybi等，2019）和T5（Raffel等，2020）。</p>
+<p>GPT-3（Brown等，2020）是一个有1750亿参数的模型，这是一个重大突破。这导致了一系列大型语言模型的出现，例如Jurassic-1（Lieber等，2021）、Megatron-Turing NLG（Smith等，2022）、Gopher（Rae等，2021）、Chinchilla（Hoffmann等，2022）、PaLM（Chowdhery等，2022）、OPT（Zhang等，2022）和GLM（Zeng等，2022）。</p>
+<p>Hestness等（2017）和Rosenfeld等（2019）研究了规模化对深度学习模型性能的影响，显示了模型和数据集大小与系统性能之间存在的幂律关系。Kaplan等（2020）专门为基于Transformer的语言模型导出了幂律，这些幂律后来由Hoffmann等（2022）通过在扩展数据集时调整学习率表进行了进一步的细化。最后，Wei等（2022）研究了规模化对大型语言模型能力的影响。</p>
+<h2 id="8-总结"><a href="#8-总结" class="headerlink" title="8 总结"></a>8 总结</h2><p>在本文中，我们介绍了一系列公开发布的语言模型，并与最先进的基础模型竞争。尤其值得注意的是，LLaMA-13B的性能超过了GPT-3，而其大小只有GPT-3的十分之一多。而LLaMA-65B与Chinchilla-70B和PaLM-540B处于竞争地位。</p>
+<p>与之前的研究不同，我们展示了仅使用公开可用的数据进行训练即可实现最先进的性能，而无需求助于专有数据集。我们希望将这些模型发布给研究社区，这将加速大型语言模型的发展，并帮助改进其稳健性以及缓解已知问题，如毒性和偏见。</p>
+<p>此外，我们观察到，与Chung等人（2022年）类似，对这些模型进行指令微调会带来有希望的结果，我们计划在未来的工作中进一步研究这一点。最后，鉴于我们在规模化过程中不断提高性能，我们计划在未来发布使用更大的预训练语料库训练的更大型的模型。</p>
 
                 
               </div>
