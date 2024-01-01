@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llama.png">
 <meta property="article:published_time" content="2024-01-01T03:22:53.000Z">
-<meta property="article:modified_time" content="2024-01-01T05:41:46.985Z">
+<meta property="article:modified_time" content="2024-01-01T06:12:38.745Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
@@ -253,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.2k 字
+          8.3k 字
         
       </span>
     
@@ -264,7 +264,7 @@
         
         
         
-          69 分钟
+          70 分钟
         
       </span>
     
@@ -327,7 +327,26 @@
             
               <div class="markdown-body">
                 
-                <h1 id="模型工程信息"><a href="#模型工程信息" class="headerlink" title="模型工程信息"></a>模型工程信息</h1><ol>
+                <p>大名鼎鼎的开源语言模型LLaMA由Meta公司发布于2023年2月27日。这在研究社区中引起了广泛的热议，它的架构也被后续各大开源模型争相模仿。</p>
+<p>发布的模型参数数量及文件大小：</p>
+<ul>
+<li>7B：12.55 GB。</li>
+<li>13B：24.24 GB。</li>
+<li>33B：60.6 GB。</li>
+<li>65B：121.6 GB。</li>
+</ul>
+<p>数据集总大小则是4828GB，占比如下：</p>
+<ul>
+<li>English CommonCrawl [67%]</li>
+<li>C4 [15%]</li>
+<li>GitHub [4.5%]</li>
+<li>Wikipedia [4.5%]</li>
+<li>Gutenberg and Books3 [4.5%]</li>
+<li>ArXiv [2.5%]</li>
+<li>Stack Exchange [2%]</li>
+</ul>
+<h1 id="LLaMA模型架构"><a href="#LLaMA模型架构" class="headerlink" title="LLaMA模型架构"></a>LLaMA模型架构</h1><p><img src="/images/llama_stru" srcset="/img/loading.gif" lazyload alt="LLaMA模型架构"></p>
+<h1 id="LLaMA论文中的关键信息"><a href="#LLaMA论文中的关键信息" class="headerlink" title="LLaMA论文中的关键信息"></a>LLaMA论文中的关键信息</h1><ol>
 <li>LLaMA 只使用公开可用数据集进行训练，模型已开源；<ul>
 <li>基于 <strong>transformer</strong> 架构；</li>
 <li>训练数据集大小：<strong>1.4T 个 tokens</strong>；</li>
@@ -458,14 +477,14 @@
 <li>使用正则表达式删除一些模板段落（boilerplate），例如 headers；</li>
 <li>在文件级别上使用精确匹配对得到的数据集进行去重。</li>
 </ul>
-<p>** Wikipedia [4.5%]**</p>
+<p><strong>Wikipedia [4.5%]</strong></p>
 <ul>
 <li><p>使用了 2022 年 6 月至 8 月的一部分 Wikipedia dumps， 覆盖 20 种语言（use either the Latin or Cyrillic scripts）：bg、ca、cs、da、de、en、es、fr、hr、hu、it、nl、pl、pt、ro、ru、sl、sr、sv、uk。</p>
 </li>
 <li><p>删掉了其中的超链接、注释和其他 formatting boilerplate。</p>
 </li>
 </ul>
-<p>** Gutenberg and Books3 [4.5%]**</p>
+<p><strong>Gutenberg and Books3 [4.5%]</strong></p>
 <p>训练数据集中包含两个书籍语料库：</p>
 <ol>
 <li>Gutenberg Project：<strong>公版书</strong>（public domain books）；</li>
@@ -475,7 +494,7 @@
 <p><strong>ArXiv [2.5%]</strong></p>
 <p>为了让训练数据集包含一定的科学数据（scientific data），我们对一些 arXiv Latex 文件做处理之后加到训练数据集。</p>
 <ul>
-<li>按照 Lewkowycz 等（2022）的方法，删除了 the first section 之前的所有内容以及参考文献，</li>
+<li>按照 Lewkowycz 等（2022）的方法，删除了the first section 之前的所有内容以及参考文献，</li>
 <li>从 .tex 文件中删除了注释，</li>
 <li>对作者编写的定义和宏（definitions and macros written by users）做了内联展开（inline-expand），使得论文更加一致（increase consistency across papers）。</li>
 </ul>
@@ -602,7 +621,7 @@
 <li>自然问题（Kwiatkowski 等，2019）</li>
 <li>TriviaQA（Joshi 等，2017）。</li>
 </ol>
-<p>对于这两个基准测试，在相同设置（例如，模型不能访问那些有助于回答问题的文档）下， 取得了完全相同的性能。 表 4 和表 5 分别是在这两个 benchmark 上的结果，</p>
+<p>对于这两个基准测试，在相同设置下（例如，模型不能访问那些有助于回答问题的文档）， 取得了完全相同的性能。 表 4 和表 5 分别是在这两个 benchmark 上的结果：</p>
 <p><img src="https://arthurchiao.art/assets/img/llama-paper/table-4.png" srcset="/img/loading.gif" lazyload alt="表 4：NaturalQuestions. Exact match performance"></p>
 <p><img src="https://arthurchiao.art/assets/img/llama-paper/table-5.png" srcset="/img/loading.gif" lazyload alt="表 5：TriviaQA. Zero-shot and few-shot exact match performance on the filtered dev set"></p>
 <p>在这两个基准测试中，LLaMA-65B 在零样本和少样本设置中都实现了 state-of-the-arts 的性能。 更重要的是，LLaMA-13B 在这些基准测试中与 GPT-3 和 Chinchilla 相比也具有竞争力，尽管参数只有后者的 10%~20％（5-10 smaller）。 在推理场景，<strong>LLaMA-13B 能在单个 V100 GPU</strong> 上运行。</p>
@@ -660,14 +679,16 @@
 <h2 id="4-指令微调（Instruction-Finetuning）"><a href="#4-指令微调（Instruction-Finetuning）" class="headerlink" title="4 指令微调（Instruction Finetuning）"></a>4 指令微调（Instruction Finetuning）</h2><p>在本节中，我们将说明简单地在指令数据上进行微调，就会迅速提高在 MMLU 上的性能。</p>
 <p>尽管 LLaMA-65B 的未微调版本已经能够 follow 基本指令，但我们观察到进行一点微调可以提高在 MMLU 上的性能， 并能进一步提高模型 follow 指令的能力。 由于这不是本文的重点，我们只进行了一次实验，遵循 Chung 等（2022）的相同协议来训练一个指令模型 LLaMA-I。 LLaMA-I 在 MMLU 上的结果见表 10，与当前中等规模的指令微调模型 OPT-IML（Iyer 等，2022）和 Flan-PaLM 系列（Chung 等，2022）进行了比较：</p>
 <p><img src="https://arthurchiao.art/assets/img/llama-paper/table-10.png" srcset="/img/loading.gif" lazyload alt="表 10：Instruction finetuning – MMLU (5-shot). Comparison of models of moderate size with and without instruction finetuning on MMLU"></p>
-<p>尽管这里使用的指令微调方法很简单，但我们在 MMLU 上达到了 68.9％。 LLaMA-I（65B）在 MMLU 上优于现有的中等规模指令微调模型，但仍远远落后于最先进的 GPT code-davinci-002 在 MMLU 上的 77.4（数字来自 Iyer 等（2022））。有关 57 个任务的 MMLU 性能详细信息，请参见附录的表 16。</p>
+<p>尽管这里使用的指令微调方法很简单，但我们在 MMLU 上达到了 68.9％。 LLaMA-I（65B）在 MMLU 上优于现有的中等规模指令微调模型，但仍远远落后于最先进的 GPT code-davinci-002 在 MMLU 上的 77.4（数字来自 Iyer 等（2022））。</p>
 <h2 id="5-偏差，毒性和错误信息"><a href="#5-偏差，毒性和错误信息" class="headerlink" title="5 偏差，毒性和错误信息"></a>5 偏差，毒性和错误信息</h2><p>大型语言模型已被证明能够复制和放大训练数据中存在的偏见（Sheng等，2019年；Kurita等，2019年），并生成有毒或冒犯性的内容（Gehman等，2020年）。由于我们的训练数据集包含大量来自网络的数据，我们认为确定我们的模型生成此类内容的潜力至关重要。为了了解LLaMA-65B的潜在危害，我们在测量有毒内容产生和刻板印象检测的不同基准上进行评估。虽然我们选择了一些语言模型社区用于指示这些模型存在问题的标准基准，但这些评估并不足以完全理解与这些模型相关的风险。</p>
 <h3 id="5-1-真实的有毒提示-RealToxicityPrompts包含约100k个提示"><a href="#5-1-真实的有毒提示-RealToxicityPrompts包含约100k个提示" class="headerlink" title="5.1 真实的有毒提示(RealToxicityPrompts包含约100k个提示)"></a>5.1 真实的有毒提示(RealToxicityPrompts包含约100k个提示)</h3><p>语言模型可以生成有毒的语言(toxic language)，例如侮辱、仇恨言论或威胁。模型可以生成的有毒内容范围非常广泛，使得进行全面评估具有挑战性。近期的几项研究（Zhang等，2022；Hoffmann等，2022）已将RealToxicityPrompts基准（Gehman等，2020）视为其模型有多毒的指标。</p>
 <p>RealToxicityPrompts包含约100k个提示，模型必须完成这些提示；然后通过向PerspectiveAPI 3发送请求自动评估其毒性得分。我们无法控制第三方PerspectiveAPI使用的流程，这使得与先前模型进行比较变得困难。</p>
 <p>对于这100k个提示中的每一个，我们使用我们的模型贪婪地生成结果，并测量其毒性得分。每个提示的得分范围从0（非有毒）到1（有毒）。在表11中，我们报告了我们在RealToxicityPrompts的基础和尊重提示类别上的平均得分。这些得分与我们在文献中观察到的是“可比较的”（例如，Chinchilla为0.087），但这些工作和我们的方法（在采样策略、提示数量和API时间方面）存在差异。</p>
-<p>我们观察到，随着模型大小的增加，尤其是对于尊重的提示，毒性也会增加。这也在之前的研究中观察到（Zhang等，2022），但Hoffmann等人（2022）是一个显著的例外，他们并未观察到Chinchilla和Gopher之间有任何差异，尽管大小不同。这可能是由于更大的模型Gopher的性能比Chinchilla差，表明毒性与模型大小之间的关系可能只适用于同一模型系列内。</p>
+<p><img src="/images/134725.png" srcset="/img/loading.gif" lazyload alt="表11：RealToxicityPrompts"></p>
+<p>我们观察到，随着模型大小的增加，哪怕是对于要求尊重的提示，毒性也会增加。这也在之前的研究中观察到（Zhang等，2022），但Hoffmann等人（2022）是一个显著的例外，他们并未观察到Chinchilla和Gopher之间有任何差异，尽管大小不同。这可能是由于更大的模型Gopher的性能比Chinchilla差，表明毒性与模型大小之间的关系可能只适用于同一模型系列内。</p>
 <h3 id="5-2-CrowS-Pairs"><a href="#5-2-CrowS-Pairs" class="headerlink" title="5.2 CrowS-Pairs"></a>5.2 CrowS-Pairs</h3><p>我们在CrowS-Pairs（Nangia等，2020）上评估我们模型的偏见。这个数据集允许在9个类别中测量偏见：性别、宗教、种族/肤色、性取向、年龄、国籍、残疾、外貌和社会经济地位。每个示例由一个刻板印象和一个反刻板印象组成，我们使用zero-shot设置中两个句子的困惑度来测量模型对刻板句子的偏好。因此，较高的分数表示较高的偏见。</p>
 <p>我们在表12中与GPT-3和OPT-175B进行比较。平均而言，LLaMA与这两个模型相比略有优势。我们的模型在宗教类别中尤其偏见明显（与OPT-175B相比增加了+10%），其次是年龄和性别。我们预计这些偏见来自CommonCrawl，尽管经过了多个过滤步骤。</p>
+<p><img src="/images/134901.png" srcset="/img/loading.gif" lazyload alt="表12：CrowS-Pairs。我们将LLaMA-65B、OPT-175B和GPT-3-175B中包含的偏见水平进行了比较。得分越高表示偏见越大。"></p>
 <h3 id="5-3-WinoGender"><a href="#5-3-WinoGender" class="headerlink" title="5.3 WinoGender"></a>5.3 WinoGender</h3><p>为了进一步研究我们模型在性别类别上的偏见，我们查看了WinoGender基准测试（Rudinger等，2018），这是一个共指解析数据集。WinoGender由Winograd模式组成，通过确定模型的共指解析性能是否受到代词性别的影响来评估偏见。</p>
 <blockquote>
 <p>人们为了避免重复，习惯用代词、称谓和缩略语来指代前面提到的实体全称。 例如，在文章开始处会写“哈尔滨工业大学”，后面可能会说“哈工大”、“工大”等，还会提到“这所大学”、“她”等。 这种现象称为共指现象。共指解析的目的就在于自动识别表示同一个实体的名词短语或代词，并将他们归类。</p>
@@ -677,29 +698,31 @@
 <p>在表13中，我们报告了数据集中包含的三种不同代词的共指得分。我们观察到，我们的模型在为“their/them/someone”代词执行共指解析时明显优于“her/her/she”和“his/him/he”代词。之前的工作（Rae等，2021年；Hoffmann等，2022）也有类似的观察，并可能表明存在性别偏见。</p>
 <p>确实，在“her/her/she”和“his/him/he”代词的情况下，模型可能使用职业的大多数性别进行共指解析，而不是使用句子的证据。为了进一步研究这一假设，我们查看了WinoGender数据集中“her/her/she”和“his/him/he”代词的“gotcha”案例集。这些案例对应于代词不匹配职业的大多数性别的句子，而职业是正确答案。</p>
 <p>在表13中，我们观察到我们的模型LLaMA-65B在“gotcha”示例上的错误更多，明确显示它捕捉到了与性别和职业相关的社会偏见。无论性别如何，我们的模型在“her/her/she”和“his/him/he”代词上的性能下降，这表明存在偏见。</p>
+<p><img src="/images/135040.png" srcset="/img/loading.gif" lazyload alt="表13：WinoGender"></p>
 <p>在表14中，我们报告了我们模型在两个问题上的性能，以测量真实模型和真实性和信息性的交集。与GPT-3相比，我们的模型在两个类别中得分更高，但正确答案的比率仍然很低，显示我们的模型可能会产生错误答案。</p>
+<p><img src="/images/135147.png" srcset="/img/loading.gif" lazyload alt="表14：Truthful QA"></p>
 <h3 id="5-4-TruthfulQA"><a href="#5-4-TruthfulQA" class="headerlink" title="5.4 TruthfulQA"></a>5.4 TruthfulQA</h3><p>TruthfulQA（Lin等，2021）旨在衡量模型的真实性，即其识别某个声明是否真实的能力。Lin等人（2021）考虑了“真实”在“实际世界的字面真实”意义上的定义，而不是只在信仰系统或传统背景下为真的声明。这个基准测试可以评估模型生成错误信息或错误声明的风险。这些问题以多种风格编写，涵盖了38个类别，并且旨在具有对抗性。</p>
 <h2 id="6-碳足迹（Carbon-footprint）"><a href="#6-碳足迹（Carbon-footprint）" class="headerlink" title="6 碳足迹（Carbon footprint）"></a>6 碳足迹（Carbon footprint）</h2><p>训练 LLaMA 消耗了大量能源，排放了很多二氧化碳。我们遵循最近的文献，将总能耗和产生的碳足迹分解在表 15 中：</p>
 <p><img src="https://arthurchiao.art/assets/img/llama-paper/table-15.png" srcset="/img/loading.gif" lazyload alt="表15：同一数据中心训练不同模型的碳足迹"></p>
-<p>我们采用 Wu 等(2022)的公式来估算训练模型所需的瓦时数（Watt-hour, Wh）和碳排放量（carbon emissions）。 对于瓦时数，我们使用以下公式：</p>
+<p>我们采用 Wu 等(2022)的公式来估算训练模型所需的瓦时数（Watt-hour, Wh）和碳排放量（carbon emissions）。对于瓦时数，我们使用以下公式：</p>
 <figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf"><span class="hljs-attribute">Wh</span> <span class="hljs-operator">=</span> GPU-h * (GPU power consumption) * PUE<br></code></pre></td></tr></table></figure>
 
-<p>其中，我们的功率使用效率（PUE）为 <strong>1.1</strong>。 产生的碳排放量取决于用于训练所在的数据中心的位置。例如，</p>
+<p>其中，我们的功率使用效率（PUE）为 1.1。 产生的碳排放量取决于用于训练所在的数据中心的位置。例如，</p>
 <ul>
-<li>BLOOM 使用排放 0.057kg CO2eq/KWh 的电网，产生 27 tCO2eq 的排放量，</li>
-<li>OPT 使用排放 0.231kg CO2eq/KWh 的电网，导致 82 tCO2eq 的排放量。</li>
+<li>BLOOM 使用排放 0.057kg CO2eq/KWh 的电网，产生 27吨CO2eq 的排放量，</li>
+<li>OPT 使用排放 0.231kg CO2eq/KWh 的电网，导致 82吨CO2eq 的排放量。</li>
 </ul>
-<p>在本研究中，我们感兴趣的是在同一个数据中心的情况下，不同模型训练的碳排放成本。 因此，我们不考虑数据中心的位置，并使用美国国家平均碳强度系数（carbon intensity factor） 0.385kg CO2eq/KWh。 那么此时就有，</p>
+<p>在本研究中，我们感兴趣的是在同一个数据中心的情况下，不同模型训练的碳排放成本。 因此，我们不考虑数据中心的位置，并使用美国国家平均碳强度系数（carbon intensity factor） 0.385kg CO2eq/KWh。 那么此时就有：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">tCO2eq</span> = MWh * <span class="hljs-number">0</span>:<span class="hljs-number">385</span><br></code></pre></td></tr></table></figure>
 
 <p>我们对 OPT 和 BLOOM 采用相同的公式进行公平比较。</p>
 <ul>
-<li>对于 OPT，我们假设训练需要在 992 个 A100-80GB 上进行 34 天（参见他们的日志 4）。</li>
-<li>我们在 <strong>2048 个 A100 80GB 上，用了约 5 个月</strong>时间来开发 LLaMA。 根据前面的公式，计算得到 LLaMA 的训练成本约为 2638 MWh，总排放量为 1015 tCO2eq。</li>
+<li>对于 OPT，我们假设训练需要在 992 个 A100-80GB 上进行 34 天。</li>
+<li>我们在 <strong>2048 个 A100 80GB 上，用了约 5 个月</strong>时间来开发 LLaMA。 根据前面的公式，计算得到 LLaMA 的训练成本约为 2638 MWh，总排放量为 1015吨的CO2eq。</li>
 </ul>
 <p>我们希望 LLaMA 的发布有助于减少未来的碳排放，因为它训练已经完成（很多情况下大家直接用或者进行微调就行了）: 而且其中一些小参数模型可以在单个 GPU 上运行。</p>
 <h2 id="7-相关工作（Related-work）"><a href="#7-相关工作（Related-work）" class="headerlink" title="7 相关工作（Related work）"></a>7 相关工作（Related work）</h2><p><strong>语言模型</strong>是单词、 token 或字符组成的序列的概率分布（probability distributions over sequences of words, tokens or characters）(Shannon, 1948, 1951)。</p>
-<p>这个任务通常被描述为<strong>对下一个 token 的预测</strong>，在自然语言处理（Bahl 等，1983；Brown 等，1990）中很早就是一个核心问题了。 Turing（1950）提出通过<strong>“模仿游戏”</strong>（imitation game），使用语言来衡量机器智能， 因此<strong>语言建模</strong>（language modeling）成为了<strong>衡量人工智能进展的基准</strong>（Mahoney，1999）。</p>
+<p>这个任务通常被描述为<strong>对下一个 token 的预测</strong>，在自然语言处理（Bahl 等，1983；Brown 等，1990）中很早就是一个核心问题了。 Turing（1950）提出通过<strong>“模仿游戏”</strong>（imitation game），使用语言来衡量机器智能， 因此<strong>语言建模</strong>（language modeling）成为了衡量人工智能进展的基准（Mahoney，1999）。</p>
 <h3 id="7-1-架构"><a href="#7-1-架构" class="headerlink" title="7.1 架构"></a>7.1 架构</h3><p>传统上，语言模型基于n-gram计数统计（Bahl等，1983），并提出了各种平滑技术来改善对稀有事件的估计（Katz，1987；Kneser和Ney，1995）。在过去的两十年中，神经网络已成功应用于语言建模任务，从前馈模型（Bengio等，2000）、循环神经网络（Elman，1990；Mikolov等，2010）到长短时记忆网络（LSTMs）（Hochreiter和Schmidhuber，1997；Graves，2013）。最近，基于自注意力的Transformer网络带来了重大的改进，尤其是对于捕获长距离依赖关系（Vaswani等，2017；Radford等，2018；Dai等，2019）。</p>
 <h3 id="7-2-规模化"><a href="#7-2-规模化" class="headerlink" title="7.2 规模化"></a>7.2 规模化</h3><p>对于语言模型的规模化，无论是模型还是数据集的大小，都有着悠久的历史。Brants等（2007）展示了使用训练有2万亿(2 trillion)Token后得到的3000亿n-gram的语言模型对机器翻译质量的好处。</p>
 <p>虽然这项工作依赖于一个简单的平滑技术，称为Stupid Backoff，但Heafield等（2013）后来展示了如何将Kneser-Ney平滑技术扩展到Web规模的数据。这使得可以从CommonCrawl的9750亿Token中训练一个5-gram模型，从而得到一个有5000亿n-gram的模型（Buck等，2014）。Chelba等（2013）引入了一个名为One Billion Word的基准测试，这是一个大规模的训练数据集，用于衡量语言模型的进展。</p>
