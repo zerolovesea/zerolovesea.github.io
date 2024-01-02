@@ -16,25 +16,26 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="大语言模型中常用到的一些名词解释及部分推导。">
+    <meta name="description" content="大语言模型中最重要的编码算法：BPE算法以及代码实现。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LLM中的常见名词">
-<meta property="og:url" content="http://example.com/2024/01/01/LLM%E4%B8%AD%E7%9A%84%E5%B8%B8%E8%A7%81%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A/index.html">
+<meta property="og:title" content="基于子词的分词方法：BPE算法">
+<meta property="og:url" content="http://example.com/2024/01/01/%E5%9F%BA%E4%BA%8E%E5%AD%97%E8%AF%8D%E7%9A%84%E5%88%86%E8%AF%8D%E6%96%B9%E6%B3%95%EF%BC%9ABPE%E7%AE%97%E6%B3%95/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="大语言模型中常用到的一些名词解释及部分推导。">
+<meta property="og:description" content="大语言模型中最重要的编码算法：BPE算法以及代码实现。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llm.png">
 <meta property="article:published_time" content="2024-01-01T07:28:07.000Z">
-<meta property="article:modified_time" content="2024-01-01T07:52:53.885Z">
+<meta property="article:modified_time" content="2024-01-02T11:36:22.497Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
+<meta property="article:tag" content="BPE">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/llm.png">
   
   
   
-  <title>LLM中的常见名词 - 我不是算法工程师</title>
+  <title>基于子词的分词方法：BPE算法 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -229,7 +230,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="LLM中的常见名词"></span>
+            <span id="subtitle" data-typed-text="基于子词的分词方法：BPE算法"></span>
           
         </div>
 
@@ -252,7 +253,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1 字
+          484 字
         
       </span>
     
@@ -263,7 +264,7 @@
         
         
         
-          1 分钟
+          5 分钟
         
       </span>
     
@@ -321,12 +322,27 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">LLM中的常见名词</h1>
+            <h1 id="seo-header">基于子词的分词方法：BPE算法</h1>
             
             
               <div class="markdown-body">
                 
-                <p>TODO</p>
+                <p>了解NLP或LLM的同学应该都对文本嵌入不陌生，例如Word2Vec，GloVe等。这些嵌入方法的第一步都是对文本进行分词，随后以各种各样的方式将分词Token转化为编码。</p>
+<p>在这过程中，分词这一步经常会被忽视。如果以字母单位进行分词，就会导致词表过大，推理时速度非常冗长，如果单词单位进行分词，就会无法处理未知的词汇。今天就介绍一下BPE(Byte Pair Encoding)分词算法。这个算法被各大模型广泛使用，用以构建词表。</p>
+<h1>完整分词流程</h1>
+<p>一个完整的分词流程是这样的：输入句子为：<code>&quot;I went to New York last week.&quot;</code></p>
+<p>分词器会将这话分为：<code>['i', 'went', 'to', 'New', 'York', 'last', 'week']</code> 这就是最普通的分词。然而它无法泛化变位的词关系。例如，当模型学习了<code>old, older, oldest</code>，这三个词是不同形态下的一个词。它不知道<code>smart, smarter, smartest</code>这是和类似的变位关系。</p>
+<p>此外，<code>old, older, oldest</code>本身也会被当作三个独立的词进行学习，这等于丢失了很多语言信息。为了解决这个问题，出现了基于子词的分词方法。</p>
+<h1>基于子词的分词方法</h1>
+<p>基于子词(subword)的分词方法很符合逻辑，英语中有词根的定义，相同的词根在语义上类似。因此，人们尝试提取词根来进行分词。再进一步，又将词根进一步细化，把词根又切分成更小的子词。例如<br>
+<code>unfortunately</code>可以被拆分为：<code>un</code> + <code>for</code> + <code>tun</code> + <code>ate</code> + <code>ly</code>。`</p>
+<p>总结一下，与传统分词对比，基于子词的分词方法的优势在于：</p>
+<ul>
+<li>可以更好的处理未知或罕见的词汇。</li>
+<li>可以学习到词缀之间的关系。</li>
+<li>分词比单词的词根分词更细。</li>
+</ul>
+<h1>BPE算法</h1>
 
                 
               </div>
@@ -363,6 +379,8 @@
         <a href="/tags/LLM/" class="print-no-link">#LLM</a>
       
         <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/BPE/" class="print-no-link">#BPE</a>
       
     </div>
   
