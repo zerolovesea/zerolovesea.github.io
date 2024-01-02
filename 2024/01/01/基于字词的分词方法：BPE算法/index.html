@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llm.png">
 <meta property="article:published_time" content="2024-01-01T07:28:07.000Z">
-<meta property="article:modified_time" content="2024-01-02T13:42:30.217Z">
+<meta property="article:modified_time" content="2024-01-02T13:53:11.598Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
@@ -343,7 +343,7 @@
 <blockquote>
 <p>BPE算法的核心思想：每一步都将最常见的一对相邻数据单位替换为该数据中没有出现过的一个新单位，反复迭代直到满足停止条件。</p>
 </blockquote>
-<p>假设有需要编码（压缩）的数据<code>aaabdaaabac</code>。可以注意到相邻字节对aa 最常出现，因此我们将用一个新字节 <code>Z</code> 替换它。</p>
+<p>假设有需要编码（压缩）的数据<code>aaabdaaabac</code>。可以注意到相邻字节对<code>aa</code>最常出现，因此我们将用一个新字节 <code>Z</code> 替换它。</p>
 <ol>
 <li>现在有了 <code>ZabdZabac</code>，其中 <code>Z</code> &#x3D;<code>aa</code>。下一个常见的字节对是 <code>ab</code>，用<code>Y</code>替换它。</li>
 <li>现在有 <code>ZYdZYac</code>，其中<code>Z</code> &#x3D; <code>aa</code> ，<code>Y</code> &#x3D; <code>ab</code>。剩下的唯一字节对是<code>ac</code>，它只有一个，所以我们不对它进行编码。</li>
