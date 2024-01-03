@@ -16,24 +16,25 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="上手Python开发的一些必要流程。">
+    <meta name="description" content="Loguru的使用教程。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Python开发：换源&#x2F;更新Python包&#x2F;虚拟环境">
-<meta property="og:url" content="http://example.com/2023/12/29/Python%E5%BC%80%E5%8F%91%EF%BC%9A%E6%8D%A2%E6%BA%90-%E6%9B%B4%E6%96%B0Python%E5%8C%85-%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/index.html">
+<meta property="og:title" content="Loguru：目前最方便的Python日志方案">
+<meta property="og:url" content="http://example.com/2024/01/03/Loguru%EF%BC%9A%E7%9B%AE%E5%89%8D%E6%9C%80%E6%96%B9%E4%BE%BF%E7%9A%84Python%E6%97%A5%E5%BF%97%E6%96%B9%E6%A1%88/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="上手Python开发的一些必要流程。">
+<meta property="og:description" content="Loguru的使用教程。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/python.png">
-<meta property="article:published_time" content="2023-12-29T00:43:58.000Z">
-<meta property="article:modified_time" content="2024-01-03T11:45:35.523Z">
+<meta property="article:published_time" content="2024-01-03T11:46:39.000Z">
+<meta property="article:modified_time" content="2024-01-03T12:46:28.085Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="Python">
+<meta property="article:tag" content="Loguru">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/python.png">
   
   
   
-  <title>Python开发：换源/更新Python包/虚拟环境 - 我不是算法工程师</title>
+  <title>Loguru：目前最方便的Python日志方案 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -228,7 +229,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Python开发：换源/更新Python包/虚拟环境"></span>
+            <span id="subtitle" data-typed-text="Loguru：目前最方便的Python日志方案"></span>
           
         </div>
 
@@ -239,8 +240,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-12-29 08:43" pubdate>
-          2023年12月29日 早上
+        <time datetime="2024-01-03 19:46" pubdate>
+          2024年1月3日 晚上
         </time>
       </span>
     
@@ -251,7 +252,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          718 字
+          1.3k 字
         
       </span>
     
@@ -262,7 +263,7 @@
         
         
         
-          6 分钟
+          11 分钟
         
       </span>
     
@@ -320,62 +321,58 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Python开发：换源/更新Python包/虚拟环境</h1>
+            <h1 id="seo-header">Loguru：目前最方便的Python日志方案</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="Python换源"><a href="#Python换源" class="headerlink" title="Python换源"></a>Python换源</h1><p>因为一些众所周知的原因，我回国以后打开VSCode的第一件事，就是火速更换Python的默认pip源。</p>
-<ol>
-<li><p>临时更换：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">pip install pandas -i http://pypi.douban.com/simple/<br></code></pre></td></tr></table></figure></li>
-<li><p>永久更换：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip config <span class="hljs-built_in">set</span> global.index-url https://mirrors.aliyun.com/pypi/simple/<br></code></pre></td></tr></table></figure>
-</li>
-<li><p>目前在国内已经有一些比较稳定，且能够及时更新的镜像源，可选的地址有：</p>
-</li>
-</ol>
-<ul>
-<li>豆瓣：<a target="_blank" rel="noopener" href="http://pypi.douban.com/simple/">http://pypi.douban.com/simple/</a></li>
-<li>中科大：<a target="_blank" rel="noopener" href="https://pypi.mirrors.ustc.edu.cn/simple/">https://pypi.mirrors.ustc.edu.cn/simple/</a></li>
-<li>清华：<a target="_blank" rel="noopener" href="https://pypi.tuna.tsinghua.edu.cn/simple/">https://pypi.tuna.tsinghua.edu.cn/simple/</a></li>
-<li>阿里云：<a target="_blank" rel="noopener" href="https://mirrors.aliyun.com/pypi/simple/">https://mirrors.aliyun.com/pypi/simple/</a></li>
-</ul>
-<p>通常阿里云和清华用的会多一点，不过清华源有时候会出现更新不及时的情况。</p>
-<h1 id="更新Python包"><a href="#更新Python包" class="headerlink" title="更新Python包"></a>更新Python包</h1><p>想要更新本地已安装的Python包，可以使用以下命令：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 更新单个包</span><br>pip install --upgrade package_name<br></code></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 更新多个包</span><br>pip install --upgrade package1 package2 package3<br></code></pre></td></tr></table></figure>
+                <p>最近在做公司的Machine Learning和Knowledge Graph的项目，这之中都需要日志模块。之前写的时候用的是基于python自带的logging模块的自定义类，相信很多python开发者都了解过。</p>
+<p>logging库本身用起来倒也不是很难，就是需要单独实例化<code>StreamHandler</code>和<code>FileHandler</code>才可以同时生成持久化日志和流式日志，还是有点复杂。对于想<del>偷懒</del>保持代码简洁的我，还是需要一个更方便的解决方案。</p>
+<p>刚好有一天刷知乎看到有人推荐了Loguru，看了一下确实很符合代码简洁的需求。网上对这个库的评价都是“优雅”，“简单”。Github页面甚至用了“Python logging made (stupidly) simple”来形容它的易用性。</p>
+<h1 id="Loguru"><a href="#Loguru" class="headerlink" title="Loguru"></a>Loguru</h1><p>Loguru中包含了一个logger类，可以直接调用。之后所有的日志处理都基于这个实例化的logger类。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br></code></pre></td></tr></table></figure>
 
-<h1 id="虚拟环境"><a href="#虚拟环境" class="headerlink" title="虚拟环境"></a>虚拟环境</h1><p>虚拟环境对于项目更迭速度极快的开发者来说应该不陌生。在读书的时候，老师经常向我们安利虚拟环境的重要性，当时我比较不以为然：都装在Base环境下，用的时候不用麻烦一直切换了，这不比切换虚拟环境来的方便吗？</p>
-<p>不过，后来在GitHub上看了一些项目，有些老的项目依赖库也很老，更新到新版本反而会导致项目不可用。这时就体现虚拟环境的重要性了，每个项目一个环境，相互不冲突，这样无论是结构清晰度还是环境整洁度都要高很多。</p>
-<p>构建Python虚拟环境的方式有不少，比如<code>Pipenv</code>,<code>Virtualenv</code>和 <code>Conda</code>。我自己用Conda多一些。</p>
-<h2 id="使用Virtualenv构建虚拟环境"><a href="#使用Virtualenv构建虚拟环境" class="headerlink" title="使用Virtualenv构建虚拟环境"></a>使用Virtualenv构建虚拟环境</h2><ol>
-<li><p>安装Virtualenv</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip install virtualenv<br></code></pre></td></tr></table></figure>
-</li>
-<li><p>进入你的项目文件夹</p>
-</li>
-<li><p>输入</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python&lt;version&gt; -m venv &lt;virtual-environment-name&gt;<br></code></pre></td></tr></table></figure>
-<p>例如想要生成一个python版本为3.12的虚拟环境，名字叫LLM_ENV</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python -3.12 -m venv LLM_ENV<br></code></pre></td></tr></table></figure>
-</li>
-<li><p>激活虚拟环境：<br>要激活虚拟环境，你需要执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">.\LLM_ENV\Scripts\activate<br></code></pre></td></tr></table></figure>
-<p>在Windows环境下，则需要在CMD中执行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">.\LLM_ENV\Scripts\activate.bat<br></code></pre></td></tr></table></figure></li>
-<li><p>停止环境:<br>要退出虚拟环境，直接执行以下命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">deactivate <br></code></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="使用Conda构建虚拟环境"><a href="#使用Conda构建虚拟环境" class="headerlink" title="使用Conda构建虚拟环境"></a>使用Conda构建虚拟环境</h2><p>Conda是一个广泛被使用的跨平台包&#x2F;环境管理器，也是我最常用的工具。用它能够创建管理任何类型的包和依赖。简单来说，它是一个编程语言的Windows商店。比较有名的Anaconda和miniconda就在它的基础上构建。</p>
-<p>要使用Conda构建虚拟环境，可以参照以下步骤：</p>
-<ol>
-<li>找到Anaconda Prompt&#x2F;Anaconda PowerShell Prompt</li>
-<li>在命令行中输入以下指令，这会帮助你生成一个名为LLM_ENV，python版本为3.12的虚拟环境：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">conda create --name LLM_ENV python=3.12<br></code></pre></td></tr></table></figure></li>
-<li>想要激活虚拟环境，则只需要在命令行中输入：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">conda activate LLM_ENV<br></code></pre></td></tr></table></figure></li>
-<li>想要停止虚拟环境，则需要在命令行中输入：deactivate<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">deactivate<br></code></pre></td></tr></table></figure></li>
-</ol>
-<p>2023&#x2F;12&#x2F;29 于公司</p>
+<p>由于logger本身已经实例化，可以把它像print一样调用，日志信息会直接显示在控制台：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">logger.debug(<span class="hljs-string">&#x27;this is a debug message&#x27;</span>)<br>logger.info(<span class="hljs-string">&#x27;this is info message&#x27;</span>)<br>logger.warning(<span class="hljs-string">&#x27;this is warning message&#x27;</span>)<br>logger.error(<span class="hljs-string">&#x27;this is error message&#x27;</span>)<br>logger.info(<span class="hljs-string">&#x27;this is info message&#x27;</span>)<br>logger.success(<span class="hljs-string">&#x27;this is success message!&#x27;</span>)<br>logger.critical(<span class="hljs-string">&#x27;this is critical message!&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><p>如果需要把它持久化在本地，也可以使用logger的add方法，添加到日志文件中。这时在调用logger时，就会同步在日志文件中更新日志。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><br>log_dir = <span class="hljs-string">&#x27;/logfile&#x27;</span><br>logfile_dir = os.path.join(log_dir,<span class="hljs-string">&#x27;model_evl.log&#x27;</span>)<br><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(log_dir):<br>    os.mkdir(log_dir)<br><br>logger.add(logfile_dir)<br>logger.debug(<span class="hljs-string">&#x27;this is a debug message&#x27;</span>)<br>logger.info(<span class="hljs-string">&#x27;this is info message&#x27;</span>)<br>logger.warning(<span class="hljs-string">&#x27;this is warning message&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<h1 id="基础配置"><a href="#基础配置" class="headerlink" title="基础配置"></a>基础配置</h1><p>logger的基础配置如下</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br><br>logger.add(<br>    sink=<span class="hljs-string">&#x27;./logs/train.log&#x27;</span>,  <br>    level=<span class="hljs-string">&#x27;INFO&#x27;</span>,<br>    rotation=<span class="hljs-string">&#x27;00:00&#x27;</span>, <span class="hljs-comment"># &#x27;5 seconds&#x27; 也可以是Int，当Int时代表日志的容量限制。      </span><br>    retention=<span class="hljs-string">&#x27;7 days&#x27;</span>,  <span class="hljs-comment"># &#x27;4 weeks&#x27;/&#x27;1 minutes&#x27;:删除超过4星期/1分钟的日志 3: 仅保留三个最新文件</span><br>    compression=<span class="hljs-string">&#x27;zip&#x27;</span>,        <br>    encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>,  <br>    backtrace=<span class="hljs-literal">True</span> <span class="hljs-comment"># 设置为True时会将报错信息完整记录在日志</span><br>    enqueue=<span class="hljs-literal">True</span>,<br>    <span class="hljs-built_in">format</span>=<span class="hljs-string">&quot;&#123;time:YYYY-MM-DD HH:mm:ss&#125; | &#123;level&#125; | &#123;message&#125;&quot;</span><br>)<br></code></pre></td></tr></table></figure>
+
+<p>以下是参数的解释：</p>
+<ul>
+<li><code>sink</code>:  创建日志文件的路径。</li>
+<li><code>level</code>: 记录日志的等级，低于这个等级的日志不会被记录。等级顺序为 debug &lt; info &lt; warning &lt; error。设置 INFO 会让 logger.debug 的输出信息不被写入磁盘。这个和logging库是一样的。</li>
+<li><code>rotation</code>: 轮换策略，此处代表每天凌晨创建新的日志文件进行日志 IO；也可以通过设置 “2 MB” 来指定 日志文件达到 2 MB 时进行轮换。</li>
+<li><code>retention</code>: 只保留 7 天。</li>
+<li><code>compression</code>: 日志文件较大时会采用 zip 进行压缩。</li>
+<li><code>encoding</code>: 日志的编码方式。</li>
+<li><code>format</code>: 定义日志字符串的样式。</li>
+<li><code>filter</code>：用于过滤记录。 </li>
+<li><code>colorize</code>: 采用布尔值并确定是否应启用终端着色。 </li>
+<li><code>serialize</code>：如果设置为 True，日志记录会保存成 JSON。 </li>
+<li><code>backtrace</code>：确定异常跟踪是否应该延伸到捕获错误的点之外，以便于调试。 诊断：确定变量值是否应显示在异常跟踪中。您应该在生产环境中将其设置为 False 以避免泄露敏感信息。 </li>
+<li><code>diagnose</code>: 确定变量值是否应在异常跟踪中显示。在生产环境中应将其设置为 False，以避免泄露敏感信息。</li>
+<li><code>enqueue</code>：启用此选项会将日志记录放入队列中，以避免多个进程记录到同一目的地时发生冲突。 </li>
+<li><code>catch</code>：如果在记录到指定的接收器时发生意外错误，您可以通过将此选项设置为 True 来捕获该错误。错误将打印到标准错误。</li>
+</ul>
+<p>这样看也比较清晰：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">logger.add(<span class="hljs-string">&quot;test.log&quot;</span>, rotation=<span class="hljs-string">&quot;10 MB&quot;</span>)     <span class="hljs-comment"># 文件大于10M会重新生成一个文件</span><br>logger.add(<span class="hljs-string">&quot;test.log&quot;</span>, rotation=<span class="hljs-string">&quot;00:00&quot;</span>)     <span class="hljs-comment"># 每天0点创建新文件</span><br>logger.add(<span class="hljs-string">&quot;test.log&quot;</span>, rotation=<span class="hljs-string">&quot;1 week&quot;</span>)    <span class="hljs-comment"># 每过一周就会创建新文件</span><br>logger.add(<span class="hljs-string">&quot;test.log&quot;</span>, retention=<span class="hljs-string">&quot;5 days&quot;</span>)   <span class="hljs-comment"># 只保留最近五天的日志文件</span><br>logger.add(<span class="hljs-string">&quot;test.log&quot;</span>, compression=<span class="hljs-string">&quot;zip&quot;</span>)    <span class="hljs-comment"># 以zip格式对日志进行保存</span><br>logger.add(<span class="hljs-string">&#x27;log-&#123;time&#125;.log&#x27;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>)  <span class="hljs-comment">#会给日志文件名自动增加时间信息以区分，比如log-2021-03-15_23-36-51_241786.log，encoding参数设置保存为UTF-8编码</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="过滤日志"><a href="#过滤日志" class="headerlink" title="过滤日志"></a>过滤日志</h1><p>可以使用filter来过滤日志。例如我们可以创建一个函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">level_filter</span>(<span class="hljs-params">level</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">is_level</span>(<span class="hljs-params">record</span>):<br>        <span class="hljs-keyword">return</span> record[<span class="hljs-string">&quot;level&quot;</span>].name == level<br>    <span class="hljs-keyword">return</span> is_level<br><br>logger.remove(<span class="hljs-number">0</span>)<br>logger.add(<span class="hljs-string">&quot;./logs/app.log&quot;</span>, <span class="hljs-built_in">filter</span>=level_filter(level=<span class="hljs-string">&quot;WARNING&quot;</span>))<br></code></pre></td></tr></table></figure>
+
+<p>在<code>filter</code>中添加过滤函数，可以限制最终日志文件的信息。当然也可以用lambda函数：<code>filter=lambda record: record[&quot;level&quot;].name == &quot;CRITICAL&quot;</code>。</p>
+<h1 id="使用装饰器捕捉异常"><a href="#使用装饰器捕捉异常" class="headerlink" title="使用装饰器捕捉异常"></a>使用装饰器捕捉异常</h1><p>loguru提供了一个装饰器来捕捉函数的异常报错。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> loguru <span class="hljs-keyword">import</span> logger<br><br><span class="hljs-meta">@logger.catch()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>/<span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+
+<p>这时运行以下代码，日志文件会捕捉报错信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">logger.add(<span class="hljs-string">&quot;test.log&quot;</span>, retention=<span class="hljs-string">&quot;5 days&quot;</span>)<br>test()<br></code></pre></td></tr></table></figure>
+
+<p>不过使用装饰器会导致函数无法并行运行，这时就需要在函数面前单独加上一个<code>logger.add(&#39;log/running_logs.log&#39;)</code>才能让它正常记录日志。</p>
+<p>2024&#x2F;1&#x2F;3 于苏州家中</p>
 
                 
               </div>
@@ -411,6 +408,8 @@
       
         <a href="/tags/Python/" class="print-no-link">#Python</a>
       
+        <a href="/tags/Loguru/" class="print-no-link">#Loguru</a>
+      
     </div>
   
 </div>
@@ -423,18 +422,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/12/30/%E8%AF%A6%E8%A7%A3Mixtral-8-7B-%E9%AB%98%E8%B4%A8%E9%87%8F%E7%9A%84%E4%B8%93%E5%AE%B6%E7%BB%84%E5%90%88%E6%A8%A1%E5%9E%8B/" title="详解Mixtral 8*7B: 高质量的专家组合模型">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">详解Mixtral 8*7B: 高质量的专家组合模型</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/12/29/%E9%A1%B9%E7%9B%AE%E5%8D%8F%E5%90%8C%E5%BC%80%E5%8F%91-Git%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/" title="项目协同开发-Git基础操作">
-                        <span class="hidden-mobile">项目协同开发-Git基础操作</span>
+                      <a href="/2024/01/01/%E5%9F%BA%E4%BA%8E%E5%AD%97%E8%AF%8D%E7%9A%84%E5%88%86%E8%AF%8D%E6%96%B9%E6%B3%95%EF%BC%9ABPE%E7%AE%97%E6%B3%95/" title="基于子词的分词方法：BPE算法">
+                        <span class="hidden-mobile">基于子词的分词方法：BPE算法</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
