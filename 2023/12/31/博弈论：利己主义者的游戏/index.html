@@ -1,0 +1,870 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="博弈论中的利己主义，囚徒困境与零和博弈。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="博弈论：利己主义者的游戏">
+<meta property="og:url" content="http://example.com/2023/12/31/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E5%88%A9%E5%B7%B1%E4%B8%BB%E4%B9%89%E8%80%85%E7%9A%84%E6%B8%B8%E6%88%8F/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="博弈论中的利己主义，囚徒困境与零和博弈。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/game.png">
+<meta property="article:published_time" content="2023-12-31T03:54:26.000Z">
+<meta property="article:modified_time" content="2023-12-31T14:44:00.309Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="博弈论">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/game.png">
+  
+  
+  
+  <title>博弈论：利己主义者的游戏 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="博弈论：利己主义者的游戏"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-31 11:54" pubdate>
+          2023年12月31日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">博弈论：利己主义者的游戏</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="利己代理"><a href="#利己代理" class="headerlink" title="利己代理"></a>利己代理</h1><p>博弈论中有一个名词：Self-Interested Agents。字面意思就是利己代理。换句话说，博弈中的玩家的目的并非是只考虑自己，或者是伤害别人。Self-Interested更多意义是指决策者根据自己所得到的信息，依照自己的判断做出决策。</p>
+<p>因此，为了量化这个性质，引出了效用理论(Utility Theory)，这个理论认为每个玩家都有自己的一个效用函数，这个函数决定了玩家的决策。而决策者的每个行为都为了最大化效用期望。</p>
+<h1 id="经典造反问题"><a href="#经典造反问题" class="headerlink" title="经典造反问题"></a>经典造反问题</h1><p>之前提到可以用收益矩阵来衡量博弈论的问题，但是有些问题比较复杂，不好写成矩阵。例如造反问题：</p>
+<p>共有$10000000$个人，每个人都可以选择是否造反，只有达到$2000000$个人才算造反成功。如果造反达到人数要求，无论决策者选择什么收益都是$1$；如果造反没有达到人数要求，则决策者选择造反的收益是$-1$；如果造反没有达到人数要求，则决策者选择不造反的收益是$0$。</p>
+<p>这种情况下，可以如此定义：</p>
+<p>玩家：$\text{Players:} : N = {1,…,10,000,000} $</p>
+<p>每个玩家i的决策集：$\text{Actions Set for player i:} : A_i = { \text{Revolt, Not} } $</p>
+<p>每个玩家的效用函数：<br>(1) $u_i(a_i) = 1 : \text{if} : j : a_j = \text{Revolt} \geqslant 2,000,000 $<br>(2) $u_i(a_i) = -1 : \text{if} : j : a_j = \text{Revolt} &lt; 2,000,000 : \text{and} : a_i = \text{Revolt} $<br>(3) $u_i(a_i) = -0 : \text{if} : j : a_j = \text{Revolt} &lt; 2,000,000 : \text{and} : a_i = \text{Not}$</p>
+<h1 id="零和博弈"><a href="#零和博弈" class="headerlink" title="零和博弈"></a>零和博弈</h1><p>什么是零和博弈？两个人对局，必有一个人赢，一个人输。如果我们把获胜看作$1$分，失败看作$-1$，那么每一局的总分永远为$0$。换句话说，零和博弈中，不存在共赢的现象，总有一方是绝对赢家，另一方是输家。</p>
+<div class="note note-success">
+            <p>定义：零和博弈（zero-sum game），又称零和游戏，与非零和博弈相对，是博弈论的一个概念，属<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%9D%9E%E5%90%88%E4%BD%9C%E5%8D%9A%E5%BC%88/4277540?fromModule=lemma_inlink">非合作博弈</a>。它是指参与<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E5%8D%9A%E5%BC%88/4669968?fromModule=lemma_inlink">博弈</a>的各方，在严格竞争下，一方的收益必然意味着另一方的<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%8D%9F%E5%A4%B1/10932540?fromModule=lemma_inlink">损失</a>，博弈各方的收益和损失相加总和永远为“零”，故双方不存在合作的可能。</p>
+          </div>
+
+<p>一个零和博弈的例子：玩家1和2都有三个策略供选择，并且每种决策组合的总得分都是0。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>(30,-30)</td>
+<td>(-10,10)</td>
+<td>(20,-20)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>(10,-10)</td>
+<td>(20,-20)</td>
+<td>(-20,20)</td>
+</tr>
+</tbody></table>
+<p>现实生活中并不是所有博弈都是要拼个你死我活的，也就是说，共同的收益不是始终为0。囚徒困境就是一个典型的非零和博弈。</p>
+<h1 id="囚徒困境"><a href="#囚徒困境" class="headerlink" title="囚徒困境"></a>囚徒困境</h1><p>著名的囚徒困境描述了一个非零和博弈的场景：</p>
+<p>两个罪犯被关入监狱，不能互相沟通情况。</p>
+<ol>
+<li>如果两个人都不揭发对方，每个人都坐牢一年；</li>
+<li> 若一人揭发，而另一人沉默，则揭发者立即获释，沉默者则因不合作而入狱十年；</li>
+<li>若互相揭发，则因证据确凿，二者都判刑八年。</li>
+</ol>
+<p>我们可以把这个场景画成一个收益矩阵：</p>
+<table>
+<thead>
+<tr>
+<th>罪犯2/罪犯1</th>
+<th>不合作</th>
+<th>合作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>不合作</td>
+<td>(1,1)</td>
+<td>(-2,2)</td>
+</tr>
+<tr>
+<td>合作</td>
+<td>(2,-2)</td>
+<td>(-1,-1)</td>
+</tr>
+</tbody></table>
+<p>从全局来看，双方都不合作的收益最大。然而每个人的个人最优策略都是合作，因此他们会倾向于互相揭发，而不是同守沉默。</p>
+<p>我们可以看一下为什么每个人的最佳策略都是合作。以罪犯1为例，当他选择合作时，不管罪犯2选择什么策略，合作带来的收益都要高于不合作（$2&gt;1$, $-1&gt;-2$），这样的选择被称为<strong>绝对占优策略</strong>。后面我们会知道，绝对占优策略并不是全局最佳策略，但是玩家往往会选择这种策略。</p>
+<div class="note note-success">
+            <p>一个法国网红小哥根据这个题材拍了个[视频](<a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=bXH4ldYHvCg&list=LL&index=279">如果您殺了人….哪一種朋友會幫你保守秘密到最後？ - YouTube</a>)，有兴趣的人可以去看一下。</p>
+          </div>
+
+<div class="note note-danger">
+            <p>重要的前提：博弈论中的理论都基于玩家是理性的。这意味着他们会根据自己的效用函数进行决策。脱离这个前提就无法进行合理的推理。</p>
+          </div>
+
+<h2 id="单次博弈和多次博弈"><a href="#单次博弈和多次博弈" class="headerlink" title="单次博弈和多次博弈"></a>单次博弈和多次博弈</h2><p>单次博弈和多次博弈的结果是不一样的。在囚徒困境案例中，由于是单次博弈，失败的玩家并没有重来的机会。而多次博弈中，玩家将有机会惩罚另一个玩家在上一回合的结果。这也是需要考虑的点。</p>
+<h1 id="Robert-Axelrod的博弈论模拟实验"><a href="#Robert-Axelrod的博弈论模拟实验" class="headerlink" title="Robert Axelrod的博弈论模拟实验"></a>Robert Axelrod的博弈论模拟实验</h1><p>1980年，时任密歇根大学政治学教授Robert Axelrod举办了一场针对囚徒困境的计算机程序模拟大赛。他邀请了多个博弈论家设计一个计算机程序，然后让不同程序彼此多次的两两进行博弈。每个程序都会根据自己的策略和对手之前的行为来决定是否选择合作还是背叛。</p>
+<p>提交的一些战略有以下几种：</p>
+<ol>
+<li>总是背叛：程序每回合都选择背叛，也是最安全的策略，但失去了合作的机会。</li>
+<li>总是合作：该策略遇到合作的程序时，效果非常好，然而遇到背叛时，这个策略会带来糟糕的结果。</li>
+<li>随机：程序以50%的概率合作。</li>
+</ol>
+<p>最终获胜的程序是一报还一报(TIT FOR TAT)，由多伦多大学的数学教授Anatol Rapoport提交。这个策略是在第一次选择合作，随后根据之前的对局选择是否合作。如果上一局对方选择背叛，下一局程序也选择背叛作为惩罚，反之则合作。</p>
+<h2 id="第二次实验：静态群体"><a href="#第二次实验：静态群体" class="headerlink" title="第二次实验：静态群体"></a>第二次实验：静态群体</h2><p>这个实验之后又举办了第二次。第二次有63个程序参加了实验，最终前15名中，只有1个程序是<strong>不善良</strong>的，其余的程序都具备<strong>善良</strong>，<strong>被激怒性</strong>，<strong>宽容性</strong>。冠军策略是之前TIT FOR TAT策略的一种变体，程序在遇到对手背叛时会连续两次背叛进行惩罚。而当遇到合作的程序时，它将一直保持合作。 </p>
+<ul>
+<li>善良性：从来不主动背叛对手。</li>
+<li>被激怒性：对于对手的背叛会加以惩罚。</li>
+<li>宽容性：对于一次背叛，不会无休止的惩罚。</li>
+</ul>
+<h2 id="第三次实验：动态群体"><a href="#第三次实验：动态群体" class="headerlink" title="第三次实验：动态群体"></a>第三次实验：动态群体</h2><p>第二次实验后，又进行了第三次实验，这次加入了进化的规则，程序会逐渐学习并进化。每一轮实验中，得分最高的程序会在第二轮实验中拥有更高的占比。</p>
+<p>实验结果中，TIT FOR TAT策略的程序的占比从最开始的$\frac{1}{63}$，进化1000代后，占比上升到总体的24%。前15的程序中，唯一不善良的程序的策略是，先合作，如果对手一直合作，就突然背叛一次。等对手开始报复时，它又开始合作。等对手继续合作时，再一次背叛。</p>
+<div class="note note-success">
+            <p>总得分最高不一定需要每次博弈都要最高分。</p>
+          </div>
+
+
+
+<p>2023/12/31 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="category-chain-item">博弈论</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="print-no-link">#博弈论</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/31/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E7%BA%B3%E4%BB%80%E5%9D%87%E8%A1%A1/" title="博弈论：纳什均衡">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">博弈论：纳什均衡</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/31/%E5%86%99%E5%9C%A82023%E7%9A%84%E6%9C%80%E5%90%8E%E4%B8%80%E5%A4%A9/" title="写在2023的最后一天">
+                        <span class="hidden-mobile">写在2023的最后一天</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
