@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/docker.jpg">
 <meta property="article:published_time" content="2024-01-23T12:38:52.000Z">
-<meta property="article:modified_time" content="2024-01-23T14:36:54.187Z">
+<meta property="article:modified_time" content="2024-01-23T14:52:14.385Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Docker">
@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.5k 字
         
       </span>
     
@@ -292,7 +292,7 @@
         
         
         
-          11 分钟
+          13 分钟
         
       </span>
     
@@ -457,6 +457,29 @@
 
 <p>删除镜像则是<code>rmi</code>命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker rmi my_image1 my_image2<br></code></pre></td></tr></table></figure>
+
+<h1 id="使用Python的简单用例"><a href="#使用Python的简单用例" class="headerlink" title="使用Python的简单用例"></a>使用Python的简单用例</h1><p>可以使用 Docker Hub 上提供的官方 Python 镜像来创建一个 Python 3.9 的容器。以下是步骤：</p>
+<ol>
+<li><p><strong>拉取 Python 3.9 镜像：</strong> 打开终端或命令提示符，并执行以下命令来拉取 Python 3.9 镜像：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bashCopy</span> code<br><span class="hljs-attribute">docker</span> pull python:<span class="hljs-number">3</span>.<span class="hljs-number">9</span><br></code></pre></td></tr></table></figure>
+
+<p>这会从 Docker Hub 下载 Python 3.9 镜像到你的本地系统。</p>
+</li>
+<li><p><strong>运行 Python 3.9 容器：</strong> 一旦下载完成，你可以通过以下命令运行一个 Python 3.9 容器：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bashCopy</span> code<br><span class="hljs-attribute">docker</span> run -it python:<span class="hljs-number">3</span>.<span class="hljs-number">9</span> /bin/bash<br></code></pre></td></tr></table></figure>
+
+<p>这个命令使用 <code>-it</code> 选项进入交互模式，并在容器内启动 Bash 终端。</p>
+</li>
+<li><p><strong>验证 Python 版本：</strong> 在容器内部，你可以使用以下命令验证 Python 版本：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs css">bashCopy <span class="hljs-selector-tag">code</span><br>python <span class="hljs-attr">--version</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="想要在这个Python容器中写对外开放的服务？"><a href="#想要在这个Python容器中写对外开放的服务？" class="headerlink" title="想要在这个Python容器中写对外开放的服务？"></a>想要在这个Python容器中写对外开放的服务？</h2><p>和之前一样，需要运行python容器时开放端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d -p 8080:80 python:3.9 <br></code></pre></td></tr></table></figure>
+
+<p>这是一个更具体的例子，在python3.9的容器运行了<code>your_flask_app.py</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d -p 8080:5000 python:3.9 python your_flask_app.py<br></code></pre></td></tr></table></figure>
+
+
 
 <p>2024&#x2F;1&#x2F;23 于苏州家中</p>
 
