@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/docker.jpg">
 <meta property="article:published_time" content="2024-01-23T12:38:52.000Z">
-<meta property="article:modified_time" content="2024-01-23T14:32:57.031Z">
+<meta property="article:modified_time" content="2024-01-23T14:36:54.187Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Docker">
@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          1.3k 字
         
       </span>
     
@@ -438,7 +438,7 @@
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it my_container <span class="hljs-built_in">cat</span> /app/config.txt<br></code></pre></td></tr></table></figure>
 
-<h1 id="删除Docker"><a href="#删除Docker" class="headerlink" title="删除Docker"></a>删除Docker</h1><p>这个简单，就是<code>rm</code>：</p>
+<h1 id="删除容器与镜像"><a href="#删除容器与镜像" class="headerlink" title="删除容器与镜像"></a>删除容器与镜像</h1><p>删除容器就是<code>rm</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">rm</span> -f &lt;docker <span class="hljs-built_in">id</span>&gt;<br></code></pre></td></tr></table></figure>
 
 <p>要清理所有停止的容器，则需要执行以下命令：</p>
@@ -454,6 +454,12 @@
 </ul>
 <p>例如：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 强制删除容器</span><br>docker <span class="hljs-built_in">rm</span> -f db01 db02<br></code></pre></td></tr></table></figure>
+
+<p>删除镜像则是<code>rmi</code>命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker rmi my_image1 my_image2<br></code></pre></td></tr></table></figure>
+
+<p>2024&#x2F;1&#x2F;23 于苏州家中</p>
+
                 
               </div>
             
