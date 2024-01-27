@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/docker.jpg">
 <meta property="article:published_time" content="2024-01-27T01:22:24.000Z">
-<meta property="article:modified_time" content="2024-01-27T02:37:09.027Z">
+<meta property="article:modified_time" content="2024-01-27T04:12:44.623Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Docker">
@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          453 字
+          1.3k 字
         
       </span>
     
@@ -292,7 +292,7 @@
         
         
         
-          4 分钟
+          11 分钟
         
       </span>
     
@@ -356,20 +356,19 @@
               <div class="markdown-body">
                 
                 <p>Docker篇的第五篇，学习一下怎么编写Dockerfile。</p>
-<h1 id="不要过多的叠加层数"><a href="#不要过多的叠加层数" class="headerlink" title="不要过多的叠加层数"></a>不要过多的叠加层数</h1><p>Docker 镜像是分层的，Dockerfile 中的每个指令都会创建一个新的镜像层。每一层都是前一层变化的增量。</p>
+<h1>不要过多的叠加层数</h1>
+<p>Docker 镜像是分层的，Dockerfile 中的每个指令都会创建一个新的镜像层。每一层都是前一层变化的增量。</p>
 <p>以下是一个Dockerfile的例子：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update<br>RUN apt-get upgrade -y<br>RUN apt-get install -y nodejs ssh mysql<br>RUN <span class="hljs-built_in">cd</span> /app &amp;&amp; npm install<br><br>CMD mysql &amp; sshd &amp; npm start<br></code></pre></td></tr></table></figure>
-
 <p>在上面这个Dockerfile里，每执行一次<code>RUN</code>，就会在镜像中多增加一层，最高层是127层。如果添加过多的层数会导致镜像过大。因此应当尽可能的将<code>RUN</code>指令写成一行，如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update \<br>    &amp;&amp; apt-get install -y nodejs \<br>    &amp;&amp; <span class="hljs-built_in">cd</span> /app \<br>    &amp;&amp; npm install<br><br>CMD npm start<br></code></pre></td></tr></table></figure>
-
-<h1 id="使用-dockerignore忽略文件"><a href="#使用-dockerignore忽略文件" class="headerlink" title="使用.dockerignore忽略文件"></a>使用.dockerignore忽略文件</h1><p>和.gitignore一样，有时候在打包时，不需要将一些文件拷贝进镜像以防止镜像过大，例如一些Readme，或者.git文件，这时候就需要用到.dockerignore。语法是类似的，例如要忽略后缀是“swp”“sh”的文件：</p>
+<h1>使用.dockerignore忽略文件</h1>
+<p>和.gitignore一样，有时候在打包时，不需要将一些文件拷贝进镜像以防止镜像过大，例如一些Readme，或者.git文件，这时候就需要用到.dockerignore。语法是类似的，例如要忽略后缀是“swp”“sh”的文件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># docker ignore</span><br>*.swp<br>*.sh<br></code></pre></td></tr></table></figure>
-
 <p>例如不需要.git目录，或者某个文件夹，则如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">.git/<br>node_modules/<br></code></pre></td></tr></table></figure>
-
-<h1 id="Dockerfile命令"><a href="#Dockerfile命令" class="headerlink" title="Dockerfile命令"></a>Dockerfile命令</h1><p>下面是Dockerfile的一些常用命令</p>
+<h1>Dockerfile命令</h1>
+<p>下面是Dockerfile的一些常用命令</p>
 <table>
 <thead>
 <tr>
@@ -377,7 +376,8 @@
 <th>基于哪个镜像来实现</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>LABEL</td>
 <td>给构建的镜像打标签</td>
 </tr>
@@ -391,7 +391,7 @@
 </tr>
 <tr>
 <td>RUN</td>
-<td>执行的命令添加宿主机文件到容器里，有需要解压的文</td>
+<td>执行的命令</td>
 </tr>
 <tr>
 <td>CMD</td>
@@ -403,7 +403,7 @@
 </tr>
 <tr>
 <td>ADD</td>
-<td>件会自动解压</td>
+<td>添加宿主机文件到容器里，有需要解压的文件会自动解压</td>
 </tr>
 <tr>
 <td>COPY</td>
@@ -425,7 +425,36 @@
 <td>USER</td>
 <td>为接下来的Dockerfile指令指定用户</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
+<h1>ARG指令</h1>
+<p><code>ARG</code> 指令用于定义构建参数，用来在构建过程中被使用，但在运行时不会保留在最终的镜像中。这对于在构建过程中传递一些动态值是非常有用的。</p>
+<p>以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用 ARG 指令定义构建参数</span><br><span class="hljs-keyword">ARG</span> BASE_IMAGE=alpine:latest<br><br><span class="hljs-comment"># 使用构建参数作为基础镜像</span><br><span class="hljs-keyword">FROM</span> $BASE_IMAGE<br><br><span class="hljs-comment"># 在容器中创建一个文件，内容为构建参数值</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;The base image is: <span class="hljs-variable">$BASE_IMAGE</span>&quot;</span> &gt; /output.txt</span><br></code></pre></td></tr></table></figure>
+<p>上面的Dockerfile中，我们设定了默认的<code>BASE_IMAGE</code>为<code>alpine:latest</code>，因此当我们执行<code>docker build -t my-image .</code>时，会使用默认的<code>alphine:latest</code>构建镜像。如果要从外部传入自定义的参数，可以执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker build -t my-image --build-arg BASE_IMAGE=ubuntu:latest .<br></code></pre></td></tr></table></figure>
+<p>可以看到，<code>--build-arg</code>这个指令将会解析传入的参数。</p>
+<h1>ENV指令</h1>
+<p><code>ENV</code> 指令用于设置环境变量。这些环境变量可以在构建过程中以及运行容器时使用。</p>
+<p>以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用基础镜像</span><br><span class="hljs-keyword">FROM</span> ubuntu:<span class="hljs-number">20.04</span><br><br><span class="hljs-comment"># 设置环境变量</span><br><span class="hljs-keyword">ENV</span> MY_VAR=<span class="hljs-string">&quot;Hello Docker&quot;</span> \<br>    ANOTHER_VAR=<span class="hljs-number">42</span><br><br><span class="hljs-comment"># 执行一些操作</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;My variable is: <span class="hljs-variable">$MY_VAR</span>&quot;</span></span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Another variable is: <span class="hljs-variable">$ANOTHER_VAR</span>&quot;</span></span><br><br><span class="hljs-comment"># 在容器启动时执行的命令</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;echo&quot;</span>, <span class="hljs-string">&quot;Container is running!&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+<p>其中，<code>ENV</code> 指令用于设置两个环境变量，<code>MY_VAR</code> 和 <code>ANOTHER_VAR</code>。当运行时，需要执行<code>-e</code>来输入环境变量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -e MY_VAR=<span class="hljs-string">&quot;Custom Value&quot;</span> -e ANOTHER_VAR=99 my-image<br></code></pre></td></tr></table></figure>
+<div class="note note-warning">
+            <p><code>ARG</code>和<code>ENV</code>的区别主要在，<code>ARG</code> 用于在构建过程中传递参数，而这些参数仅在构建时有效。而<code>ENV</code> 用于设置环境变量，可以在容器启动时访问。</p><p>也就是说，在<code>RUN</code>时，Docker只会使用<code>ARG</code>的默认值，而不是传入的值。但是会使用<code>ENV</code>传入的值。</p><p>因此，<code>ARG</code>常被用在设置软件版本、构建路径。而<code>ENV</code>被用在配置应用程序、传递参数（例如数据库密码，用户名等）。</p>
+          </div>
+<h1>RUN和CMD的区别是什么</h1>
+<p><code>RUN</code>指令在Dockerfile的作用主要是执行一些构建Docker时必要的动作，例如下载，安装等等，例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 安装</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install -y \</span><br><span class="language-bash">    package1 \</span><br><span class="language-bash">    package2 \</span><br><span class="language-bash">    &amp;&amp; <span class="hljs-built_in">rm</span> -rf /var/lib/apt/lists/*</span><br><br><span class="hljs-comment"># 下载软件</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> curl -O https://example.com/file.tar.gz \</span><br><span class="language-bash">    &amp;&amp; tar -xzvf file.tar.gz \</span><br><span class="language-bash">    &amp;&amp; <span class="hljs-built_in">rm</span> file.tar.gz</span><br><br><span class="hljs-comment"># 执行编译</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> make</span><br><br><span class="hljs-comment"># 结合ARG执行</span><br><span class="hljs-keyword">ARG</span> VERSION=latest<br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Version is <span class="hljs-variable">$VERSION</span>&quot;</span></span><br></code></pre></td></tr></table></figure>
+<p>而<code>CMD</code>则用于最后容器启动时要进行的操作，例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;./start.sh&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+<h1>VOLUME指令</h1>
+<p><code>VOLUME</code> 指令用于在容器中创建挂载，并指定容器中的目录应该被挂载到主机的哪个位置。也就是说，将容器内的数据关联到外部的文件，例如，修改配置文件时就不需要进入容器进行修改，以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> ubuntu:<span class="hljs-number">20.04</span><br><br><span class="hljs-comment"># 创建挂载点</span><br><span class="hljs-keyword">VOLUME</span><span class="language-bash"> [<span class="hljs-string">&quot;/app/data&quot;</span>]</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制应用程序代码到容器中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . /app</span><br></code></pre></td></tr></table></figure>
+<p>上述操作中的<code>VOLUME [&quot;/app/data&quot;]</code>实际上是在容器内部的 <code>/app/data</code> 目录创建一个卷（Volume）。当在命令行执行以下代码时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -v /host/path:/app/data my-image<br></code></pre></td></tr></table></figure>
+<p>就会把容器中的 <code>/app/data</code> 映射到主机上的 <code>/host/path</code>。这意味着容器中写入 <code>/app/data</code> 的数据将实际上存储在主机的 <code>/host/path</code> 目录中。</p>
+<p>2024/1/27 于苏州家中</p>
 
                 
               </div>
