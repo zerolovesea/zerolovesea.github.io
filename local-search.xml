@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>Dockfile编写指南</title>
+    <link href="/2024/01/27/Dockfile%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/"/>
+    <url>/2024/01/27/Dockfile%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/</url>
+    
+    <content type="html"><![CDATA[<p>Docker篇的第五篇，学习一下怎么编写Dockerfile。</p><h1 id="不要过多的叠加层数"><a href="#不要过多的叠加层数" class="headerlink" title="不要过多的叠加层数"></a>不要过多的叠加层数</h1><p>Docker 镜像是分层的，Dockerfile 中的每个指令都会创建一个新的镜像层。每一层都是前一层变化的增量。</p><p>以下是一个Dockerfile的例子：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update<br>RUN apt-get upgrade -y<br>RUN apt-get install -y nodejs ssh mysql<br>RUN <span class="hljs-built_in">cd</span> /app &amp;&amp; npm install<br><br>CMD mysql &amp; sshd &amp; npm start<br></code></pre></td></tr></table></figure><p>在上面这个Dockerfile里，每执行一次<code>RUN</code>，就会在镜像中多增加一层，最高层是127层。如果添加过多的层数会导致镜像过大。因此应当尽可能的将<code>RUN</code>指令写成一行，如下：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update \<br>    &amp;&amp; apt-get install -y nodejs \<br>    &amp;&amp; <span class="hljs-built_in">cd</span> /app \<br>    &amp;&amp; npm install<br><br>CMD npm start<br></code></pre></td></tr></table></figure><h1 id="使用-dockerignore忽略文件"><a href="#使用-dockerignore忽略文件" class="headerlink" title="使用.dockerignore忽略文件"></a>使用.dockerignore忽略文件</h1><p>和.gitignore一样，有时候在打包时，不需要将一些文件拷贝进镜像以防止镜像过大，例如一些Readme，或者.git文件，这时候就需要用到.dockerignore。语法是类似的，例如要忽略后缀是“swp”“sh”的文件：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># docker ignore</span><br>*.swp<br>*.sh<br></code></pre></td></tr></table></figure><p>例如不需要.git目录，或者某个文件夹，则如下：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">.git/<br>node_modules/<br></code></pre></td></tr></table></figure><h1 id="Dockerfile命令"><a href="#Dockerfile命令" class="headerlink" title="Dockerfile命令"></a>Dockerfile命令</h1><p>下面是Dockerfile的一些常用命令</p><table><thead><tr><th>FROM</th><th>基于哪个镜像来实现</th></tr></thead><tbody><tr><td>LABEL</td><td>给构建的镜像打标签</td></tr><tr><td>ENV</td><td>声明环境变量</td></tr><tr><td>ARG</td><td>指定了用户在 <code>docker build --build-arg</code> 时可以使用的参数</td></tr><tr><td>RUN</td><td>执行的命令添加宿主机文件到容器里，有需要解压的文</td></tr><tr><td>CMD</td><td>run后面跟启动命令会被覆盖掉</td></tr><tr><td>ENTRYPOINT</td><td>与CMD功能相同，但需docker run 不会覆盖，如果需要覆盖可增加参数-entrypoint来覆盖</td></tr><tr><td>ADD</td><td>件会自动解压</td></tr><tr><td>COPY</td><td>添加宿主机文件到容器里</td></tr><tr><td>WORKDIR</td><td>工作目录</td></tr><tr><td>EXPOSE</td><td>容器内应用可使用的端口容器启动后所执行的程序，如果执行docker</td></tr><tr><td>VOLUME</td><td>将宿主机的目录挂载到容器里</td></tr><tr><td>USER</td><td>为接下来的Dockerfile指令指定用户</td></tr></tbody></table>]]></content>
+    
+    
+    <categories>
+      
+      <category>工程实践</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工程实践</tag>
+      
+      <tag>Docker</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Docker实践挖坑细节</title>
     <link href="/2024/01/27/Docker%E5%AE%9E%E8%B7%B5%E6%8C%96%E5%9D%91%E7%BB%86%E8%8A%82/"/>
     <url>/2024/01/27/Docker%E5%AE%9E%E8%B7%B5%E6%8C%96%E5%9D%91%E7%BB%86%E8%8A%82/</url>

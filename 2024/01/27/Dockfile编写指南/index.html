@@ -17,16 +17,16 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="使用Docker时遇到的一些问题汇总。">
+    <meta name="description" content="如何正确，高效地编写Dockerfile。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Docker实践挖坑细节">
-<meta property="og:url" content="http://example.com/2024/01/27/Docker%E5%AE%9E%E8%B7%B5%E6%8C%96%E5%9D%91%E7%BB%86%E8%8A%82/index.html">
+<meta property="og:title" content="Dockfile编写指南">
+<meta property="og:url" content="http://example.com/2024/01/27/Dockfile%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="使用Docker时遇到的一些问题汇总。">
+<meta property="og:description" content="如何正确，高效地编写Dockerfile。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/docker.jpg">
-<meta property="article:published_time" content="2024-01-27T00:08:15.000Z">
-<meta property="article:modified_time" content="2024-01-27T00:51:10.336Z">
+<meta property="article:published_time" content="2024-01-27T01:22:24.000Z">
+<meta property="article:modified_time" content="2024-01-27T02:37:09.027Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Docker">
@@ -35,7 +35,7 @@
   
   
   
-  <title>Docker实践挖坑细节 - 我不是算法工程师</title>
+  <title>Dockfile编写指南 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -258,7 +258,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Docker实践挖坑细节"></span>
+            <span id="subtitle" data-typed-text="Dockfile编写指南"></span>
           
         </div>
 
@@ -269,8 +269,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-01-27 08:08" pubdate>
-          2024年1月27日 早上
+        <time datetime="2024-01-27 09:22" pubdate>
+          2024年1月27日 上午
         </time>
       </span>
     
@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          774 字
+          453 字
         
       </span>
     
@@ -292,7 +292,7 @@
         
         
         
-          7 分钟
+          4 分钟
         
       </span>
     
@@ -350,53 +350,82 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Docker实践挖坑细节</h1>
+            <h1 id="seo-header">Dockfile编写指南</h1>
             
             
               <div class="markdown-body">
                 
-                <p>前面写了一些Docker的基础使用的东西，不过真正要学会还是得实际上手，这篇博客就记录一下我实际使用Docker时遇到的一些问题。</p>
-<p>这里是之前几篇Docker相关的博文地址：</p>
-<ul>
-<li><p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BD%BF%E7%94%A8Docker%E6%89%93%E5%8C%85%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE/">工程实践：使用Docker打包自己的项目 - 我不是算法工程师</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/23/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9ADocker%E5%85%A5%E9%97%A8%E6%8A%80%E5%B7%A7/">工程实践：Docker入门技巧 - 我不是算法工程师 </a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/25/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%AE%9E%E6%93%8D%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84Docker%E6%93%8D%E4%BD%9C/">工程实践：实操项目中的Docker操作 - 我不是算法工程师 </a></p>
-</li>
-</ul>
-<hr>
-<h1 id="Windows终端查看Docker出现报错"><a href="#Windows终端查看Docker出现报错" class="headerlink" title="Windows终端查看Docker出现报错"></a>Windows终端查看Docker出现报错</h1><p>我在windows直接使用<code>docker ps -a</code>会出现报错<code>error during connect</code>。以下是完整报错内容；</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">error during connect: this error may indicate that the docker daemon is not running: Get <span class="hljs-string">&quot;http://%2F%2F.%2Fpipe%2Fdocker_engine/v1.24/containers/json?all=1&quot;</span>: open //./pipe/docker_engine: The system cannot find the file specified.<br></code></pre></td></tr></table></figure>
+                <p>Docker篇的第五篇，学习一下怎么编写Dockerfile。</p>
+<h1 id="不要过多的叠加层数"><a href="#不要过多的叠加层数" class="headerlink" title="不要过多的叠加层数"></a>不要过多的叠加层数</h1><p>Docker 镜像是分层的，Dockerfile 中的每个指令都会创建一个新的镜像层。每一层都是前一层变化的增量。</p>
+<p>以下是一个Dockerfile的例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update<br>RUN apt-get upgrade -y<br>RUN apt-get install -y nodejs ssh mysql<br>RUN <span class="hljs-built_in">cd</span> /app &amp;&amp; npm install<br><br>CMD mysql &amp; sshd &amp; npm start<br></code></pre></td></tr></table></figure>
 
-<p>实际遇到时，启动Docker的应用就可以解决，这是因为没有开启守护进程。在Linux上可以用以下方式设置开机自动启动Docker：<code>sudo systemctl enable docker</code>。</p>
-<h1 id="报错：repository-name-must-be-lowercase"><a href="#报错：repository-name-must-be-lowercase" class="headerlink" title="报错：repository name must be lowercase"></a>报错：repository name must be lowercase</h1><p>这个报错源自于Dockerfile的编写，执行<code> docker build -t qa_system:v0.1 .</code>时出现报错，完整报错如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">Dockerfile:1<br>--------------------<br>   1 | &gt;&gt;&gt; FROM Python:3.10<br>   2 |<br>   3 |     WORKDIR /app<br>--------------------<br>ERROR: failed to solve: failed to parse stage name <span class="hljs-string">&quot;Python:3.10&quot;</span>: invalid reference format: repository name must be lowercase<br></code></pre></td></tr></table></figure>
+<p>在上面这个Dockerfile里，每执行一次<code>RUN</code>，就会在镜像中多增加一层，最高层是127层。如果添加过多的层数会导致镜像过大。因此应当尽可能的将<code>RUN</code>指令写成一行，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update \<br>    &amp;&amp; apt-get install -y nodejs \<br>    &amp;&amp; <span class="hljs-built_in">cd</span> /app \<br>    &amp;&amp; npm install<br><br>CMD npm start<br></code></pre></td></tr></table></figure>
 
-<p>原来是需要都是小写，把<code>Python</code>改成<code>python</code>即可。</p>
-<h1 id="下载Python依赖库时的路径选择"><a href="#下载Python依赖库时的路径选择" class="headerlink" title="下载Python依赖库时的路径选择"></a>下载Python依赖库时的路径选择</h1><p>当我在执行<code>pip download -r .\requirements.txt --dest \downloaded_packages</code>时，并没有在根目录下找到文件夹。这是因为需要在路径前面加一个<code>.</code>来指定当前目录。解决方法如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 相对路径</span><br>pip download -r .\requirements.txt --dest <span class="hljs-string">&#x27;.\downloaded_packages&#x27;</span><br><br><span class="hljs-comment"># 绝对路径</span><br>pip download -r .\requirements.txt --dest C:\path\to\downloaded_packages<br></code></pre></td></tr></table></figure>
+<h1 id="使用-dockerignore忽略文件"><a href="#使用-dockerignore忽略文件" class="headerlink" title="使用.dockerignore忽略文件"></a>使用.dockerignore忽略文件</h1><p>和.gitignore一样，有时候在打包时，不需要将一些文件拷贝进镜像以防止镜像过大，例如一些Readme，或者.git文件，这时候就需要用到.dockerignore。语法是类似的，例如要忽略后缀是“swp”“sh”的文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># docker ignore</span><br>*.swp<br>*.sh<br></code></pre></td></tr></table></figure>
 
-<h1 id="命令行参数顺序出错导致无法启动Docker"><a href="#命令行参数顺序出错导致无法启动Docker" class="headerlink" title="命令行参数顺序出错导致无法启动Docker"></a>命令行参数顺序出错导致无法启动Docker</h1><p>当<code>build</code>完容器后，就是<code>run</code>这个容器，我一开始输的命令是<code> docker run qa_system:v0.1 -p 8501:8501</code>，出现了报错：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker: Error response from daemon: failed to create task <span class="hljs-keyword">for</span> container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: <span class="hljs-built_in">exec</span>: <span class="hljs-string">&quot;-p&quot;</span>: executable file not found <span class="hljs-keyword">in</span> <span class="hljs-variable">$PATH</span>: unknown.<br></code></pre></td></tr></table></figure>
+<p>例如不需要.git目录，或者某个文件夹，则如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">.git/<br>node_modules/<br></code></pre></td></tr></table></figure>
 
-<p>这是因为命令行应该把容器放在最后写，端口等参数应在前面。正确的应该是<code>docker run -p 8501:8501 qa_system:v0.1</code>。</p>
-<p><img src="/images/083343.png" srcset="/img/loading.gif" lazyload></p>
-<p>完美！现在可以在本地的<code>8501</code>访问容器的<code>8501</code>了！</p>
-<h1 id="stop容器报错"><a href="#stop容器报错" class="headerlink" title="stop容器报错"></a>stop容器报错</h1><p>当我使用<code>Ctrl C</code>停止了容器的服务后，我想在命令行停止容器，于是我执行了<code>docker stop qa_system:v0.1</code>，出现报错：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">Error response from daemon: No such container: qa_system:v0.1<br></code></pre></td></tr></table></figure>
-
-<p>这是因为需要指定容器的id。修改后即可正确stop。</p>
-<h1 id="保存镜像为tar文件并发送给其他人"><a href="#保存镜像为tar文件并发送给其他人" class="headerlink" title="保存镜像为tar文件并发送给其他人"></a>保存镜像为tar文件并发送给其他人</h1><p>这个是我单纯记不住指令，所以在这写一下。前面我们在本地已经有了镜像，现在我需要把它打包发给别人，需要执行以下指令<code>docker save -o qa_system.tar qa_system:v0.1</code>。<code>-o</code>是声明保存后的文件名，后面则附上镜像的版本号。</p>
-<p>保存完后将tar文件发送给目标用户，对方只需要执行<code>docker load -i qa_system.tar</code>即可在对方环境加载镜像。</p>
-<h1 id="删除本地的镜像"><a href="#删除本地的镜像" class="headerlink" title="删除本地的镜像"></a>删除本地的镜像</h1><p>看了一眼镜像有1.9G，所以打算删一下。执行<code>docker remove qa_system</code>会报错：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">Error response from daemon: No such container: qa_system<br></code></pre></td></tr></table></figure>
-
-<p>这是因为这个指令只是用来删除容器。删除镜像需要使用<code>rmi</code>。完整指令如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker rmi qa_system:v0.1<br></code></pre></td></tr></table></figure>
-
-<p>这样就可以顺利删除了。</p>
-<p>2024&#x2F;1&#x2F;27 于苏州家中</p>
+<h1 id="Dockerfile命令"><a href="#Dockerfile命令" class="headerlink" title="Dockerfile命令"></a>Dockerfile命令</h1><p>下面是Dockerfile的一些常用命令</p>
+<table>
+<thead>
+<tr>
+<th>FROM</th>
+<th>基于哪个镜像来实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LABEL</td>
+<td>给构建的镜像打标签</td>
+</tr>
+<tr>
+<td>ENV</td>
+<td>声明环境变量</td>
+</tr>
+<tr>
+<td>ARG</td>
+<td>指定了用户在 <code>docker build --build-arg</code> 时可以使用的参数</td>
+</tr>
+<tr>
+<td>RUN</td>
+<td>执行的命令添加宿主机文件到容器里，有需要解压的文</td>
+</tr>
+<tr>
+<td>CMD</td>
+<td>run后面跟启动命令会被覆盖掉</td>
+</tr>
+<tr>
+<td>ENTRYPOINT</td>
+<td>与CMD功能相同，但需docker run 不会覆盖，如果需要覆盖可增加参数-entrypoint来覆盖</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>件会自动解压</td>
+</tr>
+<tr>
+<td>COPY</td>
+<td>添加宿主机文件到容器里</td>
+</tr>
+<tr>
+<td>WORKDIR</td>
+<td>工作目录</td>
+</tr>
+<tr>
+<td>EXPOSE</td>
+<td>容器内应用可使用的端口容器启动后所执行的程序，如果执行docker</td>
+</tr>
+<tr>
+<td>VOLUME</td>
+<td>将宿主机的目录挂载到容器里</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>为接下来的Dockerfile指令指定用户</td>
+</tr>
+</tbody></table>
 
                 
               </div>
@@ -446,18 +475,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/01/27/Dockfile%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/" title="Dockfile编写指南">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Dockfile编写指南</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/01/25/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%AE%9E%E6%93%8D%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84Docker%E6%93%8D%E4%BD%9C/" title="工程实践：实操项目中的Docker操作">
-                        <span class="hidden-mobile">工程实践：实操项目中的Docker操作</span>
+                      <a href="/2024/01/27/Docker%E5%AE%9E%E8%B7%B5%E6%8C%96%E5%9D%91%E7%BB%86%E8%8A%82/" title="Docker实践挖坑细节">
+                        <span class="hidden-mobile">Docker实践挖坑细节</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
