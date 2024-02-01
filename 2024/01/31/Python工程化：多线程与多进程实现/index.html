@@ -17,16 +17,16 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Python中的多线程和多进程实现。">
+    <meta name="description" content="Python中的并发编程的实现。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python工程化：多线程与多进程实现">
 <meta property="og:url" content="http://example.com/2024/01/31/Python%E5%B7%A5%E7%A8%8B%E5%8C%96%EF%BC%9A%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%A4%9A%E8%BF%9B%E7%A8%8B%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="Python中的多线程和多进程实现。">
+<meta property="og:description" content="Python中的并发编程的实现。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/python.png">
 <meta property="article:published_time" content="2024-01-31T11:55:25.000Z">
-<meta property="article:modified_time" content="2024-02-01T12:28:12.552Z">
+<meta property="article:modified_time" content="2024-02-01T13:27:30.550Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Python">
@@ -283,7 +283,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          13 字
+          1.5k 字
         
       </span>
     
@@ -294,7 +294,7 @@
         
         
         
-          1 分钟
+          13 分钟
         
       </span>
     
@@ -357,10 +357,57 @@
             
               <div class="markdown-body">
                 
-                <p>首先上多线程和多进程的定义：</p>
+                <p>首先上定义：</p>
 <div class="note note-warning">
-            
+            <p>进程：可以简单的理解为一个可以独立运行的程序单位，它是线程的集合，进程就是有一个或多个线程构成的。</p><p>线程：进程中的实际运行单位，是操作系统进行运算调度的最小单位。可理解为线程是进程中的一个最小运行单元。</p>
           </div>
+<p>当我们运行一个程序时，相当于运行了一个进程，在这个进程中包含了一个或多个线程。当我们需要同时运行多个程序时，就需要用到多进程，而需要更优的运行一个程序时，就需要多线程。</p>
+<blockquote>
+<p>多线程共享同一进程的资源。</p>
+</blockquote>
+<p>我们假设有两段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time <br>result = <span class="hljs-number">0</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">100000</span>):<br>	result+=<span class="hljs-number">1</span><br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> request<br><br>url_list = [<br>    (<span class="hljs-string">&#x27;视频1&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=ZKwIInkZK90&#x27;</span>),<br>    (<span class="hljs-string">&#x27;视频2&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=Ts2wussx4Js&#x27;</span>),<br>    (<span class="hljs-string">&#x27;视频3&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=zDWO7EMFBkQ&#x27;</span>)<br>]<br><br><span class="hljs-built_in">print</span>(time.time())<br><span class="hljs-keyword">for</span> file_name, url <span class="hljs-keyword">in</span> url_list:<br>    res = request.get(url)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_name,mode=<span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(res.content)<br>    <span class="hljs-built_in">print</span>(time.time())<br></code></pre></td></tr></table></figure>
+<p>上面两段代码代表着程序中的两个任务：高计算量和高IO读写。前者需要CPU的计算能力，后者不需要这么高的计算能力，而是高磁盘读写需求。</p>
+<h1>使用多线程实现下载任务</h1>
+<p>可以使用多线程实现上面的下载任务，这样程序可以在更优的分配任务。这里需要使用<code>threading</code>库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> request<br><span class="hljs-keyword">import</span> threading<br><br>url_list = [<br>    (<span class="hljs-string">&#x27;视频1&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=ZKwIInkZK90&#x27;</span>),<br>    (<span class="hljs-string">&#x27;视频2&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=Ts2wussx4Js&#x27;</span>),<br>    (<span class="hljs-string">&#x27;视频3&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=zDWO7EMFBkQ&#x27;</span>)<br>]<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">task</span>(<span class="hljs-params">file_name,url</span>):<br>    res = request.get(url)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_name,mode=<span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(res.content)<br>    <span class="hljs-built_in">print</span>(time.time())<br><br>    <br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-built_in">print</span>(time.time())<br>    <span class="hljs-keyword">for</span> name, url <span class="hljs-keyword">in</span> url_list:<br>        t = threading.Thread(target=task, args=(name,url))<br>        t.start()<br></code></pre></td></tr></table></figure>
+<p>在for遍历的时候，会不断的创建线程。当运行<code>t.start()</code>的时候，将开始启动所有线程。参数需要在<code>Thread</code>方法中传入。</p>
+<h1>使用多进程实现下载任务</h1>
+<p>同样的可以创建多个进程来实现上面的下载任务，需要用到<code>mutilprocessing</code>库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> request<br><span class="hljs-keyword">import</span> mutilprocessing<br><br>url_list = [<br>    (<span class="hljs-string">&#x27;视频1&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=ZKwIInkZK90&#x27;</span>),<br>    (<span class="hljs-string">&#x27;视频2&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=Ts2wussx4Js&#x27;</span>),<br>    (<span class="hljs-string">&#x27;视频3&#x27;</span>,<span class="hljs-string">&#x27;https://www.youtube.com/watch?v=zDWO7EMFBkQ&#x27;</span>)<br>]<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">task</span>(<span class="hljs-params">file_name,url</span>):<br>    res = request.get(url)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_name,mode=<span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(res.content)<br>    <span class="hljs-built_in">print</span>(time.time())<br>    <br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-built_in">print</span>(time.time())<br>    <span class="hljs-keyword">for</span> name, url <span class="hljs-keyword">in</span> url_list:<br>        t = mutilprocessing.Process(target=task, args=(name,url))<br>        t.start()<br></code></pre></td></tr></table></figure>
+<p>在使用for进行遍历时，会不断加上进程。多进程的开销会更大，因为每次调用进程都相当于启动了一个新程序。</p>
+<h1>使用多进程处理高计算任务</h1>
+<p>在面对高计算量的任务时，就可以利用多核优势计算结果，例如前面的累加计算任务：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> multiprocessing<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">task</span>(<span class="hljs-params">start, end, queue</span>):<br>    result = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(start, end):<br>        result += <span class="hljs-number">1</span><br>    queue.put(result)<br>    <br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    queue = mutilprocessing.Queue()<br>    <br>    start_time = time.time()<br>    <br>    p1 = mutilprocessing.Process(target=task, args=(<span class="hljs-number">0</span>, <span class="hljs-number">50000</span>, queue))<br>    p1.start()<br>    <br>    p2 = mutilprocessing.Process(target=task, args=(<span class="hljs-number">50000</span>, <span class="hljs-number">100000</span>, queue))<br>    p2.start()<br>    <br>    v1 = queue.get(block=<span class="hljs-literal">True</span>)<br>    v2 = queue.get(block=<span class="hljs-literal">True</span>)<br>    <span class="hljs-built_in">print</span>(v1+v2)<br>    <br>    end_time = time.time()<br></code></pre></td></tr></table></figure>
+<p>上面相当于利用多进程创建了两个任务，分开计算，最后将两个任务的结果相加得到总和。</p>
+<h1>如何选择？</h1>
+<p>在只运行一个任务的时候，多线程的开销会更少一些，不过在Python的CPython解释器中有一个全局解释器锁(GIL)，它要求一个进程中，同时只能有一个线程被CPU调用。这就导致多线程的优势在Python中消失了。</p>
+<p>那么如何从这两者之间进行选择？如果程序想要利用计算机的多核优势，则使用多进程开发，让CPU同时处理任务。如果不利于多核优势，那就使用多线程开发。</p>
+<p>多线程适用于：</p>
+<ol>
+<li><strong>I/O 密集型任务：</strong> 当程序中的主要瓶颈是等待外部资源读写的时候，使用多线程可以提高效率。一个线程在等待时，其他线程可以继续执行，例如爬虫。</li>
+<li><strong>共享数据：</strong> 如果多个任务需要共享数据，且这些任务不需要同时修改共享数据，那么可以选择多线程。</li>
+</ol>
+<p>多进程适用于：</p>
+<ol>
+<li><strong>CPU 密集型任务：</strong> 当程序中的主要任务是进行大量计算，而不涉及太多的 I/O 操作时，选择多进程。</li>
+<li><strong>独立性要求：</strong> 如果任务之间需要高度的独立性，以避免由于一个任务的问题导致整个程序崩溃，选择多进程。</li>
+<li><strong>并行性需求：</strong> 多进程可以在多核处理器上并行执行，从而提高整体性能。</li>
+</ol>
+<h1>多线程常用方法</h1>
+<h2 id="t-start">t.start()</h2>
+<p><code>t.start()</code>用于将线程准备就绪。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> threading<br><br>loop = <span class="hljs-number">1000000</span><br>number = <span class="hljs-number">0</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_add</span>(<span class="hljs-params">count</span>):<br>    <span class="hljs-keyword">global</span> number<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(count):<br>        number += <span class="hljs-number">1</span><br>        <br>t = threading.Thread(target=_add, arg=(loop))<br>t.start()<br><span class="hljs-built_in">print</span>(number)<br></code></pre></td></tr></table></figure>
+<p>上面的number不一定为100000，这是因为程序在执行子线程的时候，可能执行t的子线程到一半，就跑去把print(number)执行了，这恰恰体现了多线程的作用，会跳着执行代码。为了解决这个问题，就用到了<code>join</code>方法。</p>
+<h2 id="t-join">t.join()</h2>
+<p><code>t.join()</code>用于等待当前子线程结束，主线程再继续往下执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> threading<br><br>loop = <span class="hljs-number">1000000</span><br>number = <span class="hljs-number">0</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_add</span>(<span class="hljs-params">count</span>):<br>    <span class="hljs-keyword">global</span> number<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(count):<br>        number += <span class="hljs-number">1</span><br><br>t = threading.Thread(target=_add, arg=(loop))<br>t.start()<br>t.join() <br><span class="hljs-built_in">print</span>(number)<br></code></pre></td></tr></table></figure>
+<p>当程序运行到<code>t.join</code>时，就会停下来等<code>t</code>这个子线程运行完，然后继续往下走。还有一个例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> threading<br><br>number = <span class="hljs-number">0</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_add</span>():<br>    <span class="hljs-keyword">global</span> number<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(count):<br>        number += <span class="hljs-number">1</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">_sub</span>():<br>    <span class="hljs-keyword">global</span> number<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(count):<br>        number += <span class="hljs-number">1</span><br>        <br>t1 = threading.Thread(target=_add)<br>t2 = threading.Thread(target=_sub)<br>t1.start()<br>t1.join() <br><br>t2.start()<br>t2.join()<br><br><span class="hljs-built_in">print</span>(number)<br></code></pre></td></tr></table></figure>
+<p>上面这个例子实际上等同于串行执行。主线程会等待<code>t1</code>子线程运行完后才会运行<code>t2</code>子线程。</p>
+<p>2024/2/1 于苏州家中</p>
+
                 
               </div>
             
