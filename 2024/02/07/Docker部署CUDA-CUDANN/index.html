@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/cuda.png">
 <meta property="article:published_time" content="2024-02-07T12:06:07.000Z">
-<meta property="article:modified_time" content="2024-02-07T12:41:20.526Z">
+<meta property="article:modified_time" content="2024-02-07T12:43:21.858Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Docker">
@@ -282,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          761 字
+          760 字
         
       </span>
     
@@ -358,13 +358,13 @@
                 
                 <p>最近的项目中，大规模使用了Docker，随着项目发展，萌生了把推理服务也打包容器化的想法，因此就有了这篇博客。操作系统使用的是Centos7.9，Cuda版本为11.6.1。</p>
 <p>首先，容器的主要原理就是在构建一个轻量级的操作系统，并在这个独立的操作系统中搭建想要的容器。通常来说，如果不需要调用宿主机硬件的话，可以直接构建容器。</p>
-<h1 id="安装Nvidia-Container-Toolkit"><a href="#安装Nvidia-Container-Toolkit" class="headerlink" title="安装Nvidia-Container-Toolkit"></a>安装Nvidia-Container-Toolkit</h1><p>如果需要用到显卡的话，就需要安装Nvidia的容器套件<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nvidia-container-toolkit">nvidia-container-toolkit</a></p>
+<h1>安装Nvidia-Container-Toolkit</h1>
+<p>如果需要用到显卡的话，就需要安装Nvidia的容器套件<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/nvidia-container-toolkit">nvidia-container-toolkit</a>。</p>
 <p>我们通过curl来下载并安装套件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -s -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo | \<br>sudo <span class="hljs-built_in">tee</span> /etc/yum.repos.d/nvidia-container-toolkit.repo<br><br>sudo yum install -y nvidia-container-toolkit<br></code></pre></td></tr></table></figure>
-
-<h1 id="Docker拉取镜像"><a href="#Docker拉取镜像" class="headerlink" title="Docker拉取镜像"></a>Docker拉取镜像</h1><p>安装完套件后，需要去DockerHub拉取对应版本的cuda镜像，命令如下：</p>
+<h1>Docker拉取镜像</h1>
+<p>安装完套件后，需要去DockerHub拉取对应版本的cuda镜像，命令如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull nvidia/cuda:11.6.1-cudnn8-devel-centos7<br></code></pre></td></tr></table></figure>
-
 <p>其中Cuda镜像除了本身的版本以外，还有多个版本：base, runtime, devel。它们的大小均不同。解释如下：</p>
 <ul>
 <li>base版本：只包含了预构建cuda应用程序的最低要求的包。如果用户需要自定义安装需要的cuda包，可以选择使用这个镜像版本，但如果想省事儿，别用。</li>
@@ -372,17 +372,16 @@
 <li>devel版本：涵盖了开发所需的所有工具，包含编译、debug等，以及编译需要的头文件、静态库。</li>
 </ul>
 <p><strong>如果想用docker镜像做开发环境，建议使用devel版本的image。</strong></p>
-<h1 id="编写Dockerfile"><a href="#编写Dockerfile" class="headerlink" title="编写Dockerfile"></a>编写Dockerfile</h1><p>前面拉取完cuda的镜像后就可以直接编写Dockerfile了，这里给一个示例。这里的场景是需要在Docker中构建一个能够调用显卡的python环境，因此需要分成多个阶段进行构建：</p>
+<h1>编写Dockerfile</h1>
+<p>前面拉取完cuda的镜像后就可以直接编写Dockerfile了，这里给一个示例。这里的场景是需要在Docker中构建一个能够调用显卡的python环境，因此需要分成多个阶段进行构建：</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 第一阶段：使用Miniconda镜像</span><br><span class="hljs-keyword">FROM</span> continuumio/miniconda3:latest as miniconda_stage                                           <br><span class="hljs-comment"># 设置环境变量                                                                                 </span><br><span class="hljs-keyword">ENV</span> PATH=<span class="hljs-string">&quot;/opt/conda/bin:$PATH&quot;</span>                                                               <br><span class="hljs-comment"># 安装 Python 3.10.13                                                                       </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> conda install -y python=3.10.13                                                             </span><br><span class="hljs-comment"># 第二阶段：使用 CUDA 镜像                                                                     </span><br><span class="hljs-keyword">FROM</span> nvidia/cuda:<span class="hljs-number">11.6</span>.<span class="hljs-number">1</span>-cudnn8-devel-centos7 as cuda_image                                        <br><span class="hljs-comment"># 从 Miniconda 阶段复制环境                                                                   </span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> --from=miniconda_stage /opt/conda /opt/conda                                                </span><br><span class="hljs-comment"># 设置环境变量                                                                                 </span><br><span class="hljs-keyword">ENV</span> PATH=<span class="hljs-string">&quot;/opt/conda/bin:$PATH&quot;</span>                                                                  <br><span class="hljs-comment"># 第三阶段：构建项目                                                                           </span><br><span class="hljs-keyword">FROM</span> cuda_image                                                                                 <br><span class="hljs-comment"># 设置工作目录                                                                             </span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /infer_app                                                                               </span><br><span class="hljs-comment"># 复制项目文件                                                                                 </span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./ /infer_app                                                                             </span><br><span class="hljs-comment"># 安装 mesa-libGL                                                                           </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum install -y mesa-libGL                                                                </span><br><span class="hljs-comment"># 安装 vim                                                                                   </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum install -y vim                                                                        </span><br><span class="hljs-comment"># 安装项目依赖                                                                                 </span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install -r requirements.txt                                                            </span><br><span class="hljs-comment"># 暴露端口                                                                                   </span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">58090</span> <span class="hljs-number">58091</span>                                                                                                                                                                       <br><span class="hljs-comment"># 默认命令                                                                                   </span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;/bin/bash&quot;</span>]               </span><br></code></pre></td></tr></table></figure>
-
 <p>在编写完之后，就可以构建一下容器，这里我写了个脚本来构建镜像：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">rm</span> -f <span class="hljs-built_in">test</span>:v0.0.1<br>docker rmi -f <span class="hljs-built_in">test</span>:v0.0.1<br>docker build -t <span class="hljs-built_in">test</span>:v0.0.1<br></code></pre></td></tr></table></figure>
-
-<h1 id="部署容器"><a href="#部署容器" class="headerlink" title="部署容器"></a>部署容器</h1><p>镜像构建完之后，就可以部署容器了，需要注意的是，如果要调用显卡，需要设置<code>--gpus all</code>来使用，否则会报错。这里给一个示例命令：</p>
+<h1>部署容器</h1>
+<p>镜像构建完之后，就可以部署容器了，需要注意的是，如果要调用显卡，需要设置<code>--gpus all</code>来使用，否则会报错。这里给一个示例命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -it --gpus all --network host -v /app/:/app/ -p 58090:58090 -p 58091:58091 <span class="hljs-built_in">test</span>:v0.0.1 bash<br></code></pre></td></tr></table></figure>
-
 <p>进入容器以后就可以直接运行需要运行的程序了。你也可以直接使用nvidia-smi来查看是否成功调用显卡。</p>
-<p>2024&#x2F;2&#x2F;7 于苏州家中</p>
+<p>2024/2/7 于苏州家中</p>
 
                 
               </div>
