@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>开发者必备技巧：VIM常用操作</title>
+    <link href="/2024/03/03/%E5%BC%80%E5%8F%91%E8%80%85%E5%BF%85%E5%A4%87%E6%8A%80%E5%B7%A7%EF%BC%9AVIM%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/"/>
+    <url>/2024/03/03/%E5%BC%80%E5%8F%91%E8%80%85%E5%BF%85%E5%A4%87%E6%8A%80%E5%B7%A7%EF%BC%9AVIM%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C/</url>
+    
+    <content type="html"><![CDATA[<p>Vim作为一个服务器上常用的编辑器，很多开发者都免不了与它打交道。当我刚刚接触它的时候，简直一头雾水尽管后面稍微了解了一些基本操作，但是还是有大量的操作指令相当不熟悉。这篇博客就总结一些常用的操作，已备不时之需。</p><p><strong>光标移动</strong>：<br><code>h</code>：左<br><code>j</code>：下<br><code>k</code>：上<br><code>l</code>：右</p><blockquote><p>以下内容比较实用，最好记住：</p></blockquote><p><code>w</code>：跳到下一个单词的开头<br><code>b</code>：跳到上一个单词的开头<br><code>gg</code>：跳到文件的开头<br><code>G</code>：跳到文件的末尾<br><code>0</code>：跳到行首<br><code>$</code>：跳到行尾</p><p>数字加字母则可以快速跳到指定的地方，例如：</p><p><code>50G</code>：跳到第五十行<br><code>20j</code>： 向下移动 20 行</p><p>了解如何快捷移动光标，已经满足工作中大部分的Vim操作了。</p><p><strong>查找</strong><br><code>/text</code>：向下查找文本<br><code>n</code>：跳到下一个匹配项<br><code>N</code>：跳到上一个匹配项</p><p>命令模式下，斜杠加文本即可检索内容。随后n是跳到下一个，N是跳到上一个。</p><p><strong>复制与删除</strong><br><code>yy</code>：复制一行<br><code>dd</code>：删除一行</p><p>加上数字则可以删除指定的行数，例如：<br><code>100dd</code>：删除100行</p><p>在实际用的时候，有时候会使用<code>gg</code>+<code>10000dd</code>来删除完整的文件。</p><p><strong>撤销</strong><br><code>u</code>：撤销最后一次操作</p><p><strong>翻页</strong><br><code>Ctrl</code>+<code>f</code>：向上翻页<br><code>Ctrl</code>+<code>b</code>：向下翻页</p><p><strong>一些神奇操作</strong><br><code>Ctrl</code>+<code>z</code>：将Vim切换到后台，在命令行输入<code>fg</code>切回<br><code>zt</code>： 把当前行置于屏幕顶端<br><code>zb</code> ： 把当前行置于屏幕底<br><code>zz</code> ：把当前行置于屏幕中央</p><p>2024&#x2F;3&#x2F;3 于苏州</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>工程实践</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工程实践</tag>
+      
+      <tag>Vim</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>2024/2/29 记搬家</title>
     <link href="/2024/02/29/2024-2-29-%E8%AE%B0%E6%90%AC%E5%AE%B6/"/>
     <url>/2024/02/29/2024-2-29-%E8%AE%B0%E6%90%AC%E5%AE%B6/</url>
