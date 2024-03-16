@@ -17,23 +17,35 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="十年饮冰，热血难凉">
-<meta property="og:type" content="website">
-<meta property="og:title" content="分类 - 工程实践">
-<meta property="og:url" content="http://example.com/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/page/2/index.html">
+    <meta name="description" content="Docker相关博文。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker必备指南">
+<meta property="og:url" content="http://example.com/2024/03/16/Docker%E5%BF%85%E5%A4%87%E6%8C%87%E5%8D%97/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="十年饮冰，热血难凉">
+<meta property="og:description" content="Docker相关博文。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/docker.jpg">
+<meta property="article:published_time" content="2024-03-16T10:59:47.000Z">
+<meta property="article:modified_time" content="2024-03-16T11:53:47.146Z">
 <meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/docker.jpg">
   
   
   
-  <title>分类 - 工程实践 - 我不是算法工程师</title>
+  <title>Docker必备指南 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
 
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
 
 
 
@@ -116,7 +128,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -246,9 +258,57 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="分类 - 工程实践"></span>
+            <span id="subtitle" data-typed-text="Docker必备指南"></span>
           
         </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-16 18:59" pubdate>
+          2024年3月16日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          71 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          1 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
 
         
       </div>
@@ -264,55 +324,204 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
-<div class="list-group">
-  <p class="h4">共计 12 篇文章</p>
-  <hr>
-  
-  
-    
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-      <p class="h5">2024</p>
-    
-    <a href="/2024/01/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BD%BF%E7%94%A8Docker%E6%89%93%E5%8C%85%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE/" class="list-group-item list-group-item-action">
-      <time>01-19</time>
-      <div class="list-group-item-title">工程实践：使用Docker打包自己的项目</div>
-    </a>
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Docker必备指南</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>此博文汇总了此前写过的Docker相关的博文：</p>
+<ul>
+<li>
+<p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BD%BF%E7%94%A8Docker%E6%89%93%E5%8C%85%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE/">工程实践：使用Docker打包自己的项目</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/23/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9ADocker%E5%85%A5%E9%97%A8%E6%8A%80%E5%B7%A7/">工程实践：Docker入门技巧</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/25/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%AE%9E%E6%93%8D%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84Docker%E6%93%8D%E4%BD%9C/">工程实践：实操项目中的Docker操作</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/27/Docker%E5%AE%9E%E8%B7%B5%E6%8C%96%E5%9D%91%E7%BB%86%E8%8A%82/">Docker实践挖坑细节</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/27/Dockfile%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/">Dockfile编写指南</a></p>
+</li>
+<li>
+<p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/02/07/Docker%E9%83%A8%E7%BD%B2CUDA-CUDANN/">Docker部署CUDA/CUDANN </a></p>
+</li>
+</ul>
+<p>2024/3/16 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
   
     
-      
-      <p class="h5">2023</p>
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="category-chain-item">工程实践</a>
+  
+  
+
+      </span>
     
-    <a href="/2023/12/28/%E9%A1%B9%E7%9B%AE%E5%8D%8F%E5%90%8C%E5%BC%80%E5%8F%91-%E9%85%8D%E7%BD%AESSH/" class="list-group-item list-group-item-action">
-      <time>12-28</time>
-      <div class="list-group-item-title">项目协同开发-配置SSH</div>
-    </a>
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/Docker/" class="print-no-link">#Docker</a>
+      
+    </div>
   
 </div>
 
 
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">1</a><span class="page-number current">2</span>
-    </span>
-  </nav>
+              
 
-
-
-
-              </div>
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/16/Git%EF%BC%9A%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4%E6%B1%87%E6%80%BB/" title="Git：常用指令汇总">
+                        <span class="hidden-mobile">Git：常用指令汇总</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-          </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
         </div>
       </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
     
 
     
@@ -464,6 +673,142 @@
 
 
 
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script defer src="/js/leancloud.js" ></script>
 
