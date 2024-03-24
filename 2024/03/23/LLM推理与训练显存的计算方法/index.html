@@ -17,23 +17,36 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="十年饮冰，热血难凉">
-<meta property="og:type" content="website">
-<meta property="og:title" content="归档">
-<meta property="og:url" content="http://example.com/archives/2024/01/page/2/index.html">
+    <meta name="description" content="如何计算LLM训练和推理时所需要的显存占用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM推理与训练显存的计算方法">
+<meta property="og:url" content="http://example.com/2024/03/23/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="十年饮冰，热血难凉">
+<meta property="og:description" content="如何计算LLM训练和推理时所需要的显存占用。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/llm_train.png">
+<meta property="article:published_time" content="2024-03-23T00:22:46.000Z">
+<meta property="article:modified_time" content="2024-03-24T02:38:48.640Z">
 <meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="NLP">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/llm_train.png">
   
   
   
-  <title>归档 - 我不是算法工程师</title>
+  <title>LLM推理与训练显存的计算方法 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
 
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
 
 
 
@@ -116,7 +129,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -246,9 +259,57 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="归档"></span>
+            <span id="subtitle" data-typed-text="LLM推理与训练显存的计算方法"></span>
           
         </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-23 08:22" pubdate>
+          2024年3月23日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          401 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          4 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
 
         
       </div>
@@ -264,100 +325,204 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-<div class="list-group">
-  <p class="h4">共计 47 篇文章</p>
-  <hr>
-  
-  
-    
       
-      <p class="h5">2024</p>
-    
-    <a href="/2024/01/13/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%B8%95%E7%B4%AF%E6%89%98%E6%9C%80%E4%BC%98%EF%BC%9F/" class="list-group-item list-group-item-action">
-      <time>01-13</time>
-      <div class="list-group-item-title">博弈论：如何理解帕累托最优？</div>
-    </a>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">LLM推理与训练显存的计算方法</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>众所周知，自从Transformer出现后，大语言模型基本上抛弃了原来的RNN/LSTM的思路。然而Transformer类模型也有自己的不足之处，其中最被人诟病的可能就是大量的计算量。今天我就来学习一下，训练/运行一个Transformer类的模型，究竟要占用多少显存？</p>
+<h1>整数与浮点数</h1>
+<p>在开始之前，需要了解一下不同的数据格式占用的存储大小：</p>
+<ul>
+<li>FP64：双精度浮点数（64位），8字节/单位</li>
+<li>FP32：单精度浮点数（32位），4字节/单位</li>
+<li>FP16：半精度浮点数（16位），2字节/单位</li>
+<li>BF16：Google推出的半精度浮点数（16位）</li>
+<li>INT16：整数（16位），2字节/单位</li>
+<li>INT8：整数（8位），1字节/单位</li>
+<li>INT4：整数（4位），0.5字节/单位</li>
+</ul>
+<p>浮点数是如何变成整数的？下图是一个简单的演示。在这过程中，会出现精度和存储空间的取舍。</p>
+<p><img src="/images/qualization.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h1>模型占用多大空间？</h1>
+<p>什么是B？B代表Billion，十亿参数。因此13B就是130亿参数，7B则是70亿参数。</p>
+<p>我们以参数量13B大模型为例，13B是130亿参数。如果我们以全精度fp32运行，也就是float32，将会占用32位bit，也就是4byte字节。我们给出计算的公式：</p>
+<p>$ 1\text{GB} = 1024 \text{MB} = 1024^{2}  \text{KB} = 1024^{3} \text{Byte}$</p>
+<p>那么全精度13B模型占用：$13 \times 10^{9} \times 4 \text{Byte} \div 1024^{3} \approx 48.4 \text{GB}$</p>
+<p>也就是说，我们只是单纯以全精度加载运行模型，就需要大约48.4G的显存空间。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
   
     
-    <a href="/2024/01/11/%E4%BB%A3%E7%A0%81%E5%AE%9E%E6%88%98%EF%BC%9A%E5%BE%AE%E8%B0%83Mixtral8-7B/" class="list-group-item list-group-item-action">
-      <time>01-11</time>
-      <div class="list-group-item-title">代码实战：微调Mixtral8*7B</div>
-    </a>
+      <span class="category-chain">
+        
+  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
   
-    
-    <a href="/2024/01/08/%E6%8F%90%E9%AB%98Python%E5%8F%AF%E8%AF%BB%E6%80%A7%EF%BC%9A%E7%B1%BB%E5%9E%8B%E6%8F%90%E7%A4%BA%E5%92%8CEnum/" class="list-group-item list-group-item-action">
-      <time>01-08</time>
-      <div class="list-group-item-title">提高Python可读性：Type Hints的应用</div>
-    </a>
   
+
+      </span>
     
-    <a href="/2024/01/07/%E8%AE%BAQA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F%E5%8F%91%E5%B1%95%E5%8F%B2%EF%BC%9A%E4%BB%8EText2Vec%E5%88%B0LLM/" class="list-group-item list-group-item-action">
-      <time>01-07</time>
-      <div class="list-group-item-title">论QA问答系统发展史：从Text2Vec到LLM</div>
-    </a>
   
-    
-    <a href="/2024/01/06/%E5%A6%82%E4%BD%95%E5%AE%8C%E6%88%90%E7%9A%86%E5%A4%A7%E6%AC%A2%E5%96%9C%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%9A%E8%BF%91%E6%9C%9F%E5%B7%A5%E4%BD%9C%E6%89%80%E6%84%9F/" class="list-group-item list-group-item-action">
-      <time>01-06</time>
-      <div class="list-group-item-title">如何完成皆大欢喜的项目：近期工作所感</div>
-    </a>
+</span>
+
+    </div>
   
-    
-    <a href="/2024/01/05/Python%E5%B8%B8%E7%94%A8%E8%A3%85%E9%A5%B0%E5%99%A8%E6%B1%87%E6%80%BB/" class="list-group-item list-group-item-action">
-      <time>01-05</time>
-      <div class="list-group-item-title">Python常用装饰器汇总</div>
-    </a>
   
-    
-    <a href="/2024/01/04/Python%E5%BC%80%E5%8F%91%EF%BC%9A%E8%A3%85%E9%A5%B0%E5%99%A8%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%92%8C%E4%BD%BF%E7%94%A8%EF%BC%9F/" class="list-group-item list-group-item-action">
-      <time>01-04</time>
-      <div class="list-group-item-title">Python开发：装饰器如何理解和使用？</div>
-    </a>
-  
-    
-    <a href="/2024/01/03/Loguru%EF%BC%9A%E7%9B%AE%E5%89%8D%E6%9C%80%E6%96%B9%E4%BE%BF%E7%9A%84Python%E6%97%A5%E5%BF%97%E6%96%B9%E6%A1%88/" class="list-group-item list-group-item-action">
-      <time>01-03</time>
-      <div class="list-group-item-title">Loguru：目前最方便的Python日志方案</div>
-    </a>
-  
-    
-    <a href="/2024/01/01/%E5%9F%BA%E4%BA%8E%E5%AD%97%E8%AF%8D%E7%9A%84%E5%88%86%E8%AF%8D%E6%96%B9%E6%B3%95%EF%BC%9ABPE%E7%AE%97%E6%B3%95/" class="list-group-item list-group-item-action">
-      <time>01-01</time>
-      <div class="list-group-item-title">基于子词的分词方法：BPE算法</div>
-    </a>
-  
-    
-    <a href="/2024/01/01/LlaMA%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" class="list-group-item list-group-item-action">
-      <time>01-01</time>
-      <div class="list-group-item-title">LlaMA的工程代码实现</div>
-    </a>
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+    </div>
   
 </div>
 
 
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/archives/2024/01/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/archives/2024/01/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2024/01/page/3/#board">3</a><a class="extend next" rel="next" href="/archives/2024/01/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
+              
 
-
-
-
-              </div>
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/16/Docker%E5%BF%85%E5%A4%87%E6%8C%87%E5%8D%97/" title="Docker必备指南">
+                        <span class="hidden-mobile">Docker必备指南</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-          </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
         </div>
       </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
     
 
     
@@ -509,6 +674,142 @@
 
 
 
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script defer src="/js/leancloud.js" ></script>
 
