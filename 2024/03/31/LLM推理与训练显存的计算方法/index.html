@@ -20,13 +20,13 @@
     <meta name="description" content="如何计算LLM训练和推理时所需要的显存占用。训练参数是模型参数的四倍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LLM推理与训练显存的计算方法">
-<meta property="og:url" content="http://example.com/2024/03/23/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:url" content="http://example.com/2024/03/31/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="如何计算LLM训练和推理时所需要的显存占用。训练参数是模型参数的四倍。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llm_train.png">
-<meta property="article:published_time" content="2024-03-23T00:22:46.000Z">
-<meta property="article:modified_time" content="2024-03-31T04:44:50.157Z">
+<meta property="article:published_time" content="2024-03-31T04:48:46.000Z">
+<meta property="article:modified_time" content="2024-03-31T04:49:02.593Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="LLM">
@@ -270,8 +270,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-03-23 08:22" pubdate>
-          2024年3月23日 早上
+        <time datetime="2024-03-31 12:48" pubdate>
+          2024年3月31日 下午
         </time>
       </span>
     
@@ -293,7 +293,7 @@
         
         
         
-          9 分钟
+          10 分钟
         
       </span>
     
@@ -411,6 +411,7 @@
 <p>在训练过程中，优化器则会为存储额外的信息，例如一阶和二阶动量。以Adam为例，它会存储2倍参数量（即每个参数都有两个动量）的信息。而对于SGD则只需要1倍的参数量。</p>
 <h1 id="LoRA微调参数量"><a href="#LoRA微调参数量" class="headerlink" title="LoRA微调参数量"></a>LoRA微调参数量</h1><p>此前了解过LoRA的微调方法，是利用低秩矩阵来训练一个Adaptor，对原有模型的参数进行调整。LoRA训练的参数量取决于秩Rank的大小。</p>
 <p>假如全量微调时需要$1024\times 512$的模型参数量，使用LoRA时，就只需要$1024\times8+512\times8+$原始模型参数量的总合参数量，这大大降低了的训练所需的显存占用。</p>
+<p>2024&#x2F;3&#x2F;31 于苏州</p>
 
                 
               </div>
