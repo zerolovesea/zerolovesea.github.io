@@ -17,26 +17,26 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="如何计算LLM训练和推理时所需要的显存占用。训练参数是模型参数的四倍。">
+    <meta name="description" content="自己对闭包和回调函数的简单理解。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LLM推理与训练显存的计算方法">
-<meta property="og:url" content="http://example.com/2024/03/31/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:title" content="闭包与回调函数：浅薄理解">
+<meta property="og:url" content="http://example.com/2024/04/02/%E9%97%AD%E5%8C%85%E4%B8%8E%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%EF%BC%9A%E6%B5%85%E8%96%84%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="如何计算LLM训练和推理时所需要的显存占用。训练参数是模型参数的四倍。">
+<meta property="og:description" content="自己对闭包和回调函数的简单理解。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/llm_train.png">
-<meta property="article:published_time" content="2024-03-31T04:48:46.000Z">
-<meta property="article:modified_time" content="2024-03-31T04:49:02.593Z">
+<meta property="og:image" content="http://example.com/img/callback.png">
+<meta property="article:published_time" content="2024-04-02T15:52:01.000Z">
+<meta property="article:modified_time" content="2024-04-02T16:13:01.674Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
-<meta property="article:tag" content="LLM">
-<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="闭包">
+<meta property="article:tag" content="回调函数">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/llm_train.png">
+<meta name="twitter:image" content="http://example.com/img/callback.png">
   
   
   
-  <title>LLM推理与训练显存的计算方法 - 我不是算法工程师</title>
+  <title>闭包与回调函数：浅薄理解 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -259,7 +259,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="LLM推理与训练显存的计算方法"></span>
+            <span id="subtitle" data-typed-text="闭包与回调函数：浅薄理解"></span>
           
         </div>
 
@@ -270,8 +270,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-03-31 12:48" pubdate>
-          2024年3月31日 下午
+        <time datetime="2024-04-02 23:52" pubdate>
+          2024年4月2日 晚上
         </time>
       </span>
     
@@ -282,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          622 字
         
       </span>
     
@@ -293,7 +293,7 @@
         
         
         
-          10 分钟
+          6 分钟
         
       </span>
     
@@ -351,67 +351,24 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">LLM推理与训练显存的计算方法</h1>
+            <h1 id="seo-header">闭包与回调函数：浅薄理解</h1>
             
             
               <div class="markdown-body">
                 
-                <p>值得一看的链接：</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44532170/article/details/134601507">大模型GPU显存占用计算_大模型显存计算-CSDN博客</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.datalearner.com/blog/1051692326904222">需要多少GPU显存才能运行预训练大语言模型？大语言模型参数规模与显存大小的关系估算方法~ | 数据学习者官方网站(Datalearner)</a></p>
-<p>众所周知，自从Transformer出现后，大语言模型基本上抛弃了原来的RNN&#x2F;LSTM的思路。然而Transformer类模型也有自己的不足之处，其中最被人诟病的可能就是大量的计算量。今天我就来学习一下，训练&#x2F;运行一个Transformer类的模型，究竟要占用多少显存？</p>
-<h1 id="整数与浮点数"><a href="#整数与浮点数" class="headerlink" title="整数与浮点数"></a>整数与浮点数</h1><p>在开始之前，需要了解一下不同的数据格式占用的存储大小：</p>
-<ul>
-<li>FP64：双精度浮点数（64位），8字节&#x2F;单位</li>
-<li>FP32：单精度浮点数（32位），4字节&#x2F;单位</li>
-<li>FP16：半精度浮点数（16位），2字节&#x2F;单位</li>
-<li>BF16：Google推出的半精度浮点数（16位）</li>
-<li>INT16：整数（16位），2字节&#x2F;单位</li>
-<li>INT8：整数（8位），1字节&#x2F;单位</li>
-<li>INT4：整数（4位），0.5字节&#x2F;单位</li>
-</ul>
-<p>浮点数是如何变成整数的？下图是一个简单的演示。在这过程中，会出现精度和存储空间的取舍。</p>
-<p><img src="/images/qualization.png" srcset="/img/loading.gif" lazyload></p>
-<h1 id="模型占用多大空间？"><a href="#模型占用多大空间？" class="headerlink" title="模型占用多大空间？"></a>模型占用多大空间？</h1><p>什么是B？B代表Billion，十亿参数。因此13B就是130亿参数，7B则是70亿参数。</p>
-<p>我们以参数量13B大模型为例，13B是130亿参数。如果我们以全精度fp32运行，也就是float32，将会占用32位bit，也就是4byte字节。我们给出计算的公式：</p>
-<p>$ 1\text{GB} &#x3D; 1024 \text{MB} &#x3D; 1024^{2}  \text{KB} &#x3D; 1024^{3} \text{Byte}$</p>
-<p>那么全精度13B模型占用显存为 <code>数量 * 类型大小</code>：$13 \times 10^{9} \times 4 \text{Byte} \div 1024^{3} \approx 48.4 \text{GB}$</p>
-<p>也就是说，我们只是单纯以全精度加载运行一个13B的模型，就需要大约48.4G的显存空间。</p>
-<p>实际计算中，通常会把$1000^{3}$个字节估计为1G，而非$1024^{3}$个字节。以此类推，常见的13B模型，需要的显存约为：</p>
-<ul>
-<li>FP32 13*4 &#x3D; 52 GB</li>
-<li>BF16 13*2 &#x3D; 26 GB</li>
-<li>INT8 13*1 &#x3D; 13 GB</li>
-<li>INT4 13*0.5 &#x3D; 6.5 GB</li>
-</ul>
-<h1 id="模型本身的参数量是怎么计算的？"><a href="#模型本身的参数量是怎么计算的？" class="headerlink" title="模型本身的参数量是怎么计算的？"></a>模型本身的参数量是怎么计算的？</h1><p>首先有一些符号需要给出定义：</p>
-<p>$l$ : 模型层数，每个叠起来的block的数量</p>
-<p>$d$ : 隐藏层的维度，也就是Tokenizer映射的词向量的维度</p>
-<p>$h$ : 注意力头的数量</p>
-<p>$b$ : 训练批次，Batch Size</p>
-<p>$s$ : 单个样本输入序列的长度</p>
-<p>$V$ :  词表的大小</p>
-<p>$\mu$ : 向量均值</p>
-<p>$\sigma$ : 向量方差 </p>
-<p>从输入到输出计算：</p>
+                <p>工作之后，逐渐接触到了回调函数的应用。一开始我始终无法理解回调函数的执行顺序和意义，并且认为从可读性和执行效果上，并没有优于顺序执行的代码。不过后面对设计模式有一些了解后，对回调函数的概念大概有了一些模糊的理解，因此在这里整理一下以供学习。</p>
+<h1>回调函数</h1>
+<p>回调函数的主要特点是，将一个函数作为参数传入另外一个函数。并且在主函数执行完之后再继续调用该函数。</p>
+<p>它和普通顺序写的函数相比有什么不同呢？在我的理解中，主要是能够有更好的扩展性。</p>
+<p>例如以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processor</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    处理数据的函数。直接在函数内部处理成功和失败的逻辑。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Processing data: <span class="hljs-subst">&#123;data&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 假设我们根据数据的某些属性决定是否处理成功</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">5</span>:  <span class="hljs-comment"># 假设处理成功的条件</span><br>        processed_data = data.upper()  <span class="hljs-comment"># 模拟数据处理</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Data processed successfully: <span class="hljs-subst">&#123;processed_data&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        error_message = <span class="hljs-string">&quot;Data is too short.&quot;</span>  <span class="hljs-comment"># 错误信息</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error processing data: <span class="hljs-subst">&#123;error_message&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 调用data_processor，直接处理数据</span><br>data_processor(<span class="hljs-string">&quot;Hello World&quot;</span>)<br>data_processor(<span class="hljs-string">&quot;Hi&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>上述代码在一个顺序执行的函数中判断是否处理数据。现在换成用回调函数来执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processor</span>(<span class="hljs-params">data, success_callback, error_callback</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    处理数据的函数。根据数据处理的结果，调用相应的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Processing data: <span class="hljs-subst">&#123;data&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 假设我们根据数据的某些属性决定是否处理成功</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">5</span>:  <span class="hljs-comment"># 假设处理成功的条件</span><br>        processed_data = data.upper()  <span class="hljs-comment"># 模拟数据处理</span><br>        success_callback(processed_data)  <span class="hljs-comment"># 调用成功的回调函数</span><br>    <span class="hljs-keyword">else</span>:<br>        error_message = <span class="hljs-string">&quot;Data is too short.&quot;</span>  <span class="hljs-comment"># 错误信息</span><br>        error_callback(error_message)  <span class="hljs-comment"># 调用错误的回调函数</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_success</span>(<span class="hljs-params">result</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    数据处理成功时的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Data processed successfully: <span class="hljs-subst">&#123;result&#125;</span>&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_error</span>(<span class="hljs-params">error</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    数据处理失败时的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error processing data: <span class="hljs-subst">&#123;error&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 调用data_processor，根据处理结果调用不同的回调函数</span><br>data_processor(<span class="hljs-string">&quot;Hello World&quot;</span>, on_success, on_error)<br>data_processor(<span class="hljs-string">&quot;Hi&quot;</span>, on_success, on_error)<br></code></pre></td></tr></table></figure>
+<p>这样有什么好处？</p>
 <ol>
-<li>Embedding层：词嵌入矩阵将词表大小为$V$的独热编码映射到$d$维度的词嵌入层，计算参数为$V \times d$。</li>
-<li>位置编码：无计算参数。</li>
-<li>For block in blocks_list: 在$l$个block中：</li>
-<li>Self-Attention: 每个attention层有4个$d \to d$维的线性层，包含了权重：</li>
+<li>可以灵活的修改各自情况下的回调函数，不然就需要一直在主函数中修改。</li>
+<li>所有逻辑包含在主函数中，并不利于维护。</li>
 </ol>
-<h1 id="模型训练所需的存储空间"><a href="#模型训练所需的存储空间" class="headerlink" title="模型训练所需的存储空间"></a>模型训练所需的存储空间</h1><p>当模型训练时，需要的存储空间就不止参数量本身了，因为反向传播当中处处需要计算和存储。我们只要记住：<strong>训练参数是模型参数的4倍</strong>就可以了。</p>
-<p>在训练中，存储空间主要分为了三个部分：</p>
-<ul>
-<li>梯度：1$\times $参数量</li>
-<li>参数：1$\times $参数量</li>
-<li>优化器部分：Adam-2$\times$参数量 &#x2F;SGD-1$\times$参数量</li>
-</ul>
-<p>对于每个参数，都会有一个对应的梯度，因此梯度占据的内存和参数一样。</p>
-<p>在训练过程中，优化器则会为存储额外的信息，例如一阶和二阶动量。以Adam为例，它会存储2倍参数量（即每个参数都有两个动量）的信息。而对于SGD则只需要1倍的参数量。</p>
-<h1 id="LoRA微调参数量"><a href="#LoRA微调参数量" class="headerlink" title="LoRA微调参数量"></a>LoRA微调参数量</h1><p>此前了解过LoRA的微调方法，是利用低秩矩阵来训练一个Adaptor，对原有模型的参数进行调整。LoRA训练的参数量取决于秩Rank的大小。</p>
-<p>假如全量微调时需要$1024\times 512$的模型参数量，使用LoRA时，就只需要$1024\times8+512\times8+$原始模型参数量的总合参数量，这大大降低了的训练所需的显存占用。</p>
-<p>2024&#x2F;3&#x2F;31 于苏州</p>
 
                 
               </div>
@@ -430,7 +387,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
+  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="category-chain-item">工程实践</a>
   
   
 
@@ -447,9 +404,9 @@
       
         <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
       
-        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+        <a href="/tags/%E9%97%AD%E5%8C%85/" class="print-no-link">#闭包</a>
       
-        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+        <a href="/tags/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/" class="print-no-link">#回调函数</a>
       
     </div>
   
@@ -463,18 +420,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/04/02/%E9%97%AD%E5%8C%85%E4%B8%8E%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%EF%BC%9A%E6%B5%85%E8%96%84%E7%90%86%E8%A7%A3/" title="闭包与回调函数：浅薄理解">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">闭包与回调函数：浅薄理解</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/03/16/Docker%E5%BF%85%E5%A4%87%E6%8C%87%E5%8D%97/" title="Docker必备指南">
-                        <span class="hidden-mobile">Docker必备指南</span>
+                      <a href="/2024/03/31/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/" title="LLM推理与训练显存的计算方法">
+                        <span class="hidden-mobile">LLM推理与训练显存的计算方法</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

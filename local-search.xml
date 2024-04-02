@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>闭包与回调函数：浅薄理解</title>
+    <link href="/2024/04/02/%E9%97%AD%E5%8C%85%E4%B8%8E%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%EF%BC%9A%E6%B5%85%E8%96%84%E7%90%86%E8%A7%A3/"/>
+    <url>/2024/04/02/%E9%97%AD%E5%8C%85%E4%B8%8E%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%EF%BC%9A%E6%B5%85%E8%96%84%E7%90%86%E8%A7%A3/</url>
+    
+    <content type="html"><![CDATA[<p>工作之后，逐渐接触到了回调函数的应用。一开始我始终无法理解回调函数的执行顺序和意义，并且认为从可读性和执行效果上，并没有优于顺序执行的代码。不过后面对设计模式有一些了解后，对回调函数的概念大概有了一些模糊的理解，因此在这里整理一下以供学习。</p><h1>回调函数</h1><p>回调函数的主要特点是，将一个函数作为参数传入另外一个函数。并且在主函数执行完之后再继续调用该函数。</p><p>它和普通顺序写的函数相比有什么不同呢？在我的理解中，主要是能够有更好的扩展性。</p><p>例如以下代码：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processor</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    处理数据的函数。直接在函数内部处理成功和失败的逻辑。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Processing data: <span class="hljs-subst">&#123;data&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 假设我们根据数据的某些属性决定是否处理成功</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">5</span>:  <span class="hljs-comment"># 假设处理成功的条件</span><br>        processed_data = data.upper()  <span class="hljs-comment"># 模拟数据处理</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Data processed successfully: <span class="hljs-subst">&#123;processed_data&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        error_message = <span class="hljs-string">&quot;Data is too short.&quot;</span>  <span class="hljs-comment"># 错误信息</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error processing data: <span class="hljs-subst">&#123;error_message&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 调用data_processor，直接处理数据</span><br>data_processor(<span class="hljs-string">&quot;Hello World&quot;</span>)<br>data_processor(<span class="hljs-string">&quot;Hi&quot;</span>)<br></code></pre></td></tr></table></figure><p>上述代码在一个顺序执行的函数中判断是否处理数据。现在换成用回调函数来执行：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processor</span>(<span class="hljs-params">data, success_callback, error_callback</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    处理数据的函数。根据数据处理的结果，调用相应的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Processing data: <span class="hljs-subst">&#123;data&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 假设我们根据数据的某些属性决定是否处理成功</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">5</span>:  <span class="hljs-comment"># 假设处理成功的条件</span><br>        processed_data = data.upper()  <span class="hljs-comment"># 模拟数据处理</span><br>        success_callback(processed_data)  <span class="hljs-comment"># 调用成功的回调函数</span><br>    <span class="hljs-keyword">else</span>:<br>        error_message = <span class="hljs-string">&quot;Data is too short.&quot;</span>  <span class="hljs-comment"># 错误信息</span><br>        error_callback(error_message)  <span class="hljs-comment"># 调用错误的回调函数</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_success</span>(<span class="hljs-params">result</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    数据处理成功时的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Data processed successfully: <span class="hljs-subst">&#123;result&#125;</span>&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_error</span>(<span class="hljs-params">error</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    数据处理失败时的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error processing data: <span class="hljs-subst">&#123;error&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 调用data_processor，根据处理结果调用不同的回调函数</span><br>data_processor(<span class="hljs-string">&quot;Hello World&quot;</span>, on_success, on_error)<br>data_processor(<span class="hljs-string">&quot;Hi&quot;</span>, on_success, on_error)<br></code></pre></td></tr></table></figure><p>这样有什么好处？</p><ol><li>可以灵活的修改各自情况下的回调函数，不然就需要一直在主函数中修改。</li><li>所有逻辑包含在主函数中，并不利于维护。</li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>工程实践</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工程实践</tag>
+      
+      <tag>闭包</tag>
+      
+      <tag>回调函数</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>LLM推理与训练显存的计算方法</title>
     <link href="/2024/03/31/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/"/>
     <url>/2024/03/31/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/</url>
