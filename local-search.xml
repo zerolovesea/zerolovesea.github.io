@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>源码分析：LlaMA3的工程代码实现</title>
+    <link href="/2024/04/20/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%9ALlaMA3%E6%94%B9%E8%BF%9B%E4%B8%8E%E6%9E%B6%E6%9E%84/"/>
+    <url>/2024/04/20/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%9ALlaMA3%E6%94%B9%E8%BF%9B%E4%B8%8E%E6%9E%B6%E6%9E%84/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    <categories>
+      
+      <category>LLM</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>LLM</tag>
+      
+      <tag>NLP</tag>
+      
+      <tag>代码实战</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Docker Compose编写指南</title>
     <link href="/2024/04/20/Docker-Compose%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/"/>
     <url>/2024/04/20/Docker-Compose%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/</url>
@@ -23,35 +52,6 @@
       <tag>工程实践</tag>
       
       <tag>Docker</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>VSCode必备快捷键一览</title>
-    <link href="/2024/04/20/VsCode%E5%BF%85%E5%A4%87%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%80%E8%A7%88/"/>
-    <url>/2024/04/20/VsCode%E5%BF%85%E5%A4%87%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%80%E8%A7%88/</url>
-    
-    <content type="html"><![CDATA[]]></content>
-    
-    
-    <categories>
-      
-      <category>工程实践</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>工程实践</tag>
-      
-      <tag>VSCode</tag>
-      
-      <tag>工作流</tag>
       
     </tags>
     
@@ -89,27 +89,27 @@
   
   
   <entry>
-    <title>源码分析：LlaMA3的工程代码实现</title>
-    <link href="/2024/04/20/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%9ALlaMA3%E6%94%B9%E8%BF%9B%E4%B8%8E%E6%9E%B6%E6%9E%84/"/>
-    <url>/2024/04/20/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%9ALlaMA3%E6%94%B9%E8%BF%9B%E4%B8%8E%E6%9E%B6%E6%9E%84/</url>
+    <title>VSCode必备快捷键一览</title>
+    <link href="/2024/04/20/VsCode%E5%BF%85%E5%A4%87%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%80%E8%A7%88/"/>
+    <url>/2024/04/20/VsCode%E5%BF%85%E5%A4%87%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%80%E8%A7%88/</url>
     
-    <content type="html"><![CDATA[]]></content>
+    <content type="html"><![CDATA[<p>工作中时常有批量处理代码的场景，以前我都是纯鼠标点来点去，实在是太原始人了。痛定思痛，打算花一点时间研究一下VSCode中快捷键的用法。</p>]]></content>
     
     
     <categories>
       
-      <category>LLM</category>
+      <category>工程实践</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>LLM</tag>
+      <tag>工程实践</tag>
       
-      <tag>NLP</tag>
+      <tag>VSCode</tag>
       
-      <tag>代码实战</tag>
+      <tag>工作流</tag>
       
     </tags>
     
