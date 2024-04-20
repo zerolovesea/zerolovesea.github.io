@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/docker.jpg">
 <meta property="article:published_time" content="2024-01-23T12:38:52.000Z">
-<meta property="article:modified_time" content="2024-01-25T12:27:01.896Z">
+<meta property="article:modified_time" content="2024-04-20T14:26:39.126Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Docker">
@@ -356,119 +356,130 @@
               <div class="markdown-body">
                 
                 <p><a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BD%BF%E7%94%A8Docker%E6%89%93%E5%8C%85%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE/">前面</a>介绍了如何用Docker打包自己的项目，这次要讲一下Docker的一些基本操作。</p>
-<h1>查看Docker版本</h1>
-<p>首先是如何查看Docker的版本：</p>
+<h1 id="查看Docker版本"><a href="#查看Docker版本" class="headerlink" title="查看Docker版本"></a>查看Docker版本</h1><p>首先是如何查看Docker的版本：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker --version<br></code></pre></td></tr></table></figure>
-<h1>获取镜像</h1>
-<p>Docker的基础用法之一就是从官方库拉取镜像来创建容器，只要执行以下命令：</p>
+
+<h1 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h1><p>Docker的基础用法之一就是从官方库拉取镜像来创建容器，只要执行以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull image_name:tag<br></code></pre></td></tr></table></figure>
+
 <p>例如：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull ubuntu:latest<br><br>docker pull python:3.8<br></code></pre></td></tr></table></figure>
-<h1>运行容器</h1>
-<p>要运行容器，则需要执行以下命令：</p>
+
+<h1 id="运行容器"><a href="#运行容器" class="headerlink" title="运行容器"></a>运行容器</h1><p>要运行容器，则需要执行以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run options image_name:tag<br></code></pre></td></tr></table></figure>
+
 <p>例如：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -it ubuntu:latest /bin/bash<br></code></pre></td></tr></table></figure>
-<h2 id="Docker-run命令">Docker run命令</h2>
-<p>Docker的run命令包含多个命令：</p>
+
+<h2 id="Docker-run命令"><a href="#Docker-run命令" class="headerlink" title="Docker run命令"></a>Docker run命令</h2><p>Docker的run命令包含多个命令：</p>
 <ul>
 <li><code>--name</code>为容器命名，<code>-d</code>在后台运行：</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run --name mynginx -d nginx:latest<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><code>-P</code>指定随机端口映射，容器内部端口<strong>随机</strong>映射到主机的端口，<code>-p</code>指定端口映射，语法是 <code>-p &lt;host-port&gt;:&lt;container-port&gt;</code>：</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 将容器内部的端口80随机映射到主机的任意端口</span><br>docker run -P -d nginx:latest<br><br><span class="hljs-comment"># 将在容器内部的端口 80 映射到主机上的端口 8080</span><br><span class="hljs-comment"># 当你通过浏览器访问 http://localhost:8080 时，实际上是访问了容器内运行的 Nginx 服务</span><br>docker run -p 8080:80 nginx <br></code></pre></td></tr></table></figure>
+
 <p>也可以同时映射多个端口：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -p 8080:80 -p 5000:5000 my_custom_image<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><code>-v</code>挂载目录，挂载卷允许你将主机上的文件或目录与容器内的文件或目录进行关联，从而实现数据的持久化和共享。语法是 <code>-v &lt;host-path&gt;:&lt;container-path&gt;</code>。假设有一个名为 <code>my_app</code> 的容器，它需要访问主机上的 <code>/data</code> 目录中的数据文件，则需要输入以下指令：</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -v /host/path:/container/path my_app<br></code></pre></td></tr></table></figure>
+
 <p>上述指令中，<code>/host/path</code> 是主机上的路径，例如 <code>/data</code>。<code>/container/path</code> 是容器内的路径，例如容器中的应用程序期望的路径。</p>
 <ul>
 <li><code>-rm</code>删除容器后自动删除卷，这个指令会运行容器，并在停止后自动删除：</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run --<span class="hljs-built_in">rm</span> my_custom_image<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><code>-i</code>，<code>-t</code>交互式选项。有的时候需要在容器内有一些交互操作，就需要使用这两个选项：</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -i -t ubuntu:latest /bin/bash<br></code></pre></td></tr></table></figure>
+
 <p>上述例子中，启动了一个交互式的 Ubuntu 容器，并将其连接到 Bash 终端。这允许直接在容器内执行命令，输入数据等。如果省略了 <code>-i</code> 和 <code>-t</code>，那么容器可能会在后台运行，并且无法直接与其进行交互。因此，如果只是希望在后台运行一个服务，而不需要直接与容器进行交互，那么可以省略这两个选项。</p>
-<h1>启动已停止的容器</h1>
-<p>要启动已经停止的容器，首先要查看容器的ID，随后使用<code>start</code>指令来启动，代码如下：</p>
+<h1 id="启动已停止的容器"><a href="#启动已停止的容器" class="headerlink" title="启动已停止的容器"></a>启动已停止的容器</h1><p>要启动已经停止的容器，首先要查看容器的ID，随后使用<code>start</code>指令来启动，代码如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker ps -a <span class="hljs-comment"># 查看所有的docker</span><br><br>docker start &lt;docker <span class="hljs-built_in">id</span>&gt; <span class="hljs-comment"># 启动docker</span><br></code></pre></td></tr></table></figure>
-<h1>停止和重启Docker</h1>
-<p>要停止docker，需要使用<code>stop</code>指令。重启docker，则使用<code>restart</code>指令。如下：</p>
+
+<h1 id="停止和重启Docker"><a href="#停止和重启Docker" class="headerlink" title="停止和重启Docker"></a>停止和重启Docker</h1><p>要停止docker，需要使用<code>stop</code>指令。重启docker，则使用<code>restart</code>指令。如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker stop &lt;docker <span class="hljs-built_in">id</span>&gt;<br><br>docker restart &lt;docker <span class="hljs-built_in">id</span>&gt;<br></code></pre></td></tr></table></figure>
-<h1>进入后台的Docker</h1>
-<p>使用<code>run -d</code>会让docker在后台运行，此时只要使用<code>exec</code>+<code>/bin/bash</code>就可以进入后台docker：</p>
+
+<h1 id="进入后台的Docker"><a href="#进入后台的Docker" class="headerlink" title="进入后台的Docker"></a>进入后台的Docker</h1><p>使用<code>run -d</code>会让docker在后台运行，此时只要使用<code>exec</code>+<code>/bin/bash</code>就可以进入后台docker：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -i -t &lt;docker <span class="hljs-built_in">id</span>&gt; /bin/bash<br></code></pre></td></tr></table></figure>
+
 <p>后面加上的<code>/bin/bash</code>是指在容器内打开一个交互式的Bash终端。</p>
-<h2 id="Docker-exec命令">Docker exec命令</h2>
-<p>Docker exec主要用于在运行中的容器内执行命令。这有很多种用法，例如:</p>
+<h2 id="Docker-exec命令"><a href="#Docker-exec命令" class="headerlink" title="Docker exec命令"></a>Docker exec命令</h2><p>Docker exec主要用于在运行中的容器内执行命令。这有很多种用法，例如:</p>
 <ul>
 <li><strong>容器内部命令执行：</strong> 你可以使用 <code>docker exec</code> 在容器内执行命令，而不必进入容器的交互式终端。这对于执行一次性任务或调试容器内的问题非常有用。</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 在 my_container 容器内部执行 ls /app 命令，显示容器内 /app 目录下的文件和子目录</span><br>docker <span class="hljs-built_in">exec</span> -it my_container <span class="hljs-built_in">ls</span> /app<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>进入容器内部交互式 Shell：</strong> 通过执行交互式 Shell（例如 Bash），你可以进入容器内部的终端，以便在容器内部执行多个命令。</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it my_container /bin/bash<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>查看容器日志：</strong> 使用 <code>docker exec</code> 可以查看容器的日志，而无需停止容器。这对于实时监控容器的运行状态非常有用。</li>
 </ul>
-<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stata">docker exec -it my_container tail -f /<span class="hljs-keyword">var</span>/<span class="hljs-keyword">log</span>/<span class="hljs-keyword">app</span>.<span class="hljs-keyword">log</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it my_container <span class="hljs-built_in">tail</span> -f /var/log/app.log<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>在运行中的服务中执行管理命令：</strong> 对于运行中的服务，你可以使用 <code>docker exec</code> 执行一些管理命令，例如数据库操作、Web 服务器的重新加载配置等。</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 在名为 database_container 的 Docker 容器内使用 psql 命令连接到 PostgreSQL 数据库</span><br>docker <span class="hljs-built_in">exec</span> -it database_container psql -U username -d dbname<br></code></pre></td></tr></table></figure>
+
 <ul>
 <li><strong>容器内部文件操作：</strong> 你可以使用 <code>docker exec</code> 在容器内部进行文件操作，例如查看、复制或修改文件。</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it my_container <span class="hljs-built_in">cat</span> /app/config.txt<br></code></pre></td></tr></table></figure>
-<h1>删除容器与镜像</h1>
-<p>删除容器就是<code>rm</code>：</p>
+
+<h1 id="删除容器与镜像"><a href="#删除容器与镜像" class="headerlink" title="删除容器与镜像"></a>删除容器与镜像</h1><p>删除容器就是<code>rm</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">rm</span> -f &lt;docker <span class="hljs-built_in">id</span>&gt;<br></code></pre></td></tr></table></figure>
+
 <p>要清理所有停止的容器，则需要执行以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 方法1</span><br>docker container prune <br><span class="hljs-comment"># 方法2</span><br>docker <span class="hljs-built_in">rm</span> $(docker ps -a -q)<br></code></pre></td></tr></table></figure>
-<h2 id="强制杀死容器">强制杀死容器</h2>
-<p>有时候可能会遇到应用崩溃的情况，这时候需要使用<code>kill</code>指令杀死容器：</p>
+
+<h2 id="强制杀死容器"><a href="#强制杀死容器" class="headerlink" title="强制杀死容器"></a>强制杀死容器</h2><p>有时候可能会遇到应用崩溃的情况，这时候需要使用<code>kill</code>指令杀死容器：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">kill</span> my_container<br></code></pre></td></tr></table></figure>
-<h2 id="Docker-rm命令">Docker rm命令</h2>
-<ul>
+
+<h2 id="Docker-rm命令"><a href="#Docker-rm命令" class="headerlink" title="Docker rm命令"></a>Docker rm命令</h2><ul>
 <li>-f :通过 SIGKILL 信号强制删除一个运行中的容器。</li>
 <li>-l :移除容器间的网络连接，而非容器本身。</li>
 <li>-v :删除与容器关联的卷。</li>
 </ul>
 <p>例如：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 强制删除容器</span><br>docker <span class="hljs-built_in">rm</span> -f db01 db02<br></code></pre></td></tr></table></figure>
+
 <p>删除镜像则是<code>rmi</code>命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker rmi my_image1 my_image2<br></code></pre></td></tr></table></figure>
-<h1>使用Python的简单用例</h1>
-<p>可以使用 Docker Hub 上提供的官方 Python 镜像来创建一个 Python 3.9 的容器。以下是步骤：</p>
+
+<h1 id="使用Python的简单用例"><a href="#使用Python的简单用例" class="headerlink" title="使用Python的简单用例"></a>使用Python的简单用例</h1><p>可以使用 Docker Hub 上提供的官方 Python 镜像来创建一个 Python 3.9 的容器。以下是步骤：</p>
 <ol>
-<li>
-<p><strong>拉取 Python 3.9 镜像：</strong> 打开终端或命令提示符，并执行以下命令来拉取 Python 3.9 镜像：</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bashCopy</span> code<br><span class="hljs-attribute">docker</span> pull python:<span class="hljs-number">3</span>.<span class="hljs-number">9</span><br></code></pre></td></tr></table></figure>
+<li><p><strong>拉取 Python 3.9 镜像：</strong> 打开终端或命令提示符，并执行以下命令来拉取 Python 3.9 镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull python:3.9<br></code></pre></td></tr></table></figure>
+
 <p>这会从 Docker Hub 下载 Python 3.9 镜像到你的本地系统。</p>
 </li>
-<li>
-<p><strong>运行 Python 3.9 容器：</strong> 一旦下载完成，你可以通过以下命令运行一个 Python 3.9 容器：</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bashCopy</span> code<br><span class="hljs-attribute">docker</span> run -it python:<span class="hljs-number">3</span>.<span class="hljs-number">9</span> /bin/bash<br></code></pre></td></tr></table></figure>
+<li><p><strong>运行 Python 3.9 容器：</strong> 一旦下载完成，你可以通过以下命令运行一个 Python 3.9 容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -it python:3.9 /bin/bash<br></code></pre></td></tr></table></figure>
+
 <p>这个命令使用 <code>-it</code> 选项进入交互模式，并在容器内启动 Bash 终端。</p>
 </li>
-<li>
-<p><strong>验证 Python 版本：</strong> 在容器内部，你可以使用以下命令验证 Python 版本：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs css">bashCopy <span class="hljs-selector-tag">code</span><br>python <span class="hljs-attr">--version</span><br></code></pre></td></tr></table></figure>
-</li>
+<li><p><strong>验证 Python 版本：</strong> 在容器内部，你可以使用以下命令验证 Python 版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">python --version<br></code></pre></td></tr></table></figure></li>
 </ol>
-<h2 id="想要在这个Python容器中写对外开放的服务？">想要在这个Python容器中写对外开放的服务？</h2>
-<p>和之前一样，需要运行python容器时开放端口：</p>
+<h2 id="想要在这个Python容器中写对外开放的服务？"><a href="#想要在这个Python容器中写对外开放的服务？" class="headerlink" title="想要在这个Python容器中写对外开放的服务？"></a>想要在这个Python容器中写对外开放的服务？</h2><p>和之前一样，需要运行python容器时开放端口：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d -p 8080:80 python:3.9 <br></code></pre></td></tr></table></figure>
+
 <p>这是一个更具体的例子，在python3.9的容器运行了<code>your_flask_app.py</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d -p 8080:5000 python:3.9 python your_flask_app.py<br></code></pre></td></tr></table></figure>
-<p>2024/1/23 于苏州家中</p>
+
+<p>2024&#x2F;1&#x2F;23 于苏州家中</p>
 
                 
               </div>
