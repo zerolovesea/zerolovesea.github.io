@@ -11,19 +11,49 @@
     <content type="html"><![CDATA[]]></content>
     
     
+    <categories>
+      
+      <category>工程实践</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工程实践</tag>
+      
+      <tag>Docker</tag>
+      
+    </tags>
     
   </entry>
   
   
   
   <entry>
-    <title>VsCode必备快捷键一览</title>
+    <title>VSCode必备快捷键一览</title>
     <link href="/2024/04/20/VsCode%E5%BF%85%E5%A4%87%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%80%E8%A7%88/"/>
     <url>/2024/04/20/VsCode%E5%BF%85%E5%A4%87%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%80%E8%A7%88/</url>
     
     <content type="html"><![CDATA[]]></content>
     
     
+    <categories>
+      
+      <category>工程实践</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工程实践</tag>
+      
+      <tag>VSCode</tag>
+      
+      <tag>工作流</tag>
+      
+    </tags>
     
   </entry>
   
@@ -37,6 +67,22 @@
     <content type="html"><![CDATA[]]></content>
     
     
+    <categories>
+      
+      <category>工程实践</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>工程实践</tag>
+      
+      <tag>后端</tag>
+      
+      <tag>Nginx</tag>
+      
+    </tags>
     
   </entry>
   
