@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/llm_train.png">
 <meta property="article:published_time" content="2024-03-31T04:48:46.000Z">
-<meta property="article:modified_time" content="2024-03-31T04:49:02.593Z">
+<meta property="article:modified_time" content="2024-04-23T14:10:19.743Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="LLM">
@@ -253,7 +253,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -282,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k 字
+          1.4k 字
         
       </span>
     
@@ -293,7 +293,7 @@
         
         
         
-          10 分钟
+          12 分钟
         
       </span>
     
@@ -357,8 +357,9 @@
               <div class="markdown-body">
                 
                 <p>值得一看的链接：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/624740065">分析transformer模型的参数量、计算量、中间激活、KV cache</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44532170/article/details/134601507">大模型GPU显存占用计算_大模型显存计算-CSDN博客</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.datalearner.com/blog/1051692326904222">需要多少GPU显存才能运行预训练大语言模型？大语言模型参数规模与显存大小的关系估算方法~ | 数据学习者官方网站(Datalearner)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.datalearner.com/blog/1051692326904222">需要多少GPU显存才能运行预训练大语言模型？大语言模型参数规模与显存大小的关系估算方法</a></p>
 <p>众所周知，自从Transformer出现后，大语言模型基本上抛弃了原来的RNN&#x2F;LSTM的思路。然而Transformer类模型也有自己的不足之处，其中最被人诟病的可能就是大量的计算量。今天我就来学习一下，训练&#x2F;运行一个Transformer类的模型，究竟要占用多少显存？</p>
 <h1 id="整数与浮点数"><a href="#整数与浮点数" class="headerlink" title="整数与浮点数"></a>整数与浮点数</h1><p>在开始之前，需要了解一下不同的数据格式占用的存储大小：</p>
 <ul>
@@ -385,21 +386,59 @@
 <li>INT4 13*0.5 &#x3D; 6.5 GB</li>
 </ul>
 <h1 id="模型本身的参数量是怎么计算的？"><a href="#模型本身的参数量是怎么计算的？" class="headerlink" title="模型本身的参数量是怎么计算的？"></a>模型本身的参数量是怎么计算的？</h1><p>首先有一些符号需要给出定义：</p>
-<p>$l$ : 模型层数，每个叠起来的block的数量</p>
-<p>$d$ : 隐藏层的维度，也就是Tokenizer映射的词向量的维度</p>
-<p>$h$ : 注意力头的数量</p>
-<p>$b$ : 训练批次，Batch Size</p>
-<p>$s$ : 单个样本输入序列的长度</p>
-<p>$V$ :  词表的大小</p>
-<p>$\mu$ : 向量均值</p>
-<p>$\sigma$ : 向量方差 </p>
-<p>从输入到输出计算：</p>
-<ol>
-<li>Embedding层：词嵌入矩阵将词表大小为$V$的独热编码映射到$d$维度的词嵌入层，计算参数为$V \times d$。</li>
-<li>位置编码：无计算参数。</li>
-<li>For block in blocks_list: 在$l$个block中：</li>
-<li>Self-Attention: 每个attention层有4个$d \to d$维的线性层，包含了权重：</li>
-</ol>
+<ul>
+<li>transformer模型的层数为 𝑙 </li>
+<li>隐藏层维度为 ℎ </li>
+<li>注意力头数为 𝑎 </li>
+<li>词表大小为 𝑉 </li>
+<li>训练数据的批次大小为 𝑏 </li>
+<li>序列长度为 𝑠 。</li>
+</ul>
+<p>transformer模型由 𝑙 个相同的层组成，每个层分为两部分：<code>self-attention</code>块和<code>MLP</code>块。</p>
+<p><code>self-attention块</code>的模型参数有 𝑄、𝐾、𝑉 的权重矩阵：$W_{Q}$、$W_{K}$、$W_{V}$ 和偏置，输出权重矩阵 $W_{O}$ 和偏置，4个权重矩阵的形状为 [ℎ,ℎ] ，4个偏置的形状为 [ℎ] 。<strong>self- attention块的参数量为 $4h^2 + 4h$ 。</strong></p>
+<p>MLP块由2个线性层组成，第一个线性层一般将维度从 ℎ 映射到 4ℎ ，第二个线性层再将维度从4ℎ映射到ℎ。第一个线性层的权重矩阵 $W_{1}$ 的形状为 [ℎ,4ℎ] ，偏置的形状为 [4ℎ] 。第二个线性层权重矩阵 $W_{2}$ 的形状为 [4ℎ,ℎ] ，偏置形状为 [ℎ] 。<strong>MLP块的参数量为 $8h^2 + 5h$ 。</strong></p>
+<p><code>self-attention</code>块和<code>MLP</code>块各有一个layer normalization，包含了2个可训练模型参数：缩放参数 𝛾 和平移参数 𝛽 ，形状都是 [ℎ] 。2个layer normalization的参数量为 4ℎ 。</p>
+<p>总的，<strong>每个transformer层的参数量为$12h^2 + 3h$。</strong></p>
+<p>除此之外，词嵌入矩阵的参数量也较多，词向量维度通常等于隐藏层维度 ℎ ，词嵌入矩阵的参数量为 𝑉ℎ 。最后的输出层的权重矩阵通常与词嵌入矩阵是参数共享的。</p>
+<p>关于位置编码，如果采用可训练式的位置编码，会有一些可训练模型参数，数量比较少。如果采用相对位置编码，例如RoPE和ALiBi，则不包含可训练的模型参数。我们忽略这部分参数。</p>
+<blockquote>
+<p>综上， <strong>𝑙 层transformer模型的可训练模型参数量为</strong>$ l(12h^2 + 13h) + Vh $。当隐藏维度 ℎ 较大时，可以忽略一次项，<strong>模型参数量近似为</strong> $12lh^2$ 。</p>
+</blockquote>
+<p>估计不同版本LLaMA模型的参数量：</p>
+<table>
+<thead>
+<tr>
+<th>实际参数量</th>
+<th>隐藏维度h</th>
+<th>层数l</th>
+<th>12lh^2</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>6.7B</td>
+<td>4096</td>
+<td>32</td>
+<td>6,442,450,944</td>
+</tr>
+<tr>
+<td>13.0B</td>
+<td>5120</td>
+<td>40</td>
+<td>12,582,912,000</td>
+</tr>
+<tr>
+<td>32.5B</td>
+<td>6656</td>
+<td>60</td>
+<td>31,897,681,920</td>
+</tr>
+<tr>
+<td>65.2B</td>
+<td>8192</td>
+<td>80</td>
+<td>64,424,509,440</td>
+</tr>
+</tbody></table>
 <h1 id="模型训练所需的存储空间"><a href="#模型训练所需的存储空间" class="headerlink" title="模型训练所需的存储空间"></a>模型训练所需的存储空间</h1><p>当模型训练时，需要的存储空间就不止参数量本身了，因为反向传播当中处处需要计算和存储。我们只要记住：<strong>训练参数是模型参数的4倍</strong>就可以了。</p>
 <p>在训练中，存储空间主要分为了三个部分：</p>
 <ul>
