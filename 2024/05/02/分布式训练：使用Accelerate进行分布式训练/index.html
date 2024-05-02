@@ -20,13 +20,13 @@
     <meta name="description" content="分布式数据并行的介绍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分布式训练：使用Accelerate进行分布式训练">
-<meta property="og:url" content="http://example.com/2024/04/29/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83%EF%BC%9A%E4%BD%BF%E7%94%A8Accelerate%E8%BF%9B%E8%A1%8C%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:url" content="http://example.com/2024/05/02/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83%EF%BC%9A%E4%BD%BF%E7%94%A8Accelerate%E8%BF%9B%E8%A1%8C%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="分布式数据并行的介绍。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/accelerate.png">
-<meta property="article:published_time" content="2024-04-29T11:09:09.000Z">
-<meta property="article:modified_time" content="2024-04-29T12:02:48.185Z">
+<meta property="article:published_time" content="2024-05-02T08:09:09.000Z">
+<meta property="article:modified_time" content="2024-05-02T08:11:51.104Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="分布式训练">
 <meta property="article:tag" content="Accelerate">
@@ -269,8 +269,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-04-29 19:09" pubdate>
-          2024年4月29日 晚上
+        <time datetime="2024-05-02 16:09" pubdate>
+          2024年5月2日 下午
         </time>
       </span>
     
@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          2k 字
         
       </span>
     
@@ -292,7 +292,7 @@
         
         
         
-          12 分钟
+          17 分钟
         
       </span>
     
@@ -385,7 +385,65 @@
 <li>训练中，<code>trainloder.sampler.set_epoch()</code>以及后续的<code>batch</code>发送到不同机器这一步也省略了。</li>
 <li>打印日志可以使用<code>accelerate.print()</code>实现。</li>
 </ol>
-<p>2024&#x2F;4&#x2F;29 于苏州</p>
+<h1 id="使用混合精度进行训练"><a href="#使用混合精度进行训练" class="headerlink" title="使用混合精度进行训练"></a>使用混合精度进行训练</h1><p>混合精度训练结合了32位的单精度浮点数和16位半精度来进行训练。首先加载完整的32位的完整精度模型，随后将它复制一份成16位的半精度模型。16bit的低精度模型会被用来前向传播，得到的16bit精度的梯度会被转为32bit，传入优化器。最后在32位的模型上进行参数更新。</p>
+<p>通过这种方式，能够加速训练，但是不会减少对显存的需求。</p>
+<p>假设模型参数量为M：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>混合精度</th>
+<th>单精度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>模型</td>
+<td>(4+2) Bytes * M</td>
+<td>4 Bytes * M</td>
+</tr>
+<tr>
+<td>优化器</td>
+<td>8 Bytes * M</td>
+<td>8 Bytes * M</td>
+</tr>
+<tr>
+<td>梯度</td>
+<td>(2 + ) Bytes * M</td>
+<td>4 Bytes * M</td>
+</tr>
+<tr>
+<td>激活值</td>
+<td>2 Bytes * A</td>
+<td>4 Bytes * A</td>
+</tr>
+<tr>
+<td>汇总</td>
+<td>(16 + ) Bytes * M + 2 Bytes * A</td>
+<td>16 Bytes * M + 4 Bytes * A</td>
+</tr>
+</tbody></table>
+<p>当使用混合精度训练时，不光需要一个完整模型，还需要一个半精度模型，因此模型这占用了4 + 2倍的参数量。优化器占用的参数量不变，梯度这在前向传播时变成了半精度，只在更新时会拿出一组参数提高为单精度，因此可以视作2 + 的参数量。此外，激活值也会变为半精度。</p>
+<p>使用Accelerate时，只需要使用以下几种方法就可以进行混合精度训练：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 方法一</span><br>accelerator = Accelerator(mixed_percision = <span class="hljs-string">&#x27;bf16&#x27;</span>)<br><br><span class="hljs-comment"># 方法二</span><br>acclerator config &amp;&amp; choice bf <span class="hljs-number">16</span><br><br><span class="hljs-comment"># 方法三</span><br>accelerator launch --mixed_precision bf <span class="hljs-number">16</span> &#123;script.py&#125;<br></code></pre></td></tr></table></figure>
+
+<h1 id="使用梯度累积进行训练"><a href="#使用梯度累积进行训练" class="headerlink" title="使用梯度累积进行训练"></a>使用梯度累积进行训练</h1><p>在显卡显存过小的时候，能够使用梯度累积的功能来模拟大Batch Size的训练效果。</p>
+<p>梯度累积的流程如下：</p>
+<ol>
+<li>分割Batch：将大Batch分割为多个Mini Batch</li>
+<li>计算梯度：每个Mini Batch独立计算梯度</li>
+<li>累积梯度：将Mini Batch的梯度进行累积，而不是马上更新参数</li>
+<li>更新参数：当积累到一定数量，统一使用累积的梯度更新参数</li>
+</ol>
+<p>示例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">accumulation_steps = <span class="hljs-number">4</span> <span class="hljs-comment"># 累积步数</span><br>model.zero_grad() <span class="hljs-comment"># 清空梯度</span><br><span class="hljs-keyword">for</span> step, (inputs, targets) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(dataloader):<br>    outputs = model(inputs)<br>    loss = criterion(outputs, targets) <br>    loss = loss/accumulation_steps <span class="hljs-comment"># 对损失进行缩放</span><br>    loss.backward()<br>    <span class="hljs-keyword">if</span> (step + <span class="hljs-number">1</span>) % accumulation_step == <span class="hljs-number">0</span>: <span class="hljs-comment"># 只有达到累积的步数才会更新</span><br>        optimizer.step()<br>        model.zero_grad()<br></code></pre></td></tr></table></figure>
+
+<p>在Accelerate的实现代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 在实例化时设置累积步数</span><br>accelerator = Accelerator(gradient_accumulation_steps=<span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+
+<p>然后再训练时计算：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">model, optimizer, trainloader, validloader, accelerator: Accelerator, epoch=<span class="hljs-number">3</span>, log_step=<span class="hljs-number">10</span></span>):<br>    global_step = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> ep <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(epoch):<br>        model.train()<br>        <span class="hljs-keyword">for</span> batch <span class="hljs-keyword">in</span> trainloader:<br>            <span class="hljs-comment"># 加入上下文</span><br>            <span class="hljs-keyword">with</span> accelerator.accumulate(model):<br>                optimizer.zero_grad()<br>                output = model(**batch)<br>                loss = output.loss<br>                accelerator.backward(loss)<br>                optimizer.step()<br>                <br>                <span class="hljs-keyword">if</span> accelerator.sync_gradients:<br>                    global_step += <span class="hljs-number">1</span><br>                    <span class="hljs-keyword">if</span> global_step % log_step == <span class="hljs-number">0</span>:<br>                        loss = accelerator.reduce(loss, <span class="hljs-string">&quot;mean&quot;</span>)<br>                        accelerator.<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;ep: <span class="hljs-subst">&#123;ep&#125;</span>, global_step: <span class="hljs-subst">&#123;global_step&#125;</span>, loss: <span class="hljs-subst">&#123;loss.item()&#125;</span>&quot;</span>)<br>                <br>        acc = evaluate(model, validloader, accelerator)<br>        accelerator.<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;ep: <span class="hljs-subst">&#123;ep&#125;</span>, acc: <span class="hljs-subst">&#123;acc&#125;</span>&quot;</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p>2024&#x2F;5&#x2F;2 于苏州</p>
 
                 
               </div>
