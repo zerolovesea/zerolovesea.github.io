@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/data_mining.jpg">
 <meta property="article:published_time" content="2024-05-16T12:33:14.000Z">
-<meta property="article:modified_time" content="2024-05-19T02:42:33.120Z">
+<meta property="article:modified_time" content="2024-05-19T03:23:10.401Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="特征工程">
 <meta property="article:tag" content="数据挖掘">
@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.3k 字
+          2.5k 字
         
       </span>
     
@@ -292,7 +292,7 @@
         
         
         
-          20 分钟
+          22 分钟
         
       </span>
     
@@ -387,7 +387,7 @@
 
 <p><img src="/images/prepro_6.png" srcset="/img/loading.gif" lazyload></p>
 <p>基于Target Encoding的思想，衍生出了不同的编码方式。</p>
-<h2 id="CatBoost-Encoding"><a href="#CatBoost-Encoding" class="headerlink" title="CatBoost Encoding"></a>CatBoost Encoding</h2><p>和Target Encoding思想类似，CatBoost Encoding使用目标变量的统计数据（如平均值）来替换每个类别，区别在于CatBoost 编码采取了特殊的策略来降低目标泄露（target leakage）和过拟合的风险。公式如下：$\frac{\text{TargetSum} + \text{prior}}{\text{FeatureCount} + 1} \tag{1}$。</p>
+<h2 id="CatBoost-Encoding"><a href="#CatBoost-Encoding" class="headerlink" title="CatBoost Encoding"></a>CatBoost Encoding</h2><p>和Target Encoding思想类似，CatBoost Encoding使用目标变量的统计数据（如平均值）来替换每个类别，区别在于CatBoost 编码采取了特殊的策略来降低目标泄露（target leakage）和过拟合的风险。公式如下：$\text{Encoded value} &#x3D;\frac{\text{TargetSum} + \text{prior}}{\text{FeatureCount} + 1} \tag{1}$。</p>
 <ul>
 <li><strong>Target Sum</strong>：指定类别在Target Value中的总和。找到所有类别为目标类别的行，计算它们对应的Target的和。</li>
 <li><strong>Prior</strong>：对于整个数据集而言，Target值的总和&#x2F;所有的观测变量数目。这个值是固定的，即数据的行数&#x2F;Target的总和。</li>
@@ -395,8 +395,24 @@
 </ul>
 <p>例如，对于 <code>color=[&quot;red&quot;, &quot;blue&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;red&quot;, &quot;red&quot;, &quot;black&quot;, &quot;black&quot;, &quot;blue&quot;, &quot;green&quot;] and target column with values, target=[1, 2, 3, 2, 3, 1, 4, 4, 2, 3]</code>。</p>
 <p>这里，先验$\text{prior}&#x3D;25&#x2F;10&#x3D;2.5$。</p>
-<p>对于分类<code>red</code>，$\text{TargetSum}&#x3D;1+3+1&#x3D;5$，而<code>red</code>在特征中出现了3次。因此$\text{FeatureCount}&#x3D;3$ 。所以最后类别为：$(5+2.5)&#x2F;(3+1)&#x3D;1.875$。</p>
-<h2 id="M-Estimator-Encoding"><a href="#M-Estimator-Encoding" class="headerlink" title="M Estimator Encoding"></a>M Estimator Encoding</h2><h1 id="Leave-One-Out"><a href="#Leave-One-Out" class="headerlink" title="Leave One Out"></a>Leave One Out</h1><p>在传统的目标编码方法中，类别的编码值通过计算该类别中所有样本的目标变量均值获得。但是这种方法在处理训练数据时可能会导致过拟合，因为当前样本的目标值也参与了编码值的计算。留一编码通过对每个样本进行编码时排除该样本的目标值，来减少这种过拟合的风险。</p>
+<p>对于分类<code>red</code>，$\text{TargetSum}&#x3D;1+3+1&#x3D;5$，而<code>red</code>在特征中出现了3次。因此$\text{FeatureCount}&#x3D;3$ 。所以最后编码为：$(5+2.5)&#x2F;(3+1)&#x3D;1.875$。</p>
+<h2 id="M-Estimator-Encoding"><a href="#M-Estimator-Encoding" class="headerlink" title="M Estimator Encoding"></a>M Estimator Encoding</h2><p>M Estimator Encoding是Target Encoding的简化版本。用于在保留类别之间差异的同时，通过引入全局均值来减少每个类别中的方差。它在处理具有少量样本的类别时比较有效。公式如下：</p>
+<p>$\text{Encoded value} &#x3D; \frac{n \times \text{mean}(y_{\text{category}}) + m \times \text{mean}(y_{\text{global}})}{n + m}$。</p>
+<ul>
+<li><p>$n$ 是当前类别中的样本数量。</p>
+</li>
+<li><p>$\text{mean}(y_{\text{category}}) $是当前类别的目标均值。</p>
+</li>
+<li><p>$\text{mean}(y_{\text{global}})$ 是全数据集的目标均值。</p>
+</li>
+<li><p>$m$ 是一个平滑参数，它决定了全局均值在编码中的权重，值越大，编码值越倾向于全局均值。</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> category_encoders <span class="hljs-keyword">as</span> ce<br><br>data = &#123;<br>    <span class="hljs-string">&#x27;Color&#x27;</span>: [<span class="hljs-string">&#x27;Red&#x27;</span>, <span class="hljs-string">&#x27;Blue&#x27;</span>, <span class="hljs-string">&#x27;Green&#x27;</span>, <span class="hljs-string">&#x27;Blue&#x27;</span>, <span class="hljs-string">&#x27;Red&#x27;</span>],<br>    <span class="hljs-string">&#x27;Outcome&#x27;</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>] <br>&#125;<br><br>df = pd.DataFrame(data)<br>encoder = ce.MEstimateEncoder(cols=[<span class="hljs-string">&#x27;Color&#x27;</span>], m=<span class="hljs-number">5.0</span>)  <br><br>df_encoded = encoder.fit_transform(df[<span class="hljs-string">&#x27;Color&#x27;</span>], df[<span class="hljs-string">&#x27;Outcome&#x27;</span>])<br><span class="hljs-built_in">print</span>(df_encoded)<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="Leave-One-Out"><a href="#Leave-One-Out" class="headerlink" title="Leave One Out"></a>Leave One Out</h1><p>Leave One Out也是基于目标编码，不过在传统的目标编码中，类别的编码值通过计算该类别中所有样本的目标变量均值获得。因为当前样本的目标值也参与了编码值的计算，可能会导致过拟合。留一编码通过对每个样本进行编码时排除该样本的目标值，来减少这种过拟合的风险。</p>
 <p>公式如下：$\mu_{x_i}^{(-i)} &#x3D; \frac{\sum_{j \neq i} y_j \cdot \mathbb{I}(x_j &#x3D; x_i)}{\sum_{j \neq i} \mathbb{I}(x_j &#x3D; x_i)}$</p>
 <p>公式表示为为类别$x_i$的样本中，排除第$i$个样本后的目标变量均值。</p>
 <p><strong>分子部分</strong>：计算类别为$x_i$的样本中，排除第$i$个样本后的目标变量之和。</p>
@@ -414,10 +430,12 @@
 <p>如果一个分类变量的某个类别中有 20% 是坏客户（events），80% 是好客户（non-events），那么该类别的 WoE 计算为：</p>
 <p>$\text{WoE} &#x3D; \ln\left(\frac{\text{Proportion of Non-Events}}{\text{Proportion of Events}}\right) &#x3D; \ln\left(\frac{80%}{20%}\right) &#x3D; \ln(4)$</p>
 <p>这个值表明该类别相对于其他类别在区分好坏客户上的强度。WoE 值越高，表明在该组中的好客户（non-events）的比例远高于坏客户（events）。这意味着该组的风险较低，或者说该组对于预测目标变量（比如违约）是有利的。WoE值越低（特别是负值），表示该组中坏客户的比例高于好客户。这意味着该组的风险较高，或者说该组对于预测目标变量是不利的。WoE为0，则这个组中的分布是完全随机的，预测能力完全不够。</p>
+<p>WoE的问题在于没有考虑到变量之间的相关性，也只是从自身特征出发。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">data = &#123;<br>    <span class="hljs-string">&#x27;CustomerID&#x27;</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>],<br>    <span class="hljs-string">&#x27;Satisfaction&#x27;</span>: [<span class="hljs-string">&#x27;Satisfied&#x27;</span>, <span class="hljs-string">&#x27;Dissatisfied&#x27;</span>, <span class="hljs-string">&#x27;Neutral&#x27;</span>, <span class="hljs-string">&#x27;Satisfied&#x27;</span>, <span class="hljs-string">&#x27;Dissatisfied&#x27;</span>],<br>    <span class="hljs-string">&#x27;ProductType&#x27;</span>: [<span class="hljs-string">&#x27;Electronics&#x27;</span>, <span class="hljs-string">&#x27;Furniture&#x27;</span>, <span class="hljs-string">&#x27;Electronics&#x27;</span>, <span class="hljs-string">&#x27;Clothing&#x27;</span>, <span class="hljs-string">&#x27;Furniture&#x27;</span>],<br>    <span class="hljs-string">&#x27;Target&#x27;</span>: [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]  <br>&#125;<br><br>df = pd.DataFrame(data)<br>target = df[<span class="hljs-string">&#x27;Target&#x27;</span>]<br><br>woe_encoder = ce.WOEEncoder()<br><br>df_encoded = woe_encoder.fit_transform(df[[<span class="hljs-string">&#x27;Satisfaction&#x27;</span>, <span class="hljs-string">&#x27;ProductType&#x27;</span>]], target)<br><span class="hljs-built_in">print</span>(df_encoded)<br></code></pre></td></tr></table></figure>
 
 <p><img src="/images/prepro_7.png" srcset="/img/loading.gif" lazyload></p>
-<h1 id="James-Stein-Encoding"><a href="#James-Stein-Encoding" class="headerlink" title="James Stein Encoding"></a>James Stein Encoding</h1>
+<p>2024&#x2F;5&#x2F;19 于苏州</p>
+
                 
               </div>
             
