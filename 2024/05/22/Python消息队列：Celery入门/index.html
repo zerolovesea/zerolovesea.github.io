@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/python.png">
 <meta property="article:published_time" content="2024-05-22T13:53:53.000Z">
-<meta property="article:modified_time" content="2024-05-22T13:56:05.274Z">
+<meta property="article:modified_time" content="2024-05-24T14:59:51.211Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Python">
@@ -283,7 +283,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          323 字
         
       </span>
     
@@ -294,7 +294,7 @@
         
         
         
-          1 分钟
+          3 分钟
         
       </span>
     
@@ -357,7 +357,13 @@
             
               <div class="markdown-body">
                 
-                
+                <p>上一篇博文里，实现了一个异步任务的场景：调用web服务之后立刻返回结果，后台则继续执行这个任务。这是我工作中的一个真实需求，当我费劲巴拉把这个功能写完之后，我才了解到有一个现成的工具能够实现这个功能，这就是今天要学习的Celery。</p>
+<blockquote>
+<p>Celery是一个简单，灵活、可靠的分布式任务执行框架，可以支持大量任务的并发执行。celery采用典型生产者和消费者模型。生产者提交任务到任务队列，众多消费者从任务队列中取任务执行。</p>
+</blockquote>
+<p>生产者和消费者模型是一种设计模式，在这种设计模式中，生产者和消费者分别是任务的发布者和任务的获取者，他们没有直接的关联，之间的交流通过中间人(Broker，也称为消息队列)完成。</p>
+<p>在这个过程中，生产者像悬赏榜上的贴告示人一样，将任务发布在消息队列中，任务在任务队列中依次执行后，将结果发送给消费者。在生产环境中，任务队列通常用Redis或RabbitMQ实现。</p>
+
                 
               </div>
             
