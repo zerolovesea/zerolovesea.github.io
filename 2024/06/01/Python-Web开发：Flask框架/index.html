@@ -20,13 +20,13 @@
     <meta name="description" content="Python的经典网络框架Flask介绍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python Web开发：Flask框架">
-<meta property="og:url" content="http://example.com/2024/05/25/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9AFlask%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:url" content="http://example.com/2024/06/01/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9AFlask%E6%A1%86%E6%9E%B6/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="Python的经典网络框架Flask介绍。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/flask.png">
-<meta property="article:published_time" content="2024-05-25T08:30:35.000Z">
-<meta property="article:modified_time" content="2024-05-26T01:08:51.986Z">
+<meta property="article:published_time" content="2024-05-31T22:30:35.000Z">
+<meta property="article:modified_time" content="2024-06-01T00:30:43.749Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Python">
@@ -271,8 +271,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-05-25 16:30" pubdate>
-          2024年5月25日 下午
+        <time datetime="2024-06-01 06:30" pubdate>
+          2024年6月1日 早上
         </time>
       </span>
     
@@ -283,7 +283,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          736 字
         
       </span>
     
@@ -294,7 +294,7 @@
         
         
         
-          1 分钟
+          7 分钟
         
       </span>
     
@@ -357,7 +357,37 @@
             
               <div class="markdown-body">
                 
-                
+                <p>Flask和FastAPI在目前的工作中是老生常谈的话题了，不过一直都是上手就用，遇到不会的就看文档，知识比较散落，并且容易忘记。因此这次做个整理，将Flask中一些常用的概念记录一下。</p>
+<h1 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h1><p>基本用法不再赘述，流程就是先实例化<code>app</code>，使用Flask定义的装饰器来定义路由，最后设置<code>app</code>的监听端口等配置项：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><br>app = Flask(__name__)<br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">hello_world</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Hello, World!&#x27;</span><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app.run(host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">8080</span>, debug=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>上面的代码有两种执行方法：</p>
+<ol>
+<li>直接python 文件名.py：此时会在本机IP的8080端口起服务。</li>
+<li>命令行设置环境变量，用<code>flask run</code>执行。例如以下：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">export FLASK_APP=myapplication.py <span class="hljs-comment"># 如果文件名为app.py，无需设置环境变量，直接运行flask run</span><br>flask run --host=<span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span> --port=<span class="hljs-number">8080</span><br></code></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="基本的HTTP方法"><a href="#基本的HTTP方法" class="headerlink" title="基本的HTTP方法"></a>基本的HTTP方法</h2><p>几种常用的方式能够定义，例如路由方法直接使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> request<br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/login&#x27;</span>, methods=[<span class="hljs-string">&#x27;GET&#x27;</span>, <span class="hljs-string">&#x27;POST&#x27;</span>]</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">login</span>():<br>    <span class="hljs-keyword">if</span> request.method == <span class="hljs-string">&#x27;POST&#x27;</span>:<br>        <span class="hljs-keyword">return</span> do_the_login()<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-keyword">return</span> show_the_login_form()<br></code></pre></td></tr></table></figure>
+
+<p>或者<code>app</code>实例内置的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, request<br><br>app = Flask(__name__)<br><br><span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">&#x27;/hello&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">hello_world</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Hello, World!&#x27;</span><br><br><span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">&#x27;/upload&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">upload_file</span>():<br>    file = request.files[<span class="hljs-string">&#x27;file&#x27;</span>]<br>    file.save(<span class="hljs-string">&#x27;/tmp/&#x27;</span> + file.filename)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;File uploaded&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="读取配置项构建应用"><a href="#读取配置项构建应用" class="headerlink" title="读取配置项构建应用"></a>读取配置项构建应用</h1><p>实际较大的项目中，需要配置诸多选项，这时如果只是用上面的方法构建实例<code>app</code>，那就会比较不灵活，这时能够通过定义应用工厂来实现。所谓应用工厂对应的是设计模式里的工厂函数。以下是官方示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_app</span>(<span class="hljs-params">test_config=<span class="hljs-literal">None</span></span>):<br>    <span class="hljs-comment"># 首先构建实例，instance_relative_config用来定义应用配置文件是处于一个相对路径</span><br>    app = Flask(__name__, instance_relative_config=<span class="hljs-literal">True</span>)<br>    <br>    <span class="hljs-comment"># 加载默认的一些核心配置</span><br>    app.config.from_mapping(<br>        SECRET_KEY=<span class="hljs-string">&#x27;dev&#x27;</span>,<br>        DATABASE=os.path.join(app.instance_path, <span class="hljs-string">&#x27;flaskr.sqlite&#x27;</span>),<br>    )<br><br>    <span class="hljs-keyword">if</span> test_config <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>        <span class="hljs-comment"># 读取python文件格式的配置文件，用来设置额外参数</span><br>        app.config.from_pyfile(<span class="hljs-string">&#x27;config.py&#x27;</span>, silent=<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-comment"># 读取字典格式的配置入参，用来设置额外参数</span><br>        app.config.from_mapping(test_config)<br><br>   	<span class="hljs-comment"># 确定实例路径存在</span><br>    <span class="hljs-keyword">try</span>:<br>        os.makedirs(app.instance_path)<br>    <span class="hljs-keyword">except</span> OSError:<br>        <span class="hljs-keyword">pass</span><br><br><span class="hljs-meta">    @app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/hello&#x27;</span></span>)</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Hello, World!&#x27;</span><br><br>    <span class="hljs-keyword">return</span> app<br></code></pre></td></tr></table></figure>
+
+<p>执行<code>flask --app flaskr run --debug</code>来运行应用。这时能够在默认<code>5000</code>访问到<code>hello</code>函数。</p>
+<p>以下是一个较为实际的项目场景：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, request<br><span class="hljs-keyword">from</span> config <span class="hljs-keyword">import</span> Config<br><br><span class="hljs-comment"># 自定义类，继承自Flask</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ServiceApp</span>(<span class="hljs-title class_ inherited__">Flask</span>):<br>    <span class="hljs-keyword">pass</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_app</span>():<br>    app = ServiceApp(__name__) <span class="hljs-comment"># app = Flask(__name__)</span><br><br>    app.config.from_object(Config())<br>    logging.basicConfig(level=app.config.get(<span class="hljs-string">&#x27;LOG_LEVEL&#x27;</span>, <span class="hljs-string">&#x27;INFO&#x27;</span>))<br>	<span class="hljs-comment"># 初始化及注册</span><br>    initialize_extensions(app)<br>    register_blueprints(app)<br>    register_commands(app)<br>    <span class="hljs-keyword">return</span> app<br><br>app = create_app()<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app.run(host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">5000</span>) <span class="hljs-comment"># flask run --host 0.0.0.0 --port=5000 --debug</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的<code>initialize_extensions</code>和注册函数暂且不看，我们在<code>app.config.from_object</code>的入参是一个<code>Config()</code>对象，内容大致如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Config</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        self.CURRENT_VERSION = <span class="hljs-string">&quot;0.0.1&quot;</span><br>        self.COMMIT_SHA = get_env(<span class="hljs-string">&#x27;COMMIT_SHA&#x27;</span>)<br>        self.EDITION = <span class="hljs-string">&quot;SELF_HOSTED&quot;</span><br>        self.DEPLOY_ENV = get_env(<span class="hljs-string">&#x27;DEPLOY_ENV&#x27;</span>)<br>        self.TESTING = <span class="hljs-literal">False</span><br>        self.LOG_LEVEL = get_env(<span class="hljs-string">&#x27;LOG_LEVEL&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+
+
+
                 
               </div>
             
@@ -410,18 +440,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/05/25/Python%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%EF%BC%9ACelery%E5%85%A5%E9%97%A8/" title="Python消息队列：Celery上手">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Python消息队列：Celery上手</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/05/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E9%AB%98%E8%AE%A1%E7%AE%97%E9%87%8F%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E7%8A%B6%E6%80%81%E7%9B%91%E6%B5%8B/" title="工程实践：高计算量的Python程序状态监测">
-                        <span class="hidden-mobile">工程实践：高计算量的Python程序状态监测</span>
+                      <a href="/2024/05/25/Python%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%EF%BC%9ACelery%E5%85%A5%E9%97%A8/" title="Python消息队列：Celery上手">
+                        <span class="hidden-mobile">Python消息队列：Celery上手</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
