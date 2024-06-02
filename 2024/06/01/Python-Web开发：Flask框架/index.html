@@ -17,16 +17,16 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Python的经典网络框架Flask介绍。">
+    <meta name="description" content="Python的经典网络框架Flask介绍，主要包含配置项，注册数据库，蓝图。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python Web开发：Flask框架">
 <meta property="og:url" content="http://example.com/2024/06/01/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9AFlask%E6%A1%86%E6%9E%B6/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="Python的经典网络框架Flask介绍。">
+<meta property="og:description" content="Python的经典网络框架Flask介绍，主要包含配置项，注册数据库，蓝图。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/flask.png">
 <meta property="article:published_time" content="2024-05-31T22:30:35.000Z">
-<meta property="article:modified_time" content="2024-06-01T11:30:26.959Z">
+<meta property="article:modified_time" content="2024-06-01T13:38:15.830Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Python">
@@ -283,7 +283,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          2.2k 字
         
       </span>
     
@@ -294,7 +294,7 @@
         
         
         
-          15 分钟
+          19 分钟
         
       </span>
     
@@ -424,7 +424,32 @@
 <p>随后在Flask应用的设置中引入参数：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask, request<br><span class="hljs-keyword">from</span> config <span class="hljs-keyword">import</span> Config<br><br><span class="hljs-comment"># 自定义类，继承自Flask</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ServiceApp</span>(<span class="hljs-title class_ inherited__">Flask</span>):<br>    <span class="hljs-keyword">pass</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_app</span>():<br>    app = ServiceApp(__name__) <span class="hljs-comment"># app = Flask(__name__)</span><br><br>    app.config.from_object(Config())<br>    logging.basicConfig(level=app.config.get(<span class="hljs-string">&#x27;LOG_LEVEL&#x27;</span>, <span class="hljs-string">&#x27;INFO&#x27;</span>))<br>	<span class="hljs-comment"># 数据库初始化</span><br>    db.init_app(app)<br>    <span class="hljs-keyword">return</span> app<br><br>app = create_app()<br></code></pre></td></tr></table></figure>
 
-<h1 id="蓝图"><a href="#蓝图" class="headerlink" title="蓝图"></a>蓝图</h1>
+<h1 id="蓝图"><a href="#蓝图" class="headerlink" title="蓝图"></a>蓝图</h1><p>什么是蓝图？在Flask中，我们可以把它看作是一个Flask应用的子集。</p>
+<p>在我们之前的代码中，我们都在为主Flask应用注册路由。例如<code>hello_world</code>方法通过主路由调用。如果项目中包含了多个应用，这时只通过主路由调用就不那么优雅了。Flask提供的蓝图方法支持将应用分解成不同的组件，每个组件都用来处理单独的操作，最后在主路由上统一注册。</p>
+<p>以下是一个简单示例，例如如果想创建一个处理用户相关的蓝图，我们需要实现以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Blueprint<br><br><span class="hljs-comment"># 和主应用一样实例化蓝图，区别只在于对象是Blueprint</span><br>users = Blueprint(<span class="hljs-string">&#x27;users&#x27;</span>, __name__)<br><br><span class="hljs-comment"># 定义路由</span><br><span class="hljs-meta">@users.route(<span class="hljs-params"><span class="hljs-string">&#x27;/login&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">login</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Login Page&#x27;</span><br><br><span class="hljs-meta">@users.route(<span class="hljs-params"><span class="hljs-string">&#x27;/logout&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">logout</span>():<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Logout Page&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>随后，我们需要在主Flask应用中对蓝图进行注册：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><span class="hljs-keyword">from</span> module <span class="hljs-keyword">import</span> users<br><br>app = Flask(__name__)<br><span class="hljs-comment"># 注册蓝图，并设置前缀</span><br>app.register_blueprint(users, url_prefix=<span class="hljs-string">&#x27;/users&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>当我们注册蓝图后，就可以在<code>/users/login</code>端口进行访问。这就是<code>url_prefix</code>的作用。它的好处就是让应用后加模块化。</p>
+<h2 id="实际场景-2"><a href="#实际场景-2" class="headerlink" title="实际场景"></a>实际场景</h2><p>以下是一个场景：</p>
+<p>首先我们实例化蓝图对象，并设置对应的路由：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Blueprint<br><span class="hljs-keyword">from</span> libs.external_api <span class="hljs-keyword">import</span> ExternalApi<br><br>bp = Blueprint(<span class="hljs-string">&#x27;web&#x27;</span>, __name__, url_prefix=<span class="hljs-string">&#x27;/api&#x27;</span>)<br>api = ExternalApi(bp)<br></code></pre></td></tr></table></figure>
+
+<p>这里的<code>ExternalApi</code>是我们定义的对象，它继承自<code>flask_restful</code>的<code>Api</code>对象，并覆写了<code>handle_error</code>方法以处理报错信息。</p>
+<p>我们会在这个<code>api</code>中不断添加资源，代码类似于<code>api.add_resource(CompletionApi, &#39;/chat/completions&#39;)</code>。</p>
+<p>随后我们在主应用中注册蓝图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">register_blueprints</span>(<span class="hljs-params">app</span>):<br>    <span class="hljs-keyword">from</span> controllers.web <span class="hljs-keyword">import</span> bp <span class="hljs-keyword">as</span> web_bp<br>    app.register_blueprint(web_bp)<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">create_app</span>():<br>    app = Flask(__name__)<br><br>    app.config.from_object(Config())<br>    logging.basicConfig(level=app.config.get(<span class="hljs-string">&#x27;LOG_LEVEL&#x27;</span>, <span class="hljs-string">&#x27;INFO&#x27;</span>))<br><br>    register_blueprints(app)<br>    <span class="hljs-keyword">return</span> app<br></code></pre></td></tr></table></figure>
+
+<p>整体的顺序如下：</p>
+<ul>
+<li>初始化API示例，也就是<code>api = Api(bp)</code></li>
+<li>注册蓝图至Flask应用，即<code>app.register_blueprint(bp)</code></li>
+<li>创建API实例后，向实例添加资源。</li>
+</ul>
+<p>2024&#x2F;6&#x2F;1 于苏州</p>
+
                 
               </div>
             
@@ -476,6 +501,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2024/06/02/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9ASQLAlchemy/" title="Python Web开发：SQLAlchemy">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python Web开发：SQLAlchemy</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
