@@ -4,6 +4,33 @@
   
   
   <entry>
+    <title>特征工程：如何筛选合适的特征</title>
+    <link href="/2024/06/07/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B%EF%BC%9A%E5%A6%82%E4%BD%95%E7%AD%9B%E9%80%89%E5%90%88%E9%80%82%E7%9A%84%E7%89%B9%E5%BE%81/"/>
+    <url>/2024/06/07/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B%EF%BC%9A%E5%A6%82%E4%BD%95%E7%AD%9B%E9%80%89%E5%90%88%E9%80%82%E7%9A%84%E7%89%B9%E5%BE%81/</url>
+    
+    <content type="html"><![CDATA[<div class="note note-warning">            <p>数据和特征决定了机器学习的上限，而模型和算法只是逼近了这个上限而已。</p>          </div><p>特征工程的重要性无需赘言，这次简单分析一下主要的一些特征工程。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>数据挖掘</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>特征工程</tag>
+      
+      <tag>数据挖掘</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Python Web开发：SQLAlchemy</title>
     <link href="/2024/06/02/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9ASQLAlchemy/"/>
     <url>/2024/06/02/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9ASQLAlchemy/</url>
