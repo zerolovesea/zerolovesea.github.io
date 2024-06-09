@@ -1,0 +1,993 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="如何在WSL中部署Apache Hive。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库应用：WSL-HIVE的部署">
+<meta property="og:url" content="http://example.com/2024/06/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BA%94%E7%94%A8%EF%BC%9AWSL-HIVE%E7%9A%84%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="如何在WSL中部署Apache Hive。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/hive.png">
+<meta property="article:published_time" content="2024-06-09T01:46:22.000Z">
+<meta property="article:modified_time" content="2024-06-09T04:11:14.642Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="HIVE">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/hive.png">
+  
+  
+  
+  <title>数据库应用：WSL-HIVE的部署 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="数据库应用：WSL-HIVE的部署"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-09 09:46" pubdate>
+          2024年6月9日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">数据库应用：WSL-HIVE的部署</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近开始重新捡起一些数据库相关的知识，以前学习的内容差不多忘完了，这次刚好算作温习一下。这篇博文记录如何在WSL中部署Apache Hive。</p>
+<h1>Map-Reduce</h1>
+<p>要了解Hive，首先要了解Hadoop。要了解Hadoop，就需要先了解Map-Reduce。</p>
+<p>Map-Reduce来源于谷歌公司发表于2004的一篇论文。它要解决的是传统数据库中无法解决的大数据量的场景。在过去，传统的关系型数据库中，数据都保存在单机上，随着数据量的增大，只能通过扩展单机配置来扩容。为了解决这个问题，就需要一个分布式框架，让多个主机能分开处理任务，这就是Map-Reduce产生的契机。</p>
+<p>Map-Reduce是一个框架，它的工作流程包含两步：Map，Reduce。用户通过编写并行处理的程序，在每台节点上执行，来处理大量的数据。大体上来说，Map过程将数据分割为键值对，随后进行排序及分组，最后由Reduce进行合并，并输出最后的结果。</p>
+<div class="note note-warning">
+            <p>MapReduce 优点<br>简化编程模型：开发者只需关注 Map 和 Reduce 函数的实现，并行化和分布式处理由框架处理。<br>扩展性：可以轻松扩展到数千台计算机，处理 PB 级别的数据。<br>容错性：框架自动处理任务失败和节点故障，确保任务顺利完成。</p>
+          </div>
+<div class="note note-sucess">
+            <p>MapReduce 缺点<br>实时性差：需要进行多次磁盘 I/O 操作，MapReduce 适合批处理，不适合实时数据处理。<br>效率较低：对于某些计算密集型任务的性能不行。</p>
+          </div>
+
+<pre>
+<code class="mermaid" >
+graph TD
+  A[输入分割] --> B[Map任务 1]
+  A[输入分割] --> C[Map任务 2]
+  A[输入分割] --> D[Map任务 n]
+
+  B[Map任务 1] --> E[中间键值对]
+  C[Map任务 2] --> E[中间键值对]
+  D[Map任务 n] --> E[中间键值对]
+
+  E[中间键值对] --> F[Shuffle 和 Sort]
+  F[Shuffle 和 Sort] --> G[Reduce任务 1]
+  F[Shuffle 和 Sort] --> H[Reduce任务 2]
+  F[Shuffle 和 Sort] --> I[Reduce任务 n]
+
+  G[Reduce任务 1] --> J[最终输出]
+  H[Reduce任务 2] --> J[最终输出]
+  I[Reduce任务 n] --> J[最终输出]
+</code>
+</pre>
+<p>以下是一个更具体的流程图：</p>
+<p><img src="/images/map_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h1>Hadoop</h1>
+<p>Hadoop是一个用Java编写的开源框架，旨在实现分布式数据处理。它的组件包括了以下：</p>
+<ul>
+<li>Hadoop HDFS：Hadoop 分布式存储系统。</li>
+<li>Yarn：Hadoop 2.x版本开始才有的资源管理系统。</li>
+<li>MapReduce：并行处理框架。</li>
+</ul>
+<h2 id="Hadoop的部署">Hadoop的部署</h2>
+<p>我在Windows的Linux子系统Ubuntu部署Hadoop，由于Hadoop基于Java实现，因此第一步是安装Java。</p>
+<h3 id="Java安装">Java安装</h3>
+<p>在Ubuntu中安装Java相对简单，这里采用了Java8进行实现：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt update<br>sudo apt install openjdk-8-jdk -y<br></code></pre></td></tr></table></figure>
+<p>下载完成后，设置Java 8 为默认的版本</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo update-alternatives --config java<br></code></pre></td></tr></table></figure>
+<p>上述指令能获取到Java的安装路径。获取路径是为了修改环境变量，我们使用<code>vim ~/.bashrc</code>来修改一下配置，加入以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">export</span> JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$JAVA_HOME</span>/bin:<span class="hljs-variable">$PATH</span><br></code></pre></td></tr></table></figure>
+<p>完成后需要使更改生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">source</span> ~/.bashrc<br></code></pre></td></tr></table></figure>
+<p>使用<code>java -version</code>来检查是否正确安装。</p>
+<h3 id="Hadoop安装">Hadoop安装</h3>
+<p>我部署的版本是hadoop 3.3.4，首先需要从Apache Hadoop官方网站下载Hadoop的二进制文件。从以下url获取到<code>tar</code>包：<a target="_blank" rel="noopener" href="https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz">Apache Download Mirrors</a>。也可以通过：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz<br></code></pre></td></tr></table></figure>
+<p>使用<code>tar -xzvf hadoop-3.3.4.tar.gz</code>解压，并移动到一个指定的路径，这里我们放在<code>usr/local/hadoop</code>路径。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">tar -xzvf hadoop-3.3.4.tar.gz<br>sudo <span class="hljs-built_in">mv</span> hadoop-3.3.4 /usr/local/hadoop <br></code></pre></td></tr></table></figure>
+<p>同样的需要配置一下环境变量，使用<code>vim ~/.bashrc</code>进行修改并增加以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Hadoop Environment Variables</span><br><span class="hljs-built_in">export</span> HADOOP_HOME=/usr/local/hadoop<br><span class="hljs-built_in">export</span> HADOOP_INSTALL=<span class="hljs-variable">$HADOOP_HOME</span><br><span class="hljs-built_in">export</span> HADOOP_MAPRED_HOME=<span class="hljs-variable">$HADOOP_HOME</span><br><span class="hljs-built_in">export</span> HADOOP_COMMON_HOME=<span class="hljs-variable">$HADOOP_HOME</span><br><span class="hljs-built_in">export</span> HADOOP_HDFS_HOME=<span class="hljs-variable">$HADOOP_HOME</span><br><span class="hljs-built_in">export</span> YARN_HOME=<span class="hljs-variable">$HADOOP_HOME</span><br><span class="hljs-built_in">export</span> HADOOP_COMMON_LIB_NATIVE_DIR=<span class="hljs-variable">$HADOOP_HOME</span>/lib/native<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HADOOP_HOME</span>/sbin:<span class="hljs-variable">$HADOOP_HOME</span>/bin<br><span class="hljs-built_in">export</span> HADOOP_OPTS=<span class="hljs-string">&quot;-Djava.library.path=<span class="hljs-variable">$HADOOP_HOME</span>/lib/native&quot;</span><br></code></pre></td></tr></table></figure>
+<p>使用<code>source ~/.bashrc</code>来应用更改。</p>
+<h3 id="Hadoop配置">Hadoop配置</h3>
+<p>安装完hadoop后还需要配置一下，需要到<code>$HADOOP_HOME/etc/hadoop</code>目录进行修改：</p>
+<p><strong><a target="_blank" rel="noopener" href="http://hadoop-env.sh">hadoop-env.sh</a></strong></p>
+<p>需要替换Java环境变量，这里我的路径是<code>/usr/lib/jvm/java-8-openjdk-amd64</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">export</span> JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64<br></code></pre></td></tr></table></figure>
+<p><strong>core-site.xml</strong></p>
+<p>默认是空的，需要加上以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;configuration&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;fs.defaultFS&lt;/name&gt;<br>      &lt;value&gt;hdfs://localhost:9000&lt;/value&gt;<br>   &lt;/property&gt;<br>&lt;/configuration&gt;<br></code></pre></td></tr></table></figure>
+<p><strong>hdfs-site.xml</strong></p>
+<p>用来配置HDFS，因此需要加上配置信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;configuration&gt;<br>    &lt;property&gt;<br>        &lt;name&gt;dfs.replication&lt;/name&gt;<br>        &lt;value&gt;1&lt;/value&gt;<br>    &lt;/property&gt;<br><br>    &lt;property&gt;<br>        &lt;name&gt;dfs.namenode.name.dir&lt;/name&gt;<br>        &lt;value&gt;file:///home/zerolovesea/hadoopinfra/hdfs/namenode&lt;/value&gt;<br>    &lt;/property&gt;<br><br>    &lt;property&gt;<br>        &lt;name&gt;dfs.datanode.data.dir&lt;/name&gt;<br>        &lt;value&gt;file:///home/zerolovesea/hadoopinfra/hdfs/datanode&lt;/value&gt;<br>    &lt;/property&gt;<br>&lt;/configuration&gt;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>具体的配置项解释如下：</p>
+<ul>
+<li>dfs.replication：定义了HDFS中每个文件块的复制因子。值为<code>1</code>意味着每个文件块只有一个副本。</li>
+<li>dfs.namenode.name.dir：指定了NameNode存储其元数据的本地文件系统路径。元数据包括文件系统的目录结构和文件块的信息。</li>
+<li>dfs.datanode.data.dir：指定了DataNode存储实际数据块的本地文件系统路径。</li>
+</ul>
+</blockquote>
+<p><strong>yarn-site.xml</strong></p>
+<p>YARN的配置文件，加入以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;configuration&gt;<br>   &lt;property&gt; <br>      &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt; <br>      &lt;value&gt;mapreduce_shuffle&lt;/value&gt; <br>   &lt;/property&gt;<br>&lt;/configuration&gt;<br></code></pre></td></tr></table></figure>
+<p><strong>mapred-site.xml</strong></p>
+<p>用于指定使用的MapReduce框架，加入以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;configuration&gt;<br>   &lt;property&gt; <br>      &lt;name&gt;mapreduce.framework.name&lt;/name&gt; <br>      &lt;value&gt;yarn&lt;/value&gt; <br>   &lt;/property&gt;<br>&lt;/configuration&gt;<br></code></pre></td></tr></table></figure>
+<h3 id="验证安装">验证安装</h3>
+<p>上述配置完成后就可以直接执行了。执行以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">hdfs namenode -format <br><br>start-dfs.sh<br>start-yarn.sh<br></code></pre></td></tr></table></figure>
+<p>这样就能够依次启动Hadoop文件系统和Yarn脚本。<code>hdfs namenode -format </code>用来初始化<code>namenode</code>，只需要第一次执行就可以了。</p>
+<p>至此Hadoop安装完毕，我们可以通过访问转发后的端口<code>http://localhost:转发端口/</code>来直接访问到Hadoop的服务。</p>
+<p><img src="/images/hadoop.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h1>Hive</h1>
+<p>Hive和Hadoop的关系可能让有些人不太理解，前者实际上是基于后者的一个衍生工具。由于Hadoop由Java编写，当用户需要实现具体功能的时候，需要使用Java来编写MapReduce任务。也就是需要分开写多个Java代码来实现Map和Reduce的功能，这让一些只懂SQL的用户增加了学习成本。</p>
+<p>为了解决这个问题，才出现了Hive，它用来将SQL转换为MapReduce任务，以帮助用户更快的实现需求。</p>
+<p>Hive的主要组件包括：</p>
+<ul>
+<li>MetaStore: 存储Hive表的元数据。</li>
+<li>HiveQL: 类似于SQL的查询语言。</li>
+<li>执行引擎: 将HiveQL转换为MapReduce任务，执行数据处理。</li>
+</ul>
+<h2 id="Hive的部署">Hive的部署</h2>
+<h3 id="Hive安装">Hive安装</h3>
+<p>我们选择Hive 3.1.3来安装，在选取版本时，需要注意一定要和安装的Hadoop版本相匹配，不然会出现很多问题。首先下载<code>tar</code>包，通过<a target="_blank" rel="noopener" href="https://dlcdn.apache.org/hive/">Index of /hive (apache.org)</a>或：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget https://dlcdn.apache.org/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz<br></code></pre></td></tr></table></figure>
+<p>随后解压并移动到需要的路径，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">tar -xzvf apache-hive-3.1.3-bin.tar.gz<br>sudo <span class="hljs-built_in">mv</span> apache-hive-3.1.3-bin /usr/local/hive<br></code></pre></td></tr></table></figure>
+<p>同时在<code>bashrc</code>中修改环境变量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># Hive Environment Variables</span><br><span class="hljs-built_in">export</span> HIVE_HOME=/usr/local/hive<br><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$HIVE_HOME</span>/bin<br></code></pre></td></tr></table></figure>
+<p>使用<code>source ~/.bashrc</code>使更改生效。</p>
+<h3 id="Hive配置">Hive配置</h3>
+<p>Hive的配置文件位于<code>$HIVE_HOME/conf</code>目录下。</p>
+<p>我们需要先执行<code>cp hive-env.sh.template hive-env.sh</code>，并在其中添加Hadoop的路径：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">export</span> HADOOP_HOME=/usr/local/hadoop<br></code></pre></td></tr></table></figure>
+<p>随后，需要创建并修改路径下的<code>hive-site.xml</code>，这是Hive的主要配置文件：</p>
+<p><strong>hive-site.xml</strong></p>
+<p>默认是没有这个文件的，因此需要创建并添加以下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;configuration&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;<br>      &lt;value&gt;jdbc:mysql://localhost:3306/metastore_db?createDatabaseIfNotExist=<span class="hljs-literal">true</span>&lt;/value&gt;<br>      &lt;description&gt;JDBC connect string <span class="hljs-keyword">for</span> a JDBC metastore&lt;/description&gt;<br>   &lt;/property&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;/name&gt;<br>      &lt;value&gt;com.mysql.cj.jdbc.Driver&lt;/value&gt;<br>      &lt;description&gt;Driver class name <span class="hljs-keyword">for</span> a JDBC metastore&lt;/description&gt;<br>   &lt;/property&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;javax.jdo.option.ConnectionUserName&lt;/name&gt;<br>      &lt;value&gt;zerolovesea&lt;/value&gt;<br>      &lt;description&gt;username to use against metastore database&lt;/description&gt;<br>   &lt;/property&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;javax.jdo.option.ConnectionPassword&lt;/name&gt;<br>      &lt;value&gt;zy26yang&lt;/value&gt;<br>      &lt;description&gt;password to use against metastore database&lt;/description&gt;<br>   &lt;/property&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;datanucleus.autoCreateSchema&lt;/name&gt;<br>      &lt;value&gt;<span class="hljs-literal">true</span>&lt;/value&gt;<br>      &lt;description&gt;Auto create the JDO tables needed by the metastore&lt;/description&gt;<br>   &lt;/property&gt;<br>      &lt;property&gt;<br>      &lt;name&gt;hive.server2.enable.doAs&lt;/name&gt;<br>      &lt;value&gt;<span class="hljs-literal">true</span>&lt;/value&gt;<br>   &lt;/property&gt;<br>   &lt;property&gt;<br>      &lt;name&gt;hive.server2.authentication&lt;/name&gt;<br>      &lt;value&gt;NONE&lt;/value&gt;<br>   &lt;/property&gt;<br></code></pre></td></tr></table></figure>
+<p>其中有一些是需要自定义的内容，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;property&gt;<br>  &lt;name&gt;javax.jdo.option.ConnectionUserName&lt;/name&gt;<br>  &lt;value&gt;zerolovesea&lt;/value&gt;<br>  &lt;description&gt;username to use against metastore database&lt;/description&gt;<br>&lt;/property&gt;<br><br>&lt;property&gt;<br>  &lt;name&gt;javax.jdo.option.ConnectionPassword&lt;/name&gt;<br>  &lt;value&gt;zy26yang&lt;/value&gt;<br>  &lt;description&gt;password to use against metastore database&lt;/description&gt;<br>&lt;/property&gt;<br></code></pre></td></tr></table></figure>
+<p>这两段分别用来配置连接数据库时的用户名和密码。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;property&gt;<br>  &lt;name&gt;javax.jdo.option.ConnectionURL&lt;/name&gt;<br>  &lt;value&gt;jdbc:mysql://localhost:3306/metastore_db?createDatabaseIfNotExist=<span class="hljs-literal">true</span>&lt;/value&gt;<br>  &lt;description&gt;JDBC connect string <span class="hljs-keyword">for</span> a JDBC metastore&lt;/description&gt;<br>&lt;/property&gt;<br>&lt;property&gt;<br>  &lt;name&gt;javax.jdo.option.ConnectionDriverName&lt;/name&gt;<br>  &lt;value&gt;com.mysql.cj.jdbc.Driver&lt;/value&gt;<br>  &lt;description&gt;Driver class name <span class="hljs-keyword">for</span> a JDBC metastore&lt;/description&gt;<br>&lt;/property&gt;<br></code></pre></td></tr></table></figure>
+<p>这段用于配置MySQL的连接，会在后面解释。</p>
+<h3 id="Hive元数据存储设置">Hive元数据存储设置</h3>
+<p>Hive需要一个元数据存储来保存表和数据库信息。这里我们使用MySQL作为元数据存储。</p>
+<p>首先需要安装MySQL:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt update<br>sudo apt install mysql-server -y<br></code></pre></td></tr></table></figure>
+<p>随后登录MySQL并创建数据库以及用户：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo mysql -u root -p<br></code></pre></td></tr></table></figure>
+<p>进入MySQL后，执行以下命令以创建用户名和密码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">CREATE DATABASE metastore_db;<br>CREATE USER <span class="hljs-string">&#x27;zerolovesea&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="hljs-string">&#x27;zy26yang&#x27;</span>;<br>GRANT ALL PRIVILEGES ON metastore_db.* TO <span class="hljs-string">&#x27;zerolovesea&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span>;<br>FLUSH PRIVILEGES;<br>EXIT;<br></code></pre></td></tr></table></figure>
+<p>这里的用户名和密码就对应前面Hive配置的内容。</p>
+<h3 id="初始化Hive元数据">初始化Hive元数据</h3>
+<p>Hive提供了一个脚本来初始化元数据表。需要下载MySQL JDBC驱动并将其复制到Hive库目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.29.tar.gz<br>tar -xzvf mysql-connector-java-8.0.29.tar.gz<br>sudo <span class="hljs-built_in">cp</span> mysql-connector-java-8.0.29/mysql-connector-java-8.0.29.jar /usr/local/hive/lib/<br></code></pre></td></tr></table></figure>
+<p>随后执行以下命令来初始化元数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">schematool -initSchema -dbType mysql<br></code></pre></td></tr></table></figure>
+<p>最后启动Hive：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">hive<br></code></pre></td></tr></table></figure>
+<p><img src="/images/hive_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>至此大功告成，我们可以创建一个表，插入数据来验证安装是否成功：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> test (id <span class="hljs-type">INT</span>, name STRING);<br>LOAD DATA <span class="hljs-keyword">LOCAL</span> INPATH <span class="hljs-string">&#x27;/usr/local/hive/examples/files/kv1.txt&#x27;</span> <span class="hljs-keyword">INTO</span> <span class="hljs-keyword">TABLE</span> test;<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> test;<br></code></pre></td></tr></table></figure>
+<p>我们可以通过<code>SHOW TABLES;</code>来查看当前数据库中的所有表：</p>
+<p><img src="/images/hive_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>也可以查看其中的内容：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">USE database_name;<br><span class="hljs-keyword">SHOW</span> TABLES;<br></code></pre></td></tr></table></figure>
+<p><img src="/images/hive_3.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h1>使用DBeaver连接Hive</h1>
+<p>使用命令行连数据库还是比较麻烦，因此考虑使用DBeaver来连接Hive。要实现它，首先需要让WSL和Windows进行通信。我们在WSL中输出<code>hostname -I</code>来获取WSL的IP地址。</p>
+<p>随后在WSL启动HiveServer2：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">hiveserver2<br></code></pre></td></tr></table></figure>
+<p>这时就可以在DBeaver中配置新连接了。在创建新连接中选择Apache Hive，随后连接参数里填上主机，端口，数据库，用户名和密码，就可以连接到WSL的Hive了。</p>
+<p><img src="/images/hive_4.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h1>停止服务</h1>
+<p>如果需要停止服务，需要执行以下内容：</p>
+<h4 id="停止Hadoop服务">停止Hadoop服务</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 停止YARN</span><br>stop-yarn.sh<br><br><span class="hljs-comment"># 停止HDFS</span><br>stop-dfs.sh<br></code></pre></td></tr></table></figure>
+<h4 id="停止Hive服务">停止Hive服务</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 停止Hive Metastore</span><br><span class="hljs-comment"># 如果是以后台方式启动的，需要找到其进程并杀掉</span><br><span class="hljs-comment"># 举例：</span><br><span class="hljs-comment"># ps -ef | grep HiveMetaStore</span><br><span class="hljs-comment"># kill &lt;process_id&gt;</span><br><br><span class="hljs-comment"># 停止HiveServer2</span><br><span class="hljs-comment"># 如果是以后台方式启动的，需要找到其进程并杀掉</span><br><span class="hljs-comment"># 举例：</span><br><span class="hljs-comment"># ps -ef | grep HiveServer2</span><br><span class="hljs-comment"># kill &lt;process_id&gt;</span><br></code></pre></td></tr></table></figure>
+<h4 id="关闭WSL">关闭WSL</h4>
+<p>在停止所有服务之后，就可以安全地关闭WSL：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">wsl --shutdown<br></code></pre></td></tr></table></figure>
+<p>这样可以确保Hadoop和Hive服务被优雅地停止，避免数据损坏或任务中断。</p>
+<h3 id="重新启动Hadoop和Hive服务">重新启动Hadoop和Hive服务</h3>
+<p>下次启动WSL时，需要重新启动Hadoop和Hive服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 启动HDFS</span><br>start-dfs.sh<br><br><span class="hljs-comment"># 启动YARN</span><br>start-yarn.sh<br><br><span class="hljs-comment"># 启动Hive</span><br><span class="hljs-comment"># 如果需要HiveServer2或Metastore，也需要分别启动</span><br></code></pre></td></tr></table></figure>
+<p>2024/6/9 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">数据库</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/HIVE/" class="print-no-link">#HIVE</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" class="print-no-link">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/07/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B%EF%BC%9A%E5%A6%82%E4%BD%95%E7%AD%9B%E9%80%89%E5%90%88%E9%80%82%E7%9A%84%E7%89%B9%E5%BE%81/" title="特征工程：如何筛选合适的特征">
+                        <span class="hidden-mobile">特征工程：如何筛选合适的特征</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
