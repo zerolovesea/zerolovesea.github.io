@@ -17,23 +17,25 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Markdown Folding        算法开发工程师？Data Scientist听起来要高大上多了 :p  关于自己生于江南水乡，旅西九年，目前供职于苏州一家科技公司，从事用户增长，推荐等相关工作。 践行理念：  Stay Hungry. Stay Foolish.有所欲，有所愚。   如果你对我的经历感兴趣的话，不妨点击看看   7&#x2F;2024 now">
-<meta property="og:type" content="website">
-<meta property="og:title" content="关于">
-<meta property="og:url" content="http://example.com/about/index.html">
+    <meta name="description" content="复习Spark并重新上手的记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spark入门和上手记录">
+<meta property="og:url" content="http://example.com/2024/06/23/Spark%E5%85%A5%E9%97%A8%E5%92%8C%E4%B8%8A%E6%89%8B%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="Markdown Folding        算法开发工程师？Data Scientist听起来要高大上多了 :p  关于自己生于江南水乡，旅西九年，目前供职于苏州一家科技公司，从事用户增长，推荐等相关工作。 践行理念：  Stay Hungry. Stay Foolish.有所欲，有所愚。   如果你对我的经历感兴趣的话，不妨点击看看   7&#x2F;2024 now">
+<meta property="og:description" content="复习Spark并重新上手的记录。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://komarev.com/ghpvc/?username=zerolovesea&color=blue">
-<meta property="article:published_time" content="2023-12-26T11:49:55.000Z">
-<meta property="article:modified_time" content="2024-06-22T14:36:56.975Z">
+<meta property="og:image" content="http://example.com/img/spark.jpeg">
+<meta property="article:published_time" content="2024-06-23T09:08:25.000Z">
+<meta property="article:modified_time" content="2024-06-23T14:51:27.034Z">
 <meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="Spark">
+<meta property="article:tag" content="Big Data">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://komarev.com/ghpvc/?username=zerolovesea&color=blue">
+<meta name="twitter:image" content="http://example.com/img/spark.jpeg">
   
   
   
-  <title>关于 - 我不是算法工程师</title>
+  <title>Spark入门和上手记录 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -126,7 +128,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -256,9 +258,57 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="关于"></span>
+            <span id="subtitle" data-typed-text="Spark入门和上手记录"></span>
           
         </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-06-23 17:08" pubdate>
+          2024年6月23日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          903 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
 
         
       </div>
@@ -274,109 +324,150 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          >
-          
-            <div class="about-avatar">
-              <img src="/img/avatar.png" srcset="/img/loading.gif" lazyload class="img-fluid" alt="avatar">
-            </div>
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
+      
 
-<div class="text-center">
-  <div class="about-info">
-    <div class="about-name">Yang Zhou</div>
-    <div class="about-intro">Stay Hungry. Stay Foolish.</div>
-    <div class="about-icons">
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-        
-        
-        
-        <a href=https://www.linkedin.com/in/zyaztec/ class="
-           hint--bottom hint--rounded"
-           aria-label=Linkedin
-           target="_blank"
-        >
-          <i class="iconfont icon-linkedin-fill" aria-hidden="true"></i>
-          
-        </a>
-      
-        
-        
-        
-        <a href=https://github.com/zerolovesea class="
-           hint--bottom hint--rounded"
-           aria-label=GitHub
-           target="_blank"
-        >
-          <i class="iconfont icon-github-fill" aria-hidden="true"></i>
-          
-        </a>
-      
-        
-        
-        
-        <a href=https://www.kaggle.com/yaaangzhou class="
-           hint--bottom hint--rounded"
-           aria-label=Kaggle
-           target="_blank"
-        >
-          <i class="iconfont icon-kaggle" aria-hidden="true"></i>
-          
-        </a>
-      
-    </div>
-  </div>
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
-<article class="about-content page-content mt-5">
-  <div class="markdown-body">
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown Folding</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked@2"></script>
-</head>
-<body>
 
-<p><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/"><img src="https://komarev.com/ghpvc/?username=zerolovesea&color=blue" srcset="/img/loading.gif" lazyload alt="Yang Zhou&#39;s Profile View"></a></p>
-<h4 align='center'>算法开发工程师？Data Scientist听起来要高大上多了 :p</h4>
 
-<h1 id="关于自己"><a href="#关于自己" class="headerlink" title="关于自己"></a>关于自己</h1><p>生于江南水乡，旅西九年，目前供职于苏州一家科技公司，从事用户增长，推荐等相关工作。</p>
-<p>践行理念：</p>
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Spark入门和上手记录</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>毕业之后就再也没接触过Spark，印象里它的使用方法比较繁琐，所以基本忘光了。刚好工作中可能会接触到相关内容，因此借着休息这几天的空闲时间，复习一下相关内容。</p>
+<h1>Spark</h1>
+<p>Spark 是一个通用数据处理引擎，用来进行数据处理任务，例如批处理、流处理、机器学习和图计算。</p>
+<p>Spark和Hive的区别在于，Hive用于在离线数据的处理上，Spark 用于需要实时计算和处理的任务上。</p>
 <blockquote>
-<p>Stay Hungry. Stay Foolish.<br>有所欲，有所愚。</p>
+<p>Hadoop和Spark的一个关键区别： Hadoop基于大数据的批处理。 这意味着数据会在一段时间内存储，然后使用Hadoop进行处理。 在Spark中，处理可以实时进行。</p>
 </blockquote>
-<details>
-<summary>如果你对我的经历感兴趣的话，不妨点击看看</summary>
-
+<p>Spark主要包含的组件是：</p>
 <ul>
-<li>7&#x2F;2024 now 算法工程师，<a target="_blank" rel="noopener" href="https://global.iflytek.com/en/">iFLYTEK Co., Ltd</a>(SuZhou)</li>
-<li>1&#x2F;2023 - 7&#x2F;2024 算法开发&#x2F;机器学习工程师, <a target="_blank" rel="noopener" href="https://www.leansight.cn/">Leansight Tech</a> (SuZhou)</li>
-<li>6&#x2F;2023 - 10&#x2F;2023 推荐算法工程师(Intern), XiYuan Tech</li>
-<li>9&#x2F;2022 - 9&#x2F;2023 大数据与数据科学(硕士), <a target="_blank" rel="noopener" href="https://ucm.es/">University Complutense of Madrid</a> (Spain)</li>
-<li>9&#x2F;2020 - 1&#x2F;2022 信息科学与图情管理(硕士), <a target="_blank" rel="noopener" href="https://ucm.es/">University Complutense of Madrid</a> (Spain)</li>
-<li>9&#x2F;2015 - 6&#x2F;2020 信息科学(学士), <a target="_blank" rel="noopener" href="https://ucm.es/">University Complutense of Madrid</a> (Spain)</li>
-<li>9&#x2F;2014- 6&#x2F;2015 计算机科学, <a target="_blank" rel="noopener" href="https://ucm.es/">University Complutense of Madrid</a> (Spain)</details></li>
+<li>Spark Core：基础通用执行引擎，其所有其他功能都是基于该平台执行的。</li>
+<li>Spark SQL：Spark Core之上的一个组件，它引入了一种名为SchemaRDD的新数据抽象，提供对结构化和半结构化数据的支持。</li>
+<li>Spark Streaming：利用Spark Core的快速调度功能来执行流式分析。它以小批量采集数据，并对这些小批量数据执行RDD（弹性分布式数据集）转换。</li>
+<li>MLlib：Spark上的分布式机器学习框架。</li>
+<li>GraphX：Spark上的分布式图形处理框架。</li>
 </ul>
-<h1 id="关于兴趣"><a href="#关于兴趣" class="headerlink" title="关于兴趣"></a>关于兴趣</h1><ul>
-<li>统计机器学习（Data Mining&#x2F;Machine Learning）</li>
-<li>深度学习（NLP&#x2F;Language Model）</li>
-<li>博弈论（Game Theory）</li>
-<li>Python</li>
+<h1>Spark架构</h1>
+<p>以下是Spark的架构图：</p>
+<p><img src="https://static001.geekbang.org/infoq/6a/6a017f614dd45c2434cdeb2ef203e07d.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>Spark的主要组件包括：</p>
+<ul>
+<li>Spark Driver：即运行Application的main函数并创建SparkContext，创建SparkContext的目的是为了准备Spark应用程序的运行环境。在Spark中由SparkContext负责与Cluster Manager通信，进行资源申请、任务的分配和监控等，当Executor部分运行完毕后，Driver同时负责将SparkContext关闭。</li>
+<li>Cluster Manager：控制整个集群，负责监控Worker。</li>
+<li>Worker：集群中任何一个物理节点，可以在上面启动Executor进程。</li>
+<li>Spark Executors：在每个Worker上为某应用启动的一个进程，该进程负责运行Task，并且负责将数据存在内存或者磁盘上，每个任务都有各自独立的Executor。</li>
+<li>Task：被发送到Executor上的工作单元。每个Task负责计算一个分区的数据。</li>
 </ul>
-<h1 id="关于爱好"><a href="#关于爱好" class="headerlink" title="关于爱好"></a>关于爱好</h1><ul>
-<li>桌搭与极客文化</li>
-<li>R&amp;B&#x2F;后摇&#x2F;古风&#x2F;还有一点点的西班牙曲子</li>
-<li>听恐怖片（笑）</li>
-</ul>
-<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>感谢你花时间阅读我的博客，祝好！</p>
+<h2 id="RDD">RDD</h2>
+<p>RDD是Spark中最重要的概念，被称为弹性分布式数据集。这是一个分布式的数据集合，弹性且分布式。它允许在执行多个查询时将工作集缓存在内存中，后续的查询能够重用工作集，这样就能极大的提升查询速度。</p>
+<p>RDD是一个抽象的概念，能够通过几种方式创建：</p>
+<ol>
+<li>从数据源读取</li>
+<li>将已有的集合并行化为RDD</li>
+<li>将已有的RDD通过转换（Transformations）生成新的RDD。</li>
+</ol>
+<p>RDD支持两个操作：</p>
+<ol>
+<li>转换（Transformations）：从现有的RDD创建新的RDD，例如map, filter, join等。</li>
+<li>行动（Actions）：用于触发计算，并返回结果到Driver或存储到外部存储系统，例如collect，count，reduce等。</li>
+</ol>
+<p>以下是一段简单的示例代码，用pyspark实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pyspark <span class="hljs-keyword">import</span> SparkContext<br><br><span class="hljs-comment"># 创建 SparkContext，local指Spark运行在本地模式，后者指定应用程序的名称</span><br>sc = SparkContext(<span class="hljs-string">&quot;local&quot;</span>, <span class="hljs-string">&quot;RDD Example&quot;</span>)<br><br><span class="hljs-comment"># 从本地集合创建 RDD</span><br>data = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]<br>rdd = sc.parallelize(data)<br><br><span class="hljs-comment"># 转换操作：将每个元素乘以 2</span><br>rdd2 = rdd.<span class="hljs-built_in">map</span>(<span class="hljs-keyword">lambda</span> x: x * <span class="hljs-number">2</span>)<br><br><span class="hljs-comment"># 行动操作：收集结果</span><br>result = rdd2.collect()<br><br><span class="hljs-comment"># 输出结果</span><br><span class="hljs-built_in">print</span>(result)<br></code></pre></td></tr></table></figure>
+<p>上面这段代码，首先创建了Context，用来启动Spark应用程序。</p>
+<p>随后创建了一个RDD，并使用map方法对这个RDD进行了转换操作。</p>
+<p>最后使用一个行动操作，用collect获取最后的结果。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Big-Data/" class="category-chain-item">Big Data</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Spark/" class="print-no-link">#Spark</a>
+      
+        <a href="/tags/Big-Data/" class="print-no-link">#Big Data</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/22/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%87%E6%9C%AC%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%BD%BF%E7%94%A8%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6%EF%BC%9F/" title="为什么文本相似度使用余弦相似度？">
+                        <span class="hidden-mobile">为什么文本相似度使用余弦相似度？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
   <div id="valine"></div>
   <script type="text/javascript">
     Fluid.utils.loadComments('#valine', function() {
@@ -402,49 +493,57 @@
   </script>
   <noscript>Please enable JavaScript to view the comments</noscript>
 
-  </div>
 
-  
-</article>
-
-
-
-
-
+    </article>
   
 
 
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-  
-  
-
-
-
-
-
-
-
-
-              </div>
-            </div>
-          </div>
+          </article>
         </div>
       </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
     
 
     
@@ -595,6 +694,46 @@
   
 
 
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
 
 
   <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
