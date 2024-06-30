@@ -17,25 +17,26 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="分析为什么当前的文本相似度都使用余弦相似度。">
+    <meta name="description" content="使用SyncTV+AList+阿里云盘在服务器上搭建一个支持同步观影的影院。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="为什么文本相似度使用余弦相似度？">
-<meta property="og:url" content="http://example.com/2024/06/22/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%87%E6%9C%AC%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%BD%BF%E7%94%A8%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6%EF%BC%9F/index.html">
+<meta property="og:title" content="SyncTV+AList+阿里云盘搭建服务器同步观影影院">
+<meta property="og:url" content="http://example.com/2024/06/30/SyncTV-Alist-%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%A7%82%E5%BD%B1%E5%BD%B1%E9%99%A2/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="分析为什么当前的文本相似度都使用余弦相似度。">
+<meta property="og:description" content="使用SyncTV+AList+阿里云盘在服务器上搭建一个支持同步观影的影院。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/llm.png">
-<meta property="article:published_time" content="2024-06-22T09:38:18.000Z">
-<meta property="article:modified_time" content="2024-06-27T13:07:22.795Z">
+<meta property="og:image" content="http://example.com/img/alist.png">
+<meta property="article:published_time" content="2024-06-30T06:21:24.000Z">
+<meta property="article:modified_time" content="2024-06-30T13:38:20.491Z">
 <meta property="article:author" content="Yang Zhou">
-<meta property="article:tag" content="LLM">
-<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="瞎折腾">
+<meta property="article:tag" content="SyncTV">
+<meta property="article:tag" content="Alist">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/llm.png">
+<meta name="twitter:image" content="http://example.com/img/alist.png">
   
   
   
-  <title>为什么文本相似度使用余弦相似度？ - 我不是算法工程师</title>
+  <title>SyncTV+AList+阿里云盘搭建服务器同步观影影院 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -258,7 +259,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="为什么文本相似度使用余弦相似度？"></span>
+            <span id="subtitle" data-typed-text="SyncTV+AList+阿里云盘搭建服务器同步观影影院"></span>
           
         </div>
 
@@ -269,8 +270,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-06-22 17:38" pubdate>
-          2024年6月22日 下午
+        <time datetime="2024-06-30 14:21" pubdate>
+          2024年6月30日 下午
         </time>
       </span>
     
@@ -281,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          963 字
         
       </span>
     
@@ -292,7 +293,7 @@
         
         
         
-          11 分钟
+          9 分钟
         
       </span>
     
@@ -350,42 +351,56 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">为什么文本相似度使用余弦相似度？</h1>
+            <h1 id="seo-header">SyncTV+AList+阿里云盘搭建服务器同步观影影院</h1>
             
             
               <div class="markdown-body">
                 
-                <p>最近离职了，刚好有时间研究一些之间没有钻研过的内容。某天洗澡的时候忽然想到余弦相似度的问题，为什么它在NLP中广泛被使用，这次研究一下。</p>
-<p>余弦相似度主要体现的是两个向量在方向上的差异，而对它们的模大小不做要求。计算公式是：$ \text{cosine_similarity}(\mathbf{A}, \mathbf{B}) &#x3D; \frac{\mathbf{A} \cdot \mathbf{B}}{|\mathbf{A}| |\mathbf{B}|} $。</p>
-<p>不用向量的大小来计算相似度有一个好处，如果我们有两个文档，其中一个文档中的Token多，另一个Token少，那么内容多的文档，向量的大小会比内容少的文档的向量更大，如果使用向量大小作为相似度的计算参数之一，可能会导致计算出来的相似度差距过大，而这并不代表两个文档并不相似。</p>
-<p>与之对比的是欧式距离，也就是两个向量的距离上的绝对差异。它体现的是两者之间距离相近的程度。</p>
-<blockquote>
-<p>假如有两个向量，两个人对APP的使用次数与使用时长分别表示为(1,10)和(10,100)。它们的余弦相似度较小，代表这两个人的行为是相同的，然而事实是不同的，两个人的活跃度有着极大的差异，第二个人的活跃度更高，这时就需要使用欧氏距离进行对比。</p>
-<p>不过欧式距离也会收到度量的影响。例如当用户1给Item1和Item2分别打分2和4分，用户2给Item1和Item2分别打分4和8分。两者的打分尺度并不一致，这时使用欧式距离计算两个用户的相似度会无法得到有效的结果，就需要进行标准化。</p>
-</blockquote>
-<blockquote>
-<p>另外，当向量进行归一化后，欧式距离与余弦相似度存在转换关系$ \text{euc}(a, b) &#x3D; 2 \left( 1 - \cos(a, b) \right) $。这其实能说明一定它们之间的关系。</p>
-</blockquote>
-<p><strong>点积</strong></p>
-<p>上面说的余弦相似度完全不考虑向量的长度，事实上能够使用点积来将向量长度的信息一起涵盖入相似度的计算。点积的计算公式是向量夹角的余弦值乘以两个向量的长度得到。当两个向量完全相同时，点积达到最大值。当两者垂直时，点积为0。</p>
-<blockquote>
-<p>点积如何影响相似度度量？</p>
-<p>例如正在计算一组研究论文的相似度。研究论文嵌入向量的长度与被引用次数成正比。</p>
-<p>高被引次数(较长的向量)的论文与其他高被引论文的点积相似度得分更高，因为它们的量级对结果的贡献更大。低被引次数(较短的向量)的论文与高被引次数的论文的点积相似度得分较低，因为它们的量级较小。</p>
-</blockquote>
-<p><strong>高维空间与维度灾难</strong></p>
-<p>随着维度的增长，向量之间的差距会逐渐减小，这时候相似度会趋向于零，导致计算相似度的意义不大。这种情况被称为维度灾难。</p>
-<p>根据定义，维度灾难指<code>对于已知样本数目，存在一个特征数目的最大值，当实际使用的特征数目超过这个最大值时，分类器的性能不是得到改善，而是退化，这一现象被命名为Hughes影响或Hughes现象。</code>这也是为什么高维下，相似度计算的作用会被无限降低。发现这一现象后，出现了一系列降维算法，这就是后话了。</p>
-<p>不过，在高维下，余弦相似度的计算比欧式距离的效果要更好，这就是为什么在嵌入向量的计算中更多的使用余弦相似度。</p>
-<blockquote>
-<p>还有另外一种解释，是从模型训练的角度出发解释维度灾难：在训练样本的时候，在样本数目不变的情况下，随着维度的增高，我们的模型效果会随着维度的增高而降低。也就是说，如果想要达到相同的模型效果，在使用高维度时所需要的样本数量要比低维度的样本数量大的多。</p>
-</blockquote>
-<p><strong>从深度学习思考余弦相似度</strong></p>
-<p>知乎上有一个答主提到了一点，假如我们有一个分类模型，并且用于一个线性层作为最终输出的分类头，我们可以看到，实际上这个线性层在做的事就是将权重和输入的嵌入做点积计算，这和余弦相似度是一致的。</p>
-<blockquote>
-<p>你可以理解训练一个分类模型的过程（已有特征提取的话）就是为每一个类都学出来一个这个类的embedding（线性层的w）。</p>
-</blockquote>
-<p>2024&#x2F;6&#x2F;22 于苏州</p>
+                <p>入职前的一周在家里好好休息了一阵，乘着这个功夫，我在阿里云服务器上部署了一些个人感觉比较有意思的服务，例如一个部署于服务器的一个视频播放直播间。</p>
+<p>这个方案主要解决的是多人共同观影的问题。例如以前想要和对象一起看视频，都需要一起打开同一个网站，然后随时同步两个人的观看进度，这中间会出现两边网速不一致导致的卡顿，资源难获取的问题。而通过SyncTV这个项目能够构建一个平台，并在这个平台上实现的资源的共享和同步。</p>
+<h1>部署SyncTV</h1>
+<p>部署SyncTV相当简单，只需要使用docker就可以快速部署：<code>docker run -d --name synctv -p 8080:8080 synctvorg/synctv</code>。</p>
+<p>这会在服务器的8080端口启动服务，如果需要公网访问，那么需要在服务器的安全组策略设置端口的开放。默认进入这个地址，会出现一个登录界面。管理员账户名/密码均为<code>root</code>。</p>
+<p>登录之后，首页会显示为空。这时候就可以随意创建房间了。创建房间后，能够设置房间名，密码等等。</p>
+<p><img src="/images/sync1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>创建完毕之后，就能够进入房间，并且在房间的界面里，能够添加各自形式的影片链接，包括Bilbil，通过添加Bv号，能够添加到影片列表。由于无法登录，播放的B站视频都是720p。</p>
+<p><img src="/images/sync2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>至此，SyncTV顺利部署完成。</p>
+<h1>部署AList</h1>
+<p>AList是一个多存储的文件列表系统，它能够支持网盘的统一管理。通过这种方式就能够将网盘资源统一在一个服务里。通过将这个服务和SyncTV连接，能够实现直连网盘资源。</p>
+<p>同样通过Docker进行部署：<code>docker run -d --restart=unless-stopped -v /etc/alist:/opt/alist/data -p 5244:5244 -e PUID=0 -e PGID=0 -e UMASK=022 --name=&quot;alist&quot; xhofe/alist:latest</code>。</p>
+<p>随后需要进容器设置一下账户和密码：<code>docker exec -it alist ./alist admin random</code>，<code>docker exec -it alist ./alist admin set YourNewPassword</code></p>
+<p>在后者需要将<code>YourNewPassword</code>设置为你想要的密码。</p>
+<h2 id="在AList部署阿里云盘">在AList部署阿里云盘</h2>
+<p>通过访问<code>localhost:5244</code>，能够进入Alist的管理界面。注意同样需要设置端口的开放。</p>
+<p><img src="/images/alist1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>进入存储，我们需要在这里配置阿里云盘的挂载。AList接入了阿里云盘的开发者API，因此能够获取到云盘中的资源。</p>
+<p>我们需要配置的参数选项是以下几个：</p>
+<ul>
+<li>驱动</li>
+<li>挂载路径</li>
+<li>根文件夹ID</li>
+<li>刷新令牌</li>
+<li>Oauth令牌链接</li>
+<li>移除方式</li>
+</ul>
+<p>其中驱动需要配置为<code>阿里云盘Open</code>。挂载路径可以配置为<code>/</code>，意为根目录。</p>
+<p>根文件夹ID为阿里云盘的文件夹ID，打开阿里云盘官网，点击进入要设置的文件夹时点击 URL 后面的字符串，例如<code>https://www.alipan.com/drive/folder/5fe01e1830601baf774e4827a9fb8fb2b5bf7940</code>，这个文件夹的 file_id 即为 5fe01e1830601baf774e4827a9fb8fb2b5bf7940。</p>
+<p>刷新令牌需要在<code>https://alist.nn.ci/tool/aliyundrive/request</code>获取，进入以后需要在里面扫描阿里云盘的二维码，扫描后会获得一长串Token。</p>
+<p>接下来需要修改<code>Oauth令牌链接</code>为：<code>https://api.xhofe.top/alist/ali_open/token</code>。</p>
+<p>保存后，通过访问服务器的5244端口，就能访问到云盘里的内容了。</p>
+<p><img src="/images/alist2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>至此AList也部署完成了。</p>
+<h1>SyncTV配置AList</h1>
+<p>最后一步是在SyncTV配置AList的账户，我们需要按照以下步骤进行执行：</p>
+<ul>
+<li>管理后台 --&gt; 点击用户名(root) --&gt; 平台绑定</li>
+<li>AList --&gt; 添加账号</li>
+<li>地址：<a target="_blank" rel="noopener" href="http://127.0.0.1:5244/">http://127.0.0.1:5244</a> （127.0.0.1需要替换成你的服务器ip）</li>
+<li>输入AList账号密码后点击登录</li>
+</ul>
+<p>此时进入SyncTV的房间，就能在添加影片中选择AList了。</p>
+<p>2024/6/30 于苏州</p>
 
                 
               </div>
@@ -404,7 +419,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
+  <a href="/categories/%E7%9E%8E%E6%8A%98%E8%85%BE/" class="category-chain-item">瞎折腾</a>
   
   
 
@@ -419,9 +434,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+        <a href="/tags/%E7%9E%8E%E6%8A%98%E8%85%BE/" class="print-no-link">#瞎折腾</a>
       
-        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+        <a href="/tags/SyncTV/" class="print-no-link">#SyncTV</a>
+      
+        <a href="/tags/Alist/" class="print-no-link">#Alist</a>
       
     </div>
   
@@ -435,18 +452,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/23/Spark%E6%9E%B6%E6%9E%84%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" title="Spark架构及基础概念">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Spark架构及基础概念</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/06/15/Data-Mining%EF%BC%9A-Kaggle-Playground-S4-Ep5/" title="Data Mining： Kaggle Playground S4 Ep5">
-                        <span class="hidden-mobile">Data Mining： Kaggle Playground S4 Ep5</span>
+                      <a href="/2024/06/25/Pyspark%E4%B8%8A%E6%89%8B%E4%BD%BF%E7%94%A8/" title="Pyspark上手使用">
+                        <span class="hidden-mobile">Pyspark上手使用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
