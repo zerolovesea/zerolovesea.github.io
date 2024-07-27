@@ -17,23 +17,33 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="十年饮冰，热血难凉">
-<meta property="og:type" content="website">
-<meta property="og:title" content="归档">
-<meta property="og:url" content="http://example.com/archives/index.html">
+    <meta name="description" content="协同过滤的介绍和实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统：从协同过滤的起源">
+<meta property="og:url" content="http://example.com/2024/07/27/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%9A%84%E8%B5%B7%E6%BA%90/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="十年饮冰，热血难凉">
+<meta property="og:description" content="协同过滤的介绍和实现。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/search.jpg">
+<meta property="article:published_time" content="2024-07-27T10:30:29.864Z">
+<meta property="article:modified_time" content="2024-07-27T11:22:06.797Z">
 <meta property="article:author" content="Yang Zhou">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/search.jpg">
   
   
   
-  <title>归档 - 我不是算法工程师</title>
+  <title>推荐系统：从协同过滤的起源 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
 
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
 
 
 
@@ -116,7 +126,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 70vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -246,9 +256,57 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="归档"></span>
+            <span id="subtitle" data-typed-text="推荐系统：从协同过滤的起源"></span>
           
         </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-27 18:30" pubdate>
+          2024年7月27日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          352 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          3 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
 
         
       </div>
@@ -264,100 +322,178 @@
 
   <main>
     
-      <div class="container nopadding-x-md">
-        <div id="board"
-          >
-          
-          <div class="container">
-            <div class="row">
-              <div class="col-12 col-md-10 m-auto">
-                
-
-<div class="list-group">
-  <p class="h4">共计 73 篇文章</p>
-  <hr>
-  
-  
-    
       
-      <p class="h5">2024</p>
-    
-    <a href="/2024/07/27/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%9A%84%E8%B5%B7%E6%BA%90/" class="list-group-item list-group-item-action">
-      <time>07-27</time>
-      <div class="list-group-item-title">推荐系统：从协同过滤的起源</div>
-    </a>
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">推荐系统：从协同过滤的起源</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>从上篇博文到现在又隔了一个月，由于工作内容的转变，转向了推荐/风控算法，尤其是CTR模型相关，因此准备系统的学习并实现一下一些常用的推荐和分控算法。</p>
+<p>记得曾经看过一句话，推荐算法是没有Query的搜索系统，这句话非常粗略的介绍了推荐算法。正如搜索系统需要想法设法对用户的输入进行信息抽取，推荐算法的Query则是用户自身的历史行为信息和物品的信息。</p>
+<p>推荐系统最早出现在90年代，1992年出现了第一个最早的协同过滤系统，由Xerox公司帕罗奥多研究中心研发。当时需要解决的问题是员工需要对大量的邮件进行筛选分类，因此衍生出了这个系统。随着不断的发展，这个协同过滤系统逐渐发展完善，并于1998年被亚马逊公司使用于自己的网站，为用户进行商品的个性化推荐。</p>
+<p>大体上，协同过滤被分为三个子类：User based，Item based和Model based。从核心思想上来介绍协同过滤，可以用一言概括：通过分析用户或者事物之间的相似性来找到目标对象。</p>
+<h1>基于用户的协同过滤</h1>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
   
     
-    <a href="/2024/06/30/SyncTV-Alist-%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%A7%82%E5%BD%B1%E5%BD%B1%E9%99%A2/" class="list-group-item list-group-item-action">
-      <time>06-30</time>
-      <div class="list-group-item-title">SyncTV+AList+阿里云盘搭建服务器同步观影影院</div>
-    </a>
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%90%9C%E7%B4%A2%E7%B3%BB%E7%BB%9F/" class="category-chain-item">搜索系统</a>
   
-    
-    <a href="/2024/06/25/Pyspark%E4%B8%8A%E6%89%8B%E4%BD%BF%E7%94%A8/" class="list-group-item list-group-item-action">
-      <time>06-25</time>
-      <div class="list-group-item-title">Pyspark上手使用</div>
-    </a>
   
+
+      </span>
     
-    <a href="/2024/06/23/Spark%E6%9E%B6%E6%9E%84%E5%8F%8A%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" class="list-group-item list-group-item-action">
-      <time>06-23</time>
-      <div class="list-group-item-title">Spark架构及基础概念</div>
-    </a>
   
-    
-    <a href="/2024/06/22/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%96%87%E6%9C%AC%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%BD%BF%E7%94%A8%E4%BD%99%E5%BC%A6%E7%9B%B8%E4%BC%BC%E5%BA%A6%EF%BC%9F/" class="list-group-item list-group-item-action">
-      <time>06-22</time>
-      <div class="list-group-item-title">为什么文本相似度使用余弦相似度？</div>
-    </a>
+</span>
+
+    </div>
   
-    
-    <a href="/2024/06/15/Data-Mining%EF%BC%9A-Kaggle-Playground-S4-Ep5/" class="list-group-item list-group-item-action">
-      <time>06-15</time>
-      <div class="list-group-item-title">Data Mining： Kaggle Playground S4 Ep5</div>
-    </a>
-  
-    
-    <a href="/2024/06/12/Why-Decoder-Only-Instead-of-Encoder-Only/" class="list-group-item list-group-item-action">
-      <time>06-12</time>
-      <div class="list-group-item-title">Why Decoder-Only Instead of Encoder-Only?</div>
-    </a>
-  
-    
-    <a href="/2024/06/10/%E6%97%B6%E9%97%B4%E6%98%AF%E6%9C%80%E6%BC%AB%E9%95%BF%E7%9A%84%E6%AF%92%E8%8D%AF/" class="list-group-item list-group-item-action">
-      <time>06-10</time>
-      <div class="list-group-item-title">时间是最漫长的毒药</div>
-    </a>
-  
-    
-    <a href="/2024/06/09/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BA%94%E7%94%A8%EF%BC%9AWSL-HIVE%E7%9A%84%E9%83%A8%E7%BD%B2/" class="list-group-item list-group-item-action">
-      <time>06-09</time>
-      <div class="list-group-item-title">数据库应用：WSL-HIVE的部署</div>
-    </a>
-  
-    
-    <a href="/2024/06/02/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9ASQLAlchemy/" class="list-group-item list-group-item-action">
-      <time>06-02</time>
-      <div class="list-group-item-title">Python Web开发：SQLAlchemy</div>
-    </a>
   
 </div>
 
 
-  <nav aria-label="navigation">
-    <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/#board">2</a><a class="page-number" href="/archives/page/3/#board">3</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/8/#board">8</a><a class="extend next" rel="next" href="/archives/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
-    </span>
-  </nav>
+              
 
-
-
-
-              </div>
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/30/SyncTV-Alist-%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%A7%82%E5%BD%B1%E5%BD%B1%E9%99%A2/" title="SyncTV+AList+阿里云盘搭建服务器同步观影影院">
+                        <span class="hidden-mobile">SyncTV+AList+阿里云盘搭建服务器同步观影影院</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
             </div>
-          </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
         </div>
       </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
     
 
     
@@ -509,6 +645,142 @@
 
 
 
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script defer src="/js/leancloud.js" ></script>
 
