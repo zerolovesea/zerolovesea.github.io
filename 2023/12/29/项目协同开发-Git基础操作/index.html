@@ -292,7 +292,7 @@
         
         
         
-          11 分钟
+          12 分钟
         
       </span>
     
@@ -361,14 +361,14 @@
 <p>Git的起源也和Linux系统的发展息息相关。早在1991年，Linus开发出开源系统Linux后，全世界的开发者都向他发送了自己贡献的代码，Linus会对这些代码检查测试，在达到他的要求后将代码合并。在这种高频的代码版本更迭中，需要一个合适的版本控制工具。</p>
 <p>最开始Lin叔使用了一个商业版本控制系统BitKeeper，但是由于一些纠纷，Lin叔没有继续使用它，而是花了十天的时间自己开发出了未来风靡世界的Git。<br><img src="/images/v2-7cb1639ab23aaf21dcdc5a8beda23296_ipico.jpg" srcset="/img/loading.gif" lazyload></p>
 <p>下面我们先来说一些Git的常用操作代码。</p>
-<h1 id="Git用法："><a href="#Git用法：" class="headerlink" title="Git用法："></a>Git用法：</h1><h2 id="本地仓库管理"><a href="#本地仓库管理" class="headerlink" title="本地仓库管理"></a>本地仓库管理</h2><p>新手上门三板斧：<code>init</code>/<code>add</code>/<code>commit</code>自不用多说。</p>
+<h1 id="Git用法："><a href="#Git用法：" class="headerlink" title="Git用法："></a>Git用法：</h1><h2 id="本地仓库管理"><a href="#本地仓库管理" class="headerlink" title="本地仓库管理"></a>本地仓库管理</h2><p>新手上门三板斧：<code>init</code>&#x2F;<code>add</code>&#x2F;<code>commit</code>自不用多说。</p>
 <p><strong>本地初始化一个仓库，你将能够在本地进行版本控制操作，包括提交，分支，回退等：</strong><br><code>git init</code></p>
 <p><strong>在修改了本地文件后，你可以将修改的内容添加到本地的暂存区：</strong><br><code>git add .</code><br><strong>确定了暂存区后，可以本地提交代码：</strong><br><code>git commit</code><br><code>git commit -m &#39;This is a commit message&#39; #附加提交信息</code></p>
 <p><strong>本地切换已经建立好的分支，分支可以管理单个项目中不同的开发方向：</strong><br><code>git switch &lt;branch-name&gt;</code><br><strong>也可以通过加上<code>-c</code>，直接在本地建立新分支，并自动切换到该分支：</strong><br><code>git switch -c &lt;new-branch-name&gt;</code></p>
 <p><strong>通过<code>-M</code> 可以为本地当前分支改名：</strong><br><code>git branch -M main</code></p>
 <h2 id="远程仓库管理"><a href="#远程仓库管理" class="headerlink" title="远程仓库管理"></a>远程仓库管理</h2><p>下面这个是比较重要的：本地仓库连接到远程仓库。新建了远程仓库后，会产生一个地址。这时在你的本地仓库地址输入以下命令即可连接两个仓库：</p>
 <p><strong>为本地仓库添加一个新的远程仓库并给它起一个别名为 origin：</strong><br><code>git remote add origin https://github.com/zerolovesea/Coding-Tips.git</code></p>
-<p><strong>连接了仓库以后，就可以拉取/提交/推送代码了：</strong><br><code>git pull origin master</code><br><code>git push origin master</code></p>
+<p><strong>连接了仓库以后，就可以拉取&#x2F;提交&#x2F;推送代码了：</strong><br><code>git pull origin master</code><br><code>git push origin master</code></p>
 <p><strong>设置SSH密钥以后，你可能想把仓库从http协议改为ssh协议。那么你可以更新远程仓库的URL，使用remote set-url命令进行操作：</strong><br><code>git remote set-url origin git@github.com:zerolovesea/Coding-Tips.git</code></p>
 <p><strong>在推送代码时加上-u，可以将本地和远程仓库建立连接。</strong>这样未来就可以通过<code>git push</code>直接推送代码。下面这个示例中，working-pc是本地分支，origin是远程名称，-u代表建立联系：<br><code>git push -u origin working-pc</code></p>
 <p><strong>而未建立联系的时候，在提交推送时就需要写上两边的仓库：</strong><br><code>git push origin working-pc</code></p>
@@ -419,7 +419,7 @@
 <p><code>sudo apt-get install git-lfs</code></p>
 <p>有时候会出现Git clone GnuTLS recv error (-110)报错，只需要输入以下命令即可解决：</p>
 <p><code>git config --global --unset http.https://github.com.proxy</code></p>
-<p>2023/12/29 于昆山</p>
+<p>2023&#x2F;12&#x2F;29 于昆山</p>
 
                 
               </div>

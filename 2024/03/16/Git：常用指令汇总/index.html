@@ -281,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          970 字
+          972 字
         
       </span>
     
@@ -356,51 +356,58 @@
               <div class="markdown-body">
                 
                 <p>此前在<a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2023/12/29/%E9%A1%B9%E7%9B%AE%E5%8D%8F%E5%90%8C%E5%BC%80%E5%8F%91-Git%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/">项目协同开发-Git基础操作</a>一文中简单写了一些常用的git的基础操作，这次增加了一些其他的指令。</p>
-<h1>配置管理</h1>
-<p>如果要查看Git中配置的用户名和邮箱地址，使用以下命令：</p>
+<h1 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h1><p>如果要查看Git中配置的用户名和邮箱地址，使用以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git config --global user.name<br>git config --global user.email<br></code></pre></td></tr></table></figure>
+
 <p>在后面加上用户名和邮箱地址，即可修改，例如<code>git config --global user.name &quot;Your Name&quot;</code>。</p>
-<h1>修改远程仓库地址</h1>
-<p>如果要修改本地仓库管理的远程仓库地址，需要使用以下指令：</p>
+<h1 id="修改远程仓库地址"><a href="#修改远程仓库地址" class="headerlink" title="修改远程仓库地址"></a>修改远程仓库地址</h1><p>如果要修改本地仓库管理的远程仓库地址，需要使用以下指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git remote remove origin  <span class="hljs-comment"># 删除该远程路径  </span><br>git remote add origin git@jslite.github.com:JSLite/JSLite.git  <span class="hljs-comment"># 添加远程路径 </span><br></code></pre></td></tr></table></figure>
-<h1>撤销提交记录</h1>
-<p>如果撤销本地的提交记录，并在远程进行同步，需要执行以下命令：</p>
+
+<h1 id="撤销提交记录"><a href="#撤销提交记录" class="headerlink" title="撤销提交记录"></a>撤销提交记录</h1><p>如果撤销本地的提交记录，并在远程进行同步，需要执行以下命令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">git reset --hard HEAD~1 <span class="hljs-comment"># 撤销一条记录   </span><br>git push -f origin HEAD:master <span class="hljs-comment"># 同步到远程仓库的master分支</span><br><br>git push -f origin HEAD:dev <span class="hljs-comment"># 如果想撤销远程仓库的dev分支</span><br></code></pre></td></tr></table></figure>
-<h1>reset和revert的区别是什么？</h1>
-<p>简单一句话总结：</p>
+
+<h1 id="reset和revert的区别是什么？"><a href="#reset和revert的区别是什么？" class="headerlink" title="reset和revert的区别是什么？"></a>reset和revert的区别是什么？</h1><p>简单一句话总结：</p>
 <ul>
 <li><code>git reset</code> 用于在本地修改提交历史，可能会导致丢失提交历史。</li>
 <li><code>git revert</code> 用于在提交历史中创建新的提交，以撤销之前的更改，而不会修改提交历史。</li>
 </ul>
 <p>如果要回退到某个版本，需要执行以下指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">git reset --hard &lt;<span class="hljs-built_in">hash</span>&gt;<br><span class="hljs-comment"># 例如 git reset --hard a3hd73r</span><br><span class="hljs-comment"># --hard代表丢弃工作区的修改，让工作区与版本代码一模一样，与之对应，</span><br><span class="hljs-comment"># --soft参数代表保留工作区的修改。</span><br></code></pre></td></tr></table></figure>
+
 <p>如果要回滚到某个commit提交：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">git revert HEAD~1 <span class="hljs-comment"># 撤销一条记录 会弹出 commit 编辑</span><br>git push <span class="hljs-comment"># 提交回滚</span><br></code></pre></td></tr></table></figure>
+
 <p>需要更保守的去除某个commit：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 实质是新建了一个与原来完全相反的commit，抵消了原来commit的效果</span><br>git revert &lt;commit-hash&gt; <br></code></pre></td></tr></table></figure>
-<h1>将A分支的某一commit提交至B分支</h1>
-<p>有的时候，两个分支同时都拥有同一个文件。进行修改后，可以同时commit到这两个分支，比如 <code>master</code> 分支和 <code>dev</code> 分支，都拥有文件 <code>.env</code> ，在 <code>master</code> 或者 <code>dev</code> 分支下对 <code>.env</code> 进行修改后，把修改的文件同时提交到 <code>master</code> 分支和 <code>dev</code> 分支。</p>
+
+<h1 id="将A分支的某一commit提交至B分支"><a href="#将A分支的某一commit提交至B分支" class="headerlink" title="将A分支的某一commit提交至B分支"></a>将A分支的某一commit提交至B分支</h1><p>有的时候，两个分支同时都拥有同一个文件。进行修改后，可以同时commit到这两个分支，比如 <code>master</code> 分支和 <code>dev</code> 分支，都拥有文件 <code>.env</code> ，在 <code>master</code> 或者 <code>dev</code> 分支下对 <code>.env</code> 进行修改后，把修改的文件同时提交到 <code>master</code> 分支和 <code>dev</code> 分支。</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml">git checkout <span class="hljs-tag">&lt;<span class="hljs-name">branch-name</span>&gt;</span> &amp;&amp; git cherry-pick <span class="hljs-tag">&lt;<span class="hljs-name">commit-id</span>&gt;</span><br></code></pre></td></tr></table></figure>
-<h1>查看提交历史</h1>
-<p>使用以下命令来查看提交日志：</p>
+
+<h1 id="查看提交历史"><a href="#查看提交历史" class="headerlink" title="查看提交历史"></a>查看提交历史</h1><p>使用以下命令来查看提交日志：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">log</span><br></code></pre></td></tr></table></figure>
+
 <p>如果要在一行进行查看，则加上<code>--oneline</code>：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">log</span> --oneline -5 <span class="hljs-comment"># 查看最近的5个提交日志</span><br></code></pre></td></tr></table></figure>
-<h1>查看某一文件的历史</h1>
-<p>有时候需要查看某一个文件的所有历史改动，可以使用以下的这些指令：</p>
+
+<h1 id="查看某一文件的历史"><a href="#查看某一文件的历史" class="headerlink" title="查看某一文件的历史"></a>查看某一文件的历史</h1><p>有时候需要查看某一个文件的所有历史改动，可以使用以下的这些指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">log</span> --pretty=oneline 文件名  <span class="hljs-comment"># 列出文件的所有改动历史  </span><br>git show c178bf49   <span class="hljs-comment"># 某次的改动的修改记录  </span><br>git <span class="hljs-built_in">log</span> -p c178bf49 <span class="hljs-comment"># 某次的改动的修改记录  </span><br>git blame 文件名     <span class="hljs-comment"># 显示文件的每一行是在那个版本最后修改。  </span><br>git whatchanged 文件名  <span class="hljs-comment"># 显示某个文件的每个版本提交信息：提交日期，提交人员，版本号，提交备注（没有修改细节）  </span><br></code></pre></td></tr></table></figure>
-<h1>合并多个commit</h1>
-<p>有时候需要将多个commit历史合并成一个，让提交记录更加简洁：</p>
+
+<h1 id="合并多个commit"><a href="#合并多个commit" class="headerlink" title="合并多个commit"></a>合并多个commit</h1><p>有时候需要将多个commit历史合并成一个，让提交记录更加简洁：</p>
 <p>首先输入：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git rebase -i HEAD~5 <span class="hljs-comment"># 合并最近的5个提交</span><br></code></pre></td></tr></table></figure>
+
 <p>这将会打开文本编辑器，你可以选择是否进行保留和合并。将除第一个提交之外的行前面的单词改为 <code>squash</code>（或 <code>s</code>），这样 Git 将会把这些提交合并到第一个提交中。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">pick &lt;commit_hash&gt; Commit message 1<br>squash &lt;commit_hash&gt; Commit message 2<br>squash &lt;commit_hash&gt; Commit message 3<br>squash &lt;commit_hash&gt; Commit message 4<br>squash &lt;commit_hash&gt; Commit message 5<br></code></pre></td></tr></table></figure>
+
 <p>保存并关闭后，进行提交：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">git push -f origin HEAD:branch_name<br></code></pre></td></tr></table></figure>
-<h1>删除分支</h1>
-<p>删除分支包括以下常用指令：</p>
+
+<h1 id="删除分支"><a href="#删除分支" class="headerlink" title="删除分支"></a>删除分支</h1><p>删除分支包括以下常用指令：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">git push origin :branchName  <span class="hljs-comment"># 删除远程分支  </span><br>git push origin --delete new <span class="hljs-comment"># 删除远程分支new   </span><br>git branch -d branchName     <span class="hljs-comment"># 删除本地分支，强制删除用-D  </span><br>git branch -d <span class="hljs-built_in">test</span>      <span class="hljs-comment"># 删除本地test分支   </span><br>git branch -D <span class="hljs-built_in">test</span>      <span class="hljs-comment"># 强制删除本地test分支   </span><br>git remote prune origin <span class="hljs-comment"># 远程删除了，本地还能看到远程存在，这条命令删除远程不存在的分支</span><br></code></pre></td></tr></table></figure>
-<p>2024/3/16 于苏州</p>
+
+
+
+<p>2024&#x2F;3&#x2F;16 于苏州</p>
 
                 
               </div>
