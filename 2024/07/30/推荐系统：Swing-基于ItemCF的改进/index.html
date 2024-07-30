@@ -26,9 +26,9 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/search.jpg">
 <meta property="article:published_time" content="2024-07-30T13:06:39.000Z">
-<meta property="article:modified_time" content="2024-07-30T13:07:41.670Z">
+<meta property="article:modified_time" content="2024-07-30T14:40:10.854Z">
 <meta property="article:author" content="Yang Zhou">
-<meta property="article:tag" content="搜索系统">
+<meta property="article:tag" content="推荐系统">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/search.jpg">
   
@@ -280,7 +280,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          714 字
         
       </span>
     
@@ -291,7 +291,7 @@
         
         
         
-          1 分钟
+          6 分钟
         
       </span>
     
@@ -354,7 +354,20 @@
             
               <div class="markdown-body">
                 
-                
+                <p>相关链接：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_46838716/article/details/126138597">一文看懂推荐系统：召回02：Swing 模型，和itemCF很相似，区别在于计算相似度的方法不一样_swing模型-CSDN博客</a></p>
+<p>前一篇文章介绍了ItemCF，核心思想是如果两个物品相似，那么就可以推荐给相似的用户。如何定义两个物品相似？就是两个物品的打分分布是相似的，也就是说两个物品重合的用户比例高。</p>
+<h2 id="ItemCF的不足"><a href="#ItemCF的不足" class="headerlink" title="ItemCF的不足"></a>ItemCF的不足</h2><p>ItemCF的不足也提到了，其中之一是对尾部产品的推荐精度不高，而倾向于热门产品。这会出现一种情况，当两个不太相似的物品被发送到同一个微信群中时，这两个物品同时被群友点击，这样就会导致这两个物品的相似度很高，但是这两个物品实际上并不相似。</p>
+<hr>
+<p>为了解决这个问题，阿里巴巴开发了Swing模型，这个召回模型在阿里巴巴早期被多个业务部门验证过有效性。核心逻辑也比较易懂：如果两个物品的重合用户比例较高，<strong>且重合用户不来自于一个小圈子</strong>，那么这两个物品是相似的。</p>
+<p>Swing是一个i2i的召回算法，即通过计算Item-Item相似度来进行推荐。</p>
+<h2 id="什么是Swing？"><a href="#什么是Swing？" class="headerlink" title="什么是Swing？"></a>什么是Swing？</h2><p>Swing意为秋千，在图结构中，如果用户1和用户2同时购买了物品$i$，那么三者就构成了一个秋千。这是一个三阶的交互关系。之前的ItemCF只关注了用户-物品之间的二阶关系，即物品的受众类似，则物品类似。而Swing关注了三阶关系，如果两个用户之间组成的秋千过多（即两个用户属于一个圈子），那么这两个用户的权重越低。</p>
+<p>Swing想要实现的理想场景是，两个用户的喜好完全不同，但是他们同时购买了同样的两个物品，这说明这两个物品非常相似。因此，Swing的结构被称为User-Item-User图结构。</p>
+<h2 id="Swing的公式"><a href="#Swing的公式" class="headerlink" title="Swing的公式"></a>Swing的公式</h2><p>从算法公式上来看，对原先的ItemCF对物品相似度的计算进行了修改，改为计算两个物品中，每个用户对的相似度总和。其中每个用户对的相似度拥有一个惩罚项：两个用户的重合度。记同时喜欢两个物品的用户为集合$\nu$。对于$\nu$中的用户$u_1$和$u_2$，它们的重合度记作$\text{overlap}(u_1,u_2)$。</p>
+<p>下面是Swing对物品相似度的计算公式：</p>
+<p>$\text{sim}(i_1, i_2) &#x3D; \sum_{u_1 \in V} \sum_{u_2 \in V} \frac{1}{\alpha + \text{overlap}(u_1, u_2)}$</p>
+<p>其中$\alpha$为平滑项，用来避免分母为零，可以取一个较小的正数。</p>
+
                 
               </div>
             
@@ -372,7 +385,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%90%9C%E7%B4%A2%E7%B3%BB%E7%BB%9F/" class="category-chain-item">搜索系统</a>
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
   
   
 
@@ -387,7 +400,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%90%9C%E7%B4%A2%E7%B3%BB%E7%BB%9F/" class="print-no-link">#搜索系统</a>
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
       
     </div>
   
