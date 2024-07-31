@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/search.jpg">
 <meta property="article:published_time" content="2024-07-30T13:06:39.000Z">
-<meta property="article:modified_time" content="2024-07-30T14:40:10.854Z">
+<meta property="article:modified_time" content="2024-07-31T00:19:16.903Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta name="twitter:card" content="summary_large_image">
@@ -280,7 +280,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          714 字
+          1.4k 字
         
       </span>
     
@@ -291,7 +291,7 @@
         
         
         
-          6 分钟
+          12 分钟
         
       </span>
     
@@ -367,6 +367,30 @@
 <p>下面是Swing对物品相似度的计算公式：</p>
 <p>$\text{sim}(i_1, i_2) &#x3D; \sum_{u_1 \in V} \sum_{u_2 \in V} \frac{1}{\alpha + \text{overlap}(u_1, u_2)}$</p>
 <p>其中$\alpha$为平滑项，用来避免分母为零，可以取一个较小的正数。</p>
+<h2 id="Swing的官方配置参数"><a href="#Swing的官方配置参数" class="headerlink" title="Swing的官方配置参数"></a>Swing的官方配置参数</h2><p>阿里官方的Swing官方配置参数包含了多个参数，其中输入是Pyspark Dataframe。格式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">user,item<br>A,t<br>A,r<br>A,p<br>B,t<br>B,r<br>B,p<br>C,p<br>C,q<br>A,h<br>B,h<br>C,h<br></code></pre></td></tr></table></figure>
+
+<p>需要调整的入参是：</p>
+<ul>
+<li><code>min_user_items</code>：User互动的Item的最小数量，默认10</li>
+<li><code>max_user_items</code>：User互动的Item的最大数量，默认1000</li>
+<li><code>max_item_number</code>：Item参与计算的人数最大值，默认1000</li>
+<li><code>user_alpha</code>：用户权重的平滑项，默认0.0</li>
+<li><code>user_beta</code>：用户权重的beta参数，默认0.5</li>
+</ul>
+<p>其中最后两项是工业场景增加的用户权重，这来源于阿里对Swing的改进：</p>
+<p>$\text{user weight} &#x3D; \frac{1.0}{(\text{userAlpha} + \text{userClickCount})^{\text{userBeta}}}$</p>
+<p>用户权重用于在赋予每个用户对的相似度得分时，对高热度用户进行惩罚。</p>
+<p>这里摘抄了阿里对此的解释：</p>
+<blockquote>
+<p>原版的Swing算法对于物品的同时被触达的用户数量过少的情况，并不适用。从统计学的角度来看，数据量过少，往往会导致结果的误差过大。也就是说当同时触达两个物品的用户数量过少时，这时候swing计算得出的结果误差会比较大。</p>
+<p>举个极端的例子：</p>
+<p>如下图所示，有A、B、C三个视频，$X_1$到$X_10$共10个皇马死忠球迷，只关注音乐的音乐爱好者$Y$。皇马死忠球迷会看与皇马相关的内容，不管是热门视频C，还是中低频视频A，他们都会观看，可以假定他们都看了200个关于皇马的视频。其中有一个球迷$X_1$，被其他朋友推荐了一首冷门音乐B，听完发现不喜欢这种暗黑系古典音乐，还是喜欢比较激昂的皇马队歌A。音乐爱好者Y会听各种音乐，不管是A，还是B，都会播放。那么在这种情况下，由于视频A、B的共现用户量过少（只有2个），从而导致swing算法得出的分数<code>s(A,B)=0.33 &gt; s(A,C)=0.22</code>。但是很明显，用户在观看视频A的时候，推荐视频C比推荐视频B要好。</p>
+<p><img src="/images/swing1.png" srcset="/img/loading.gif" lazyload><br>问题是由两个视频的同时被看的用户数量过少导致的，所以我们需要根据同时观看过两个视频的用户数量来对结果进行处理。我们在swing的基础上，往其公式中增加了指示函数 Id（.） 来达到去噪的目的。同时，引入行为权重来打压过热的用户或物品。改进后的公式如下：</p>
+<p><img src="/images/swing2.png" srcset="/img/loading.gif" lazyload></p>
+</blockquote>
+<p>可以看到，如果两个物体的共现用户较少，相似度会直接赋予0，因为这个样本不具备普遍性。</p>
+<p>2024&#x2F;7&#x2F;31 于苏州</p>
 
                 
               </div>
