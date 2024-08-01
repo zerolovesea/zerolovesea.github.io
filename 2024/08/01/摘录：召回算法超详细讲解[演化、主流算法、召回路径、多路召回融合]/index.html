@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/search.jpg">
 <meta property="article:published_time" content="2024-08-01T14:26:33.000Z">
-<meta property="article:modified_time" content="2024-08-01T14:59:04.304Z">
+<meta property="article:modified_time" content="2024-08-01T23:39:46.761Z">
 <meta property="article:author" content="Yang Zhou">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/search.jpg">
@@ -357,7 +357,7 @@
 <p>[人工智能 - 推荐系统<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000043454134#item-2">二]：召回算法超详细讲解[召回模型演化过程、召回模型主流常见算法、召回路径简介、多路召回融合] - 汀NLP - SegmentFault 思否</a></p>
 <p>看到一篇非常不错的对召回算法的介绍，故摘抄至此，并做了一些排版的优化。</p>
 <hr>
-<h2 id="1-前言：召回排序流程策略算法简介"><a href="#1-前言：召回排序流程策略算法简介" class="headerlink" title="1.前言：召回排序流程策略算法简介"></a>1.前言：召回排序流程策略算法简介</h2><p><img src="https://segmentfault.com/img/remote/1460000043454136" srcset="/img/loading.gif" lazyload><br>推荐可分为以下四个流程，分别是召回、粗排、精排以及重排：</p>
+<h2 id="1-前言：召回排序流程策略算法简介"><a href="#1-前言：召回排序流程策略算法简介" class="headerlink" title="1.前言：召回排序流程策略算法简介"></a>1.前言：召回排序流程策略算法简介</h2><p><img src="/images/recall1.png" srcset="/img/loading.gif" lazyload><br>推荐可分为以下四个流程，分别是召回、粗排、精排以及重排：</p>
 <ol>
 <li>召回是源头，在某种意义上决定着整个推荐的天花板；</li>
 <li>粗排是初筛，一般不会上复杂模型；</li>
@@ -373,8 +373,10 @@
 <li>i2i类，如Embedding（Word2Vec、FastText），GraphEmbedding（Node2Vec、DeepWalk、EGES）；</li>
 <li>u2i类，如DSSM、YouTube DNN、Sentence Bert；</li>
 </ul>
-<p><img src="https://segmentfault.com/img/remote/1460000043454137" srcset="/img/loading.gif" lazyload></p>
 </li>
+</ul>
+<p><img src="/images/recall2.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
 <li><p><strong>模型类</strong>：模型类的模式是将用户和item分别映射到一个向量空间，然后用向量召回，这类有itemcf，usercf，embedding（word2vec），Graph embedding（node2vec等），DNN（如DSSM双塔召回，YouTubeDNN等），RNN（预测下一个点击的item得到用户emb和item emb）；向量检索可以用Annoy（基于LSH），FAISS（基于矢量量化）。此外还见过用逻辑回归搞个预估模型，把权重大的交叉特征拿出来构建索引做召回</p>
 </li>
 <li><p><strong>排序策略</strong>：learning to rank 流程三大模式（pointwise、pairwise、listwise），主要是特征工程和CTR模型预估；</p>
@@ -390,8 +392,10 @@
 </ul>
 </li>
 </ul>
-<p><img src="https://segmentfault.com/img/remote/1460000043454138" srcset="/img/loading.gif" lazyload></p>
 </li>
+</ul>
+<p><img src="/images/recall3.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
 <li><p><strong>重排层</strong>：重排层解决的是展示列表总体最优，模型有 MMR，DPP，RNN系列（参考阿里的global rerank系列）</p>
 </li>
 <li><p><strong>展示层</strong>：</p>
@@ -407,7 +411,7 @@
 </ul>
 <h2 id="2-召回算法简介"><a href="#2-召回算法简介" class="headerlink" title="2.召回算法简介"></a>2.召回算法简介</h2><p>召回区分主路和旁路，主路的作用是个性化+向上管理，而旁路的作用是查缺补漏。</p>
 <p>推荐系统的前几个操作可能就决定了整个系统的走向，在初期一定要三思而后行。</p>
-<p>做自媒体，打广告，漏斗的入口有多大很重要。<br><img src="https://segmentfault.com/img/remote/1460000043454139" srcset="/img/loading.gif" lazyload></p>
+<p>做自媒体，打广告，漏斗的入口有多大很重要。<br><img src="/images/recall4.png" srcset="/img/loading.gif" lazyload></p>
 <p>召回这里稍微有些复杂，因为召回是多路的。</p>
 <p>首先我们要解释主路和旁路的差别，主路的意义和粗排类似，可以看作是一个入口更大，但模型更加简单的粗排。</p>
 <p>主路的意义是为粗排分担压力。但是旁路却不是这样的，旁路出现的时机往往是当主路存在某种机制上的问题，而单靠现在的这个模型很难解决的时候。</p>
@@ -418,7 +422,7 @@
 <li>第二种召回，是i2i，i指的是item，严格意义上应该叫u2i2i。指的是用用户的历史item，来找相似的item。比如说我们把用户过去点过赞的视频拿出来，去找画面上，BGM上，或者用户行为结构上相似的视频。等于说我们就认为用户还会喜欢看同样类型的视频。这种召回，既可以从内容上建立相似关系（利用深度学习），也可以用现在比较火的graph来构建关系。这种召回负担也比较小，图像上谁和谁相似完全可以离线计算，甚至都不会随着时间变化。</li>
 <li>第三种召回是u2i，即纯粹从user和item的关系出发。我们所说的双塔就是一个典型的u2i。在用户请求过来的时候，计算出user的embedding，然后去一个实现存好的item embedding的空间，寻找最相似的一批拿出来。由于要实时计算user特征，它的负担要大于前面两者，但这种召回个性化程度最高，实践中效果也是非常好的。</li>
 </ul>
-<p><img src="https://segmentfault.com/img/remote/1460000043454140" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/images/recall5.png" srcset="/img/loading.gif" lazyload></p>
 <p>通过上图理解什么是召回路径：</p>
 <ul>
 <li>u、i、Tag是指图中的节点</li>
@@ -583,9 +587,10 @@
 <h3 id="3-5-TDM-深度树匹配召回"><a href="#3-5-TDM-深度树匹配召回" class="headerlink" title="3.5 TDM 深度树匹配召回"></a>3.5 TDM 深度树匹配召回</h3><p>TDM 是为大规模推荐系统设计的、能够承载任意先进模型 ( 也就是可以通过任何深度学习推荐模型来训练树 ) 来高效检索用户兴趣的推荐算法解决方案。</p>
 <p>TDM 基于树结构，提出了一套对用户兴趣度量进行层次化建模与检索的方法论，使得系统能直接利高级深度学习模型在全库范围内检索用户兴趣。</p>
 <p>其基本原理是使用树结构对全库 item 进行索引，然后训练深度模型以支持树上的逐层检索，从而将大规模推荐中全库检索的复杂度由 O(n) ( n 为所有 item 的量级 ) 下降至 O(log n)。</p>
-<h2 id="4-当前业界的主流召回算法综述"><a href="#4-当前业界的主流召回算法综述" class="headerlink" title="4.当前业界的主流召回算法综述"></a>4.当前业界的主流召回算法综述</h2><h3 id="4-1-Youtube-DNN"><a href="#4-1-Youtube-DNN" class="headerlink" title="4.1 Youtube DNN"></a>4.1 Youtube DNN</h3><p><img src="https://segmentfault.com/img/remote/1460000043454141" srcset="/img/loading.gif" lazyload><br>当前的<strong>主流方法的通用思路就是对于use和item的embedding的学习, 这也被称为表示学习</strong>; YoutbeDNN是经典的将深度学习模型引入推荐系统中，可以看到网络模型并不复杂，但是文中有很多工程上的技巧，比如说 word2vec对 video 和 search token做embedding后做为video初始embedding，对模型训练中训练时间和采集日志时间之间“position bias”的处理，以及对大规模多分类问题的负采样softmax。</p>
+<h2 id="4-当前业界的主流召回算法综述"><a href="#4-当前业界的主流召回算法综述" class="headerlink" title="4.当前业界的主流召回算法综述"></a>4.当前业界的主流召回算法综述</h2><h3 id="4-1-Youtube-DNN"><a href="#4-1-Youtube-DNN" class="headerlink" title="4.1 Youtube DNN"></a>4.1 Youtube DNN</h3><p><img src="/images/recall6.png" srcset="/img/loading.gif" lazyload></p>
+<p>当前的<strong>主流方法的通用思路就是对于use和item的embedding的学习, 这也被称为表示学习</strong>; YoutbeDNN是经典的将深度学习模型引入推荐系统中，可以看到网络模型并不复杂，但是文中有很多工程上的技巧，比如说 word2vec对 video 和 search token做embedding后做为video初始embedding，对模型训练中训练时间和采集日志时间之间“position bias”的处理，以及对大规模多分类问题的负采样softmax。</p>
 <h3 id="4-2-DeepMF"><a href="#4-2-DeepMF" class="headerlink" title="4.2 DeepMF"></a>4.2 DeepMF</h3><h3 id="4-3-DSSM"><a href="#4-3-DSSM" class="headerlink" title="4.3 DSSM"></a>4.3 DSSM</h3><p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=9VE2qCPRyCXvGOC7f8igDg==.U5njn1Vyf0bN1Z+McUv0FVVTe5My4lxmiagsPFZLeuKmv4/ZfTTawm+eQc84KmZBbg6VWbwOTx3irux5ZHbgww==">https://blog.csdn.net/sinat_39620217&#x2F;article&#x2F;details&#x2F;129119611</a></p>
-<h3 id="4-4-Item2vec"><a href="#4-4-Item2vec" class="headerlink" title="4.4.Item2vec"></a>4.4.Item2vec</h3><h3 id="4-5-Airbnb-Embedding"><a href="#4-5-Airbnb-Embedding" class="headerlink" title="4.5.Airbnb Embedding"></a>4.5.Airbnb Embedding</h3><h3 id="4-6-DeepWalk"><a href="#4-6-DeepWalk" class="headerlink" title="4.6.DeepWalk"></a>4.6.DeepWalk</h3><p><img src="https://segmentfault.com/img/remote/1460000043454142" srcset="/img/loading.gif" lazyload></p>
+<h3 id="4-4-Item2vec"><a href="#4-4-Item2vec" class="headerlink" title="4.4.Item2vec"></a>4.4.Item2vec</h3><h3 id="4-5-Airbnb-Embedding"><a href="#4-5-Airbnb-Embedding" class="headerlink" title="4.5.Airbnb Embedding"></a>4.5.Airbnb Embedding</h3><h3 id="4-6-DeepWalk"><a href="#4-6-DeepWalk" class="headerlink" title="4.6.DeepWalk"></a>4.6.DeepWalk</h3><p><img src="/images/recall7.png" srcset="/img/loading.gif" lazyload></p>
 <h3 id="4-7-Node2Vec"><a href="#4-7-Node2Vec" class="headerlink" title="4.7 Node2Vec"></a>4.7 Node2Vec</h3><h3 id="4-8-EGES"><a href="#4-8-EGES" class="headerlink" title="4.8.EGES"></a>4.8.EGES</h3><h3 id="4-9-LINE"><a href="#4-9-LINE" class="headerlink" title="4.9.LINE"></a>4.9.LINE</h3><p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=H1Sy1LhP29sGHnoDSiNqsA==.SL+6UPlymbfxPh1o4jozreHyvPc3DmLLdFrVsaaG7WlqCxB4ryH/qQckyVlHHtFtG2ge3hMPoENxluaEiWKsoA==">https://blog.csdn.net/sinat_39620217&#x2F;article&#x2F;details&#x2F;129119611</a></p>
 <h3 id="4-10-SDNE"><a href="#4-10-SDNE" class="headerlink" title="4.10.SDNE"></a>4.10.SDNE</h3><h3 id="4-11-GraphSAGE"><a href="#4-11-GraphSAGE" class="headerlink" title="4.11.GraphSAGE"></a>4.11.GraphSAGE</h3><h3 id="4-12-MIND"><a href="#4-12-MIND" class="headerlink" title="4.12 MIND"></a>4.12 MIND</h3><h3 id="4-13-SDM"><a href="#4-13-SDM" class="headerlink" title="4.13.SDM"></a>4.13.SDM</h3><h3 id="4-14-DeepFM"><a href="#4-14-DeepFM" class="headerlink" title="4.14.DeepFM"></a>4.14.DeepFM</h3><h3 id="4-15-NCF"><a href="#4-15-NCF" class="headerlink" title="4.15.NCF"></a>4.15.NCF</h3><h3 id="4-16-TDM"><a href="#4-16-TDM" class="headerlink" title="4.16.TDM"></a>4.16.TDM</h3><p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=77wCPdm9T5Xrhp+6vmyZVA==.MCcJfFaIBxCSLcpBO32mchMl28kSgKg1s04jOX6J16KLbiRU1P7RUmyxuaQ1f2yJdOC+8CgIH2RxA6FnQbQz4A==">https://blog.csdn.net/sinat_39620217&#x2F;article&#x2F;details&#x2F;129119611</a></p>
 
