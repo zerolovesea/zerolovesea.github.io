@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/search.jpg">
 <meta property="article:published_time" content="2024-08-01T14:26:33.000Z">
-<meta property="article:modified_time" content="2024-08-01T14:56:50.401Z">
+<meta property="article:modified_time" content="2024-08-01T14:59:04.304Z">
 <meta property="article:author" content="Yang Zhou">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/search.jpg">
@@ -369,9 +369,9 @@
 <ul>
 <li>基于规则的统计类，热度，LBS；</li>
 <li>协同过滤类，UserCF、ItemCF；</li>
-<li>U2Tag2I，如基于user Tag的召回；</li>
-<li>I2I类，如Embedding（Word2Vec、FastText），GraphEmbedding（Node2Vec、DeepWalk、EGES）；</li>
-<li>U2I类，如DSSM、YouTube DNN、Sentence Bert；</li>
+<li>u2Tag2i，如基于user Tag的召回；</li>
+<li>i2i类，如Embedding（Word2Vec、FastText），GraphEmbedding（Node2Vec、DeepWalk、EGES）；</li>
+<li>u2i类，如DSSM、YouTube DNN、Sentence Bert；</li>
 </ul>
 <p><img src="https://segmentfault.com/img/remote/1460000043454137" srcset="/img/loading.gif" lazyload></p>
 </li>
@@ -475,22 +475,22 @@
 </ul>
 <h3 id="2-2-多路召回融合排序"><a href="#2-2-多路召回融合排序" class="headerlink" title="2.2 多路召回融合排序"></a>2.2 多路召回融合排序</h3><h4 id="2-2-1-多路召回"><a href="#2-2-1-多路召回" class="headerlink" title="2.2.1 多路召回"></a>2.2.1 多路召回</h4><p>推荐服务一般有多个环节（召回、粗排序、精排序），一般会使用多个召回策略，互相弥补不足，效果更好。比如说：</p>
 <ul>
-<li>实时召回- U2I2I，<ul>
+<li>实时召回- u2i2i，<ul>
 <li>几秒之内根据行为更新推荐列表。</li>
-<li>用U2I得到你实时的行为对象列表，再根据I2I得到可能喜欢的其他的物品</li>
+<li>用u2i得到你实时的行为对象列表，再根据I2I得到可能喜欢的其他的物品</li>
 <li>这个是实时召回，剩下3个是提前算好的</li>
 </ul>
 </li>
-<li>基于内容 - U2Tag2I<ul>
+<li>基于内容 - u2Tag2i<ul>
 <li>先算好用户的偏好Tag，然后对Tag计算相似度，获取可能感兴趣的item</li>
 </ul>
 </li>
-<li>矩阵分解 - U2I<ul>
+<li>矩阵分解 - u2i<ul>
 <li>先算好User和Item的Tag矩阵，然后叉乘，给每个user推荐item</li>
 <li>提前存储好进行推荐</li>
 </ul>
 </li>
-<li>聚类推荐 - U2U2I<ul>
+<li>聚类推荐 - u2u2i<ul>
 <li>根据用户信息对用户进行聚类，然后找到最相似的user，推荐最相似user喜欢的物品；或者找到聚类中大家喜欢的物品，进行推荐</li>
 </ul>
 </li>
