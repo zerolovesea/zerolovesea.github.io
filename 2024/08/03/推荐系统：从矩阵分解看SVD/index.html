@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/search.jpg">
 <meta property="article:published_time" content="2024-08-03T15:30:47.000Z">
-<meta property="article:modified_time" content="2024-08-04T06:49:24.589Z">
+<meta property="article:modified_time" content="2024-08-04T07:43:16.858Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta name="twitter:card" content="summary_large_image">
@@ -280,7 +280,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.9k 字
+          3.1k 字
         
       </span>
     
@@ -291,7 +291,7 @@
         
         
         
-          25 分钟
+          26 分钟
         
       </span>
     
@@ -358,6 +358,13 @@
 <p>用户对多个物品的打分可能代表了用户本身的一些爱好偏向，而不同物品向量之间本身也存在特征信息。如果只使用协同过滤，就损失了这些信息。为了解决这个问题，矩阵分解算法被提出。</p>
 <p>这个算法在06年Netflix Prize Challenge中表现出众，解决了稀疏矩阵的问题。</p>
 <p>通过将矩阵分解为$P$矩阵和$Q$矩阵，每一个物品和每一个用户都用一个隐向量表示。</p>
+<p>矩阵分解的优势在于以下几点：</p>
+<ul>
+<li>泛化能力强，且隐向量基于全局的共线矩阵拟合，能够使用全局信息</li>
+<li>空间复杂度低，不用存储大量的稀疏矩阵</li>
+<li>隐向量的表达能力更强，其实和Embedding的思想是类似的</li>
+</ul>
+<p>不过，矩阵分解依旧无法使用到一些其他的特征，例如用户和物品自身的一些特征。隐向量的构建还是基于共现矩阵，而共现矩阵并无法体现一些上下文信息。</p>
 <h1>代码实现</h1>
 <p>基于pytorch简单实现矩阵分解算法。首先写一个FM的网络。完整的训练过程中，我们需要初始化两个矩阵，让两个矩阵的点积拟合评分矩阵。</p>
 <p>我们使用torch的Embedding类实例化两个矩阵。</p>
