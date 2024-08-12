@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/search.jpg">
 <meta property="article:published_time" content="2024-08-10T14:09:54.000Z">
-<meta property="article:modified_time" content="2024-08-10T14:10:35.590Z">
+<meta property="article:modified_time" content="2024-08-12T13:18:36.691Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="机器学习">
@@ -283,7 +283,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          0 字
+          695 字
         
       </span>
     
@@ -294,7 +294,7 @@
         
         
         
-          1 分钟
+          6 分钟
         
       </span>
     
@@ -357,7 +357,29 @@
             
               <div class="markdown-body">
                 
-                
+                <h1>从MF到FM</h1>
+<p>前面讲过了MF模型，它基于用户ID和物品ID的共现矩阵进行矩阵分解，用隐向量来表示物品和用户，并通过内积的形式计算得到预估评分。它比协同过滤的优势在于泛化能力，使用嵌入能够表达一些训练集不存在的特例，但是损失了一定的记忆能力。</p>
+<p>MF是协同过滤的一大改进，然而它无法将一些物品及用户的信息作为特征。为了解决这个问题，逻辑回归以其可解释性和易于工业计算的优点，在工业推荐算法中非常流行。</p>
+<p>逻辑回归的优点在于特征可解释性非常强，能够通过权重直观的反应特征重要性，然而实际应用中需要进行人工特征组合，这一过程非常耗时耗力。这里的特征组合通常是特征交叉，也就是特征两两之间进行计算。</p>
+<p>由于推荐系统天生拥有的稀疏性问题，本就稀疏的特征在进行交叉之和，维度大幅提高的同时，稀疏性也大大提高，由于很难出现两个特征同时出现的情况，要求极大的数据量才能让模型收敛。</p>
+<p>这个问题似乎有些似曾相识，在FM模型中，我们也提到它解决了共现矩阵的稀疏问题。现在，为了解决特征的稀疏问题，我们同样能够将他们变为低维稠密向量，这时它们之间两两交互就不会有太多0出现了。</p>
+<h1>FM的公式</h1>
+<p>FM的公式是对逻辑回归的改进，在原本一次项的基础上增加了二次项，即特征之间的两两内积。</p>
+<p>FM 模型的基本形式是：</p>
+<p>$\hat{y}(x) = w_0 + \sum_{i=1}^{n} w_i x_i + \sum_{i=1}^{n} \sum_{j=i+1}^{n} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j$</p>
+<p>其中：</p>
+<ul>
+<li>$\hat{y}(x)$ 表示对目标变量的预测值。</li>
+<li>$w_0$是全局偏置（全局截距）。</li>
+<li>$w_i$是特征 $x_i$的权重。</li>
+<li>$x_i$ 和 $x_j$是输入特征。</li>
+<li>$\mathbf{v}_i$和 $\mathbf{v}_j$是对应于特征$x_i$和 $x_j$ 的嵌入隐向量。</li>
+<li>$\langle \mathbf{v}_i, \mathbf{v}_j \rangle $表示$\mathbf{v}$ 和$\mathbf{v}_j$的内积，计算特征$x_i$和 $x_j$之间的交互作用。</li>
+</ul>
+<p>内积部分进一步展开后FM 模型的预测公式可以写成：</p>
+<p>$\hat{y}(x) = w_0 + \sum_{i=1}^{n} w_i x_i + \sum_{i=1}^{n} \sum_{j=i+1}^{n} \left( \sum_{f=1}^{k} v_{i,f} \cdot v_{j,f} \right) x_i x_j$</p>
+<p>FM 可以高效地捕捉特征之间的二阶交互作用，并通过隐向量 $\mathbf{v}_i$和$\mathbf{v}_j$对这些交互进行建模。</p>
+
                 
               </div>
             
