@@ -4,6 +4,37 @@
   
   
   <entry>
+    <title>推荐系统：NeuralCF的实现</title>
+    <link href="/2024/08/21/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ANeuralCF%E7%9A%84%E5%AE%9E%E7%8E%B0/"/>
+    <url>/2024/08/21/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ANeuralCF%E7%9A%84%E5%AE%9E%E7%8E%B0/</url>
+    
+    <content type="html"><![CDATA[<p>在Github上看到一张不错的思维导图，摘录至此：</p><p><img src="/images/neuralcf.png"></p><p>这张图概述了整个推荐系统的学习框架。这次要学习的NeuralCF正属于协同过滤家族下，属于深度学习运用协同过滤的思想诞生的产物。</p><p>原论文地址：<a href="http://www.comp.nus.edu.sg/~xiangnan/papers/ncf.pdf">Neural Collaborative Filtering</a></p><p>翻译论文地址：<a href="https://www.cnblogs.com/HolyShine/p/6728999.html">【翻译】Neural Collaborative Filtering–神经协同过滤</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>推荐系统</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>特征工程</tag>
+      
+      <tag>推荐系统</tag>
+      
+      <tag>机器学习</tag>
+      
+      <tag>NeuralCF</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>推荐系统：Deep Crossing设计理念及实现</title>
     <link href="/2024/08/17/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ADeep-Crossing%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E5%8F%8A%E5%AE%9E%E7%8E%B0/"/>
     <url>/2024/08/17/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ADeep-Crossing%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E5%8F%8A%E5%AE%9E%E7%8E%B0/</url>
