@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://example.com/2024/12/14/What-goes-up-must-come-down/</loc>
+    
+    <lastmod>2024-12-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/2024/09/30/%E6%9C%89%E4%BA%9B%E5%BF%99%E7%A2%8C%E7%9A%84%E8%BF%91%E6%9C%9F/</loc>
     
     <lastmod>2024-12-14</lastmod>
