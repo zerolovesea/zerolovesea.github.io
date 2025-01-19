@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="如何构建和使用Docker镜像。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="工程实践：使用Docker打包自己的项目">
+<meta property="og:url" content="http://example.com/2024/01/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BD%BF%E7%94%A8Docker%E6%89%93%E5%8C%85%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="如何构建和使用Docker镜像。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/docker.jpg">
+<meta property="article:published_time" content="2024-01-19T13:48:01.000Z">
+<meta property="article:modified_time" content="2024-01-23T12:45:20.469Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="工程实践">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/docker.jpg">
+  
+  
+  
+  <title>工程实践：使用Docker打包自己的项目 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="工程实践：使用Docker打包自己的项目"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-19 21:48" pubdate>
+          2024年1月19日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">工程实践：使用Docker打包自己的项目</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Docker的重要性是老生常谈的话题了，无非就是那些工程部署上的好处。由于之前对Linux不熟悉，所以基本没有接触过它，最近工作中正好用到了，所以干脆研究一下。</p>
+<h1 id="项目路径设置"><a href="#项目路径设置" class="headerlink" title="项目路径设置"></a>项目路径设置</h1><p>首先，我们要了解项目的路径结构是什么样的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">/project-root<br>│<br>├── Dockerfile <span class="hljs-comment"># 将要创建的Dockerfile</span><br>├── app.py <span class="hljs-comment"># 项目文件</span><br>├── requirements.txt <span class="hljs-comment"># 依赖项清单</span><br>└── downloaded-packages/ <span class="hljs-comment"># 无网环境下用于迁移环境的安装包</span><br><br></code></pre></td></tr></table></figure>
+
+<h1 id="打包Docker容器"><a href="#打包Docker容器" class="headerlink" title="打包Docker容器"></a>打包Docker容器</h1><p>要将一个本地的项目打包成Docker容器，首先要创建一个<code>Dockerfile</code>。<code>Dockerfile</code>类似于一个脚本，用于准备环境，并通过路径下的项目文件构建成一个服务。</p>
+<p>我们应在项目根路径下创建一个<code>Dockerfile</code>，以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用官方的 Python 镜像作为基础</span><br><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.8</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制项目文件到工作目录</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . /app</span><br><br><span class="hljs-comment"># 安装项目依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install --no-cache-dir -r requirements.txt</span><br><br><span class="hljs-comment"># 暴露应用运行的端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span><br><br><span class="hljs-comment"># 定义容器启动时运行的命令</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;app.py&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="构建Docker容器"><a href="#构建Docker容器" class="headerlink" title="构建Docker容器"></a>构建Docker容器</h1><p>下一步是在项目根目录运行终端命令行，构建容器，代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker build -t your_image_name:tag .<br></code></pre></td></tr></table></figure>
+
+<p>这段代码中，<code>your_image_name</code> 是你为容器指定的名称，<code>tag</code> 是容器的标签，<code>.</code> 表示使用当前目录中的 <code>Dockerfile</code>。</p>
+<p>例如<code>docker build -t my_python_app:v1.0 .</code> 其中<code>my_python_app</code> 是容器的名称，<code>v1.0</code> 是版本标签，这有助于进行版本管理。</p>
+<h1 id="运行Docker容器"><a href="#运行Docker容器" class="headerlink" title="运行Docker容器"></a>运行Docker容器</h1><p>在构建完成后，就可以运行容器了，代码如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -p 8080:8080 your_image_name:tag<br></code></pre></td></tr></table></figure>
+
+<p>以上代码将会将容器的8080端口映射到主机的8080端口，以供用户访问。其中的<code>tag</code>是容器的标签，可以是<code>latest</code>来运行最新的容器。</p>
+<h1 id="向无网环境发送完整Docker"><a href="#向无网环境发送完整Docker" class="headerlink" title="向无网环境发送完整Docker"></a>向无网环境发送完整Docker</h1><p>有的时候，目标环境没有连接外网，这时候就需要进行环境迁移，相关内容可以看我的<a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/17/Linux-Python%E7%8E%AF%E5%A2%83%E8%BF%81%E7%A7%BB%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8%E6%97%A0%E7%BD%91%E7%8E%AF%E5%A2%83%E4%B8%AD%E8%BF%81%E7%A7%BBPython%E7%8E%AF%E5%A2%83%EF%BC%9F/">上一篇博客</a>，这里简单给出代码：</p>
+<p>首先，在有网环境下载Python包：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip download -r requirements.txt --dest=/path/to/download/directory<br></code></pre></td></tr></table></figure>
+
+<p>然后在目标环境安装一下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip install --no-index --find-links=/path/to/downloaded/packages -r requirements.txt<br></code></pre></td></tr></table></figure>
+
+<p>假设用户将安装包放在根目录的<code>downloaded-packages</code>文件夹下，那么相应的，上面这些操作可以写在<code>Dockerfile</code>里，这样用户就不需要先手动构建环境了：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用官方的 Python 镜像作为基础</span><br><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.8</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制项目文件到工作目录</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . /app</span><br><br><span class="hljs-comment"># 将位于downloaded-packages的离线包拷贝到镜像的downloaded-packages中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> downloaded-packages /app/downloaded-packages</span><br><br><span class="hljs-comment"># 安装项目依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install --no-index --find-links=/app/downloaded-packages -r requirements.txt</span><br><br><span class="hljs-comment"># 暴露应用运行的端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span><br><br><span class="hljs-comment"># 定义容器启动时运行的命令</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;app.py&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<p>这样就可以和之前一样构建并运行Docker容器了：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker build -t your_image_name:tag .<br><br>docker run -p 8080:8080 your_image_name:tag<br></code></pre></td></tr></table></figure>
+
+<h1 id="多文件夹项目的容器构建"><a href="#多文件夹项目的容器构建" class="headerlink" title="多文件夹项目的容器构建"></a>多文件夹项目的容器构建</h1><p>有时候，项目结构过于复杂，可以精确的将需要的文件夹移动到容器中，例如Dockerfile可以这么写：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用官方的 Python 镜像作为基础</span><br><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.8</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制需要的项目文件到工作目录</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> src/ /app/src</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> data/ /app/data</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> requirements.txt /app/requirements.txt</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> app.py /app/app.py</span><br><br><span class="hljs-comment"># 将离线包拷贝到镜像中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> downloaded-packages /app/downloaded-packages</span><br><br><span class="hljs-comment"># 安装项目依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install --no-index --find-links=/app/downloaded-packages -r /app/requirements.txt</span><br><br><span class="hljs-comment"># 暴露应用运行的端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span><br><br><span class="hljs-comment"># 定义容器启动时运行的命令</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;/app/app.py&quot;</span>]</span><br><br></code></pre></td></tr></table></figure>
+
+<h1 id="在容器中修改Python源"><a href="#在容器中修改Python源" class="headerlink" title="在容器中修改Python源"></a>在容器中修改Python源</h1><p>回顾一下，怎么在Python环境修改安装源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pip config <span class="hljs-built_in">set</span> global.index-url https://mirrors.aliyun.com/pypi/simple/<br></code></pre></td></tr></table></figure>
+
+<p>同理，写在Dockerfile就可以了，代码如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用官方的 Python 镜像作为基础</span><br><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.8</span><br><br><span class="hljs-comment"># 设置 pip 的源为国内源（例如阿里云）</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip config <span class="hljs-built_in">set</span> global.index-url https://mirrors.aliyun.com/pypi/simple/</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制项目文件到工作目录</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . /app</span><br><br><span class="hljs-comment"># 将离线包拷贝到镜像中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> downloaded-packages /app/downloaded-packages</span><br><br><span class="hljs-comment"># 安装项目依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install --no-index --find-links=/app/downloaded-packages --no-binary=:all: -r requirements.txt</span><br><br><span class="hljs-comment"># 暴露应用运行的端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">8080</span><br><br><span class="hljs-comment"># 定义容器启动时运行的命令</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;app.py&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<p>你大概了解了，<code>RUN</code>指令实际上就是在运行命令行。</p>
+<h1 id="实际项目中的Dockerfile"><a href="#实际项目中的Dockerfile" class="headerlink" title="实际项目中的Dockerfile"></a>实际项目中的Dockerfile</h1><p>这里给出一个实际项目中的Dockerfile，来看一下工程实践里是怎么写的：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用官方 Python 3 镜像作为基础镜像</span><br><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.11</span>-bookworm<br><br><span class="hljs-comment"># 复制debian-sources.list文件到/etc/apt/sources.list</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./docker/debian-sources.list /etc/apt/sources.list</span><br><br><span class="hljs-comment"># 替换Debian软件包管理器的源，安装需要的镜像</span><br><span class="hljs-comment"># 修改Python安装源</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">rm</span> -rf /etc/apt/sources.list.d/debian.sources \</span><br><span class="language-bash">    &amp;&amp; apt-get update \</span><br><span class="language-bash">    &amp;&amp; apt-get install -y vim \</span><br><span class="language-bash">    &amp;&amp; apt-get install -y libgl1-mesa-glx \</span><br><span class="language-bash">    &amp;&amp; apt-get install -y redis-server \</span><br><span class="language-bash">    &amp;&amp; apt-get install -y nginx \</span><br><span class="language-bash">    \</span><br><span class="language-bash">    &amp;&amp; <span class="hljs-built_in">mkdir</span> -p /root/.pip \</span><br><span class="language-bash">    &amp;&amp; pip config <span class="hljs-built_in">set</span> global.index-url https://mirrors.aliyun.com/pypi/simple/ \ </span><br>    &amp;&amp; echo <span class="hljs-string">&quot;[install]&quot;</span> &gt;&gt; /root/.pip/pip.conf \<br>    &amp;&amp; echo <span class="hljs-string">&quot;trusted-host=mirrors.aliyun.com&quot;</span> &gt;&gt; /root/.pip/pip.conf <br><br><span class="hljs-comment"># 复制前端和Nginx配置文件</span><br><span class="hljs-keyword">COPY</span><span class="language-bash">  --from=behavior-detector-frontend:latest /behavior-detector-admin/dist/ /var/www/html</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./docker/nginx.default.conf /etc/nginx/sites-available/default</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><span class="hljs-comment"># 复制当前目录下的所有文件到容器的 /app 目录</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> ./backend /app/</span><br><br><span class="hljs-comment"># 安装项目依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install -r requirements.txt</span><br><br><span class="hljs-comment"># 暴露端口号</span><br><span class="hljs-comment"># 80 前端服务</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">80</span><br><span class="hljs-comment"># python 服务</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">7091</span><br><br><span class="hljs-comment"># 执行bash start.sh prod</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;bash&quot;</span>, <span class="hljs-string">&quot;start.sh&quot;</span>, <span class="hljs-string">&quot;prod&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<p>2024&#x2F;1&#x2F;19 于苏州家中</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="category-chain-item">工程实践</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Docker/" class="print-no-link">#Docker</a>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/21/Yolo-v5%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9Adetect-py/" title="Yolo v5的工程代码实现：detect.py">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Yolo v5的工程代码实现：detect.py</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/17/Linux-Python%E7%8E%AF%E5%A2%83%E8%BF%81%E7%A7%BB%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A8%E6%97%A0%E7%BD%91%E7%8E%AF%E5%A2%83%E4%B8%AD%E8%BF%81%E7%A7%BBPython%E7%8E%AF%E5%A2%83%EF%BC%9F/" title="环境迁移：如何在无网Linux环境中迁移Python环境？">
+                        <span class="hidden-mobile">环境迁移：如何在无网Linux环境中迁移Python环境？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

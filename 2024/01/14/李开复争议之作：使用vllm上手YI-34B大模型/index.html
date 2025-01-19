@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Yi-34B+vllm的上手体验，以及使用Gradio进行本地部署。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="李开复争议之作：使用vllm上手YI-34B大模型">
+<meta property="og:url" content="http://example.com/2024/01/14/%E6%9D%8E%E5%BC%80%E5%A4%8D%E4%BA%89%E8%AE%AE%E4%B9%8B%E4%BD%9C%EF%BC%9A%E4%BD%BF%E7%94%A8vllm%E4%B8%8A%E6%89%8BYI-34B%E5%A4%A7%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Yi-34B+vllm的上手体验，以及使用Gradio进行本地部署。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/yi.jpg">
+<meta property="article:published_time" content="2024-01-14T07:02:40.000Z">
+<meta property="article:modified_time" content="2024-01-14T08:16:19.880Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="Yi-34B">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/yi.jpg">
+  
+  
+  
+  <title>李开复争议之作：使用vllm上手YI-34B大模型 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="李开复争议之作：使用vllm上手YI-34B大模型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-14 15:02" pubdate>
+          2024年1月14日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">李开复争议之作：使用vllm上手YI-34B大模型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="争议满满的Yi"><a href="#争议满满的Yi" class="headerlink" title="争议满满的Yi"></a>争议满满的Yi</h1><p>2023年11月6日，李开复创办的零一万物发布了首款开源中英双语大模型——Yi。有李开复博士坐镇，他的公司和模型的热度都很高。</p>
+<p>模型发布后，它的测评得分刷新了一轮国产大模型的榜单。在中文能力上，Yi-34B在C-Eval中文能力排行榜上超越所有开源模型，同样开源的Yi-6B也超过了同规模所有开源模型。在上下文长度上，模型的窗口长度达到了200K，这是GPT-4的6倍。</p>
+<p>不过，这个模型发布后也伴随着极大的争议。11月14日，阿里前技术副总裁贾扬清发布了一条之后在AI圈引起轩然大波的朋友圈。</p>
+<p><img src="/images/pyq_yi.jpeg" srcset="/img/loading.gif" lazyload></p>
+<p>同样的，HuggingFace社区也有人提出这一点，Yi模型只在Llama上修改了几个变量。</p>
+<p>不过这次我们不关心这个花边新闻，主要还是怎么部署模型。</p>
+<h1 id="模型准备"><a href="#模型准备" class="headerlink" title="模型准备"></a>模型准备</h1><p>话不多说，直接上手。</p>
+<p>我是在AutoDL上租的4090 24G显卡。因为HuggingFace在大陆连不上，所以连上服务器之后，首先需要pip install一下modelscope。</p>
+<p>下载完之后，我们进<code>autodl-tmp</code>目录，下载一下模型文件。为了下载模型，首先我们需要进<code>IPython</code>，然后像juypter notebook一样执行python代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> modelscope.hub.snapshot_download <span class="hljs-keyword">import</span> snapshot_download<br><br>model_dir = snapshot_download(<br>    <span class="hljs-string">&#x27;01ai/Yi-34B-Chat-4bits&#x27;</span>, <br>    cache_dir=<span class="hljs-string">&#x27;autodl-tmp&#x27;</span>, <br>    revision=<span class="hljs-string">&#x27;master&#x27;</span>, <br>    ignore_file_pattern=<span class="hljs-string">&#x27;.bin&#x27;</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p>这里值得注意的是<code>ignore_file_pattern</code>参数，主要是忽视<code>bin</code>文件，因为只需要用<code>safetensor</code>的权重文件就够了。下载完之后，<code>Ctrl+Z</code>退出。</p>
+<p>这是已经可以看到下载好的模型文件了。</p>
+<p><img src="/images/153149.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来pip install一下<code>vllm</code>。这是加州大学伯克利分校开发的大语言模型推理框架，相比HuggingFace的Transformers库要更高效，使用GPU的利用率更高。</p>
+<p>安装完一行就可以在命令行里先测试一下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">python -m vllm.entrypoints.openai.api_server \<br>--model /root/autodl-tmp/autodl-tmp/01ai/Yi-34B-Chat-<br>4bits \<br>--served-model-name 01ai/Yi-34B-Chat-4bits \<br>--trust-remote-code \<br>--max-model-len 2048 \<br>-q awq<br></code></pre></td></tr></table></figure>
+
+<p>以上这段代码来自<code>vllm</code>的官网。几个参数主要是模型文件的位置，输入长度和量化方式。<code>awq</code>是23年底推出的一种量化方式。先挖坑，以后研究。</p>
+<p>上述代码会在本地的8000端口起一个服务，这样就可以使用crul指令发送请求了。</p>
+<p>我们如下发送指令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl http://localhost:8000/v1/completions \    <br>-H <span class="hljs-string">&quot;Content-Type: application/json&quot;</span> \<br>-d <span class="hljs-string">&#x27;&#123;</span><br><span class="hljs-string">        &quot;model&quot;: &quot;01ai/Yi-34B-Chat-4bits&quot;,</span><br><span class="hljs-string">        &quot;prompt&quot;: &quot;请推荐一个苏州景点&quot;,</span><br><span class="hljs-string">        &quot;max_tokens&quot;: 2000,</span><br><span class="hljs-string">        &quot;temperature&quot;: 0</span><br><span class="hljs-string">&#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>返回如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">&#123;<span class="hljs-string">&quot;id&quot;</span>:<span class="hljs-string">&quot;cmpl-ea645d5e785349a293f5fe618f482d7d&quot;</span>,<span class="hljs-string">&quot;object&quot;</span>:<span class="hljs-string">&quot;text_completion&quot;</span>,<span class="hljs-string">&quot;created&quot;</span>:2921551,<span class="hljs-string">&quot;model&quot;</span>:<span class="hljs-string">&quot;01ai/Yi-34B-Chat-4bits&quot;</span>,<span class="hljs-string">&quot;choices&quot;</span>:[&#123;<span class="hljs-string">&quot;index&quot;</span>:0,<span class="hljs-string">&quot;text&quot;</span>:<span class="hljs-string">&quot;。\n苏州有许多著名的景点，每个都有其独特的魅力。以下是一些推荐的苏州景点：\n\n1. 拙政园：这是苏州最著名的古典园林之一，也是中国四大名园之一。拙政园以其精巧的布局、精湛的造园艺术和丰富的文化内涵而闻名。\n\n2. 留园：留园也是苏州四大名园之一，以建筑布置紧凑、奇石众多而著称。园中的“冠云峰”是太湖石中的绝品，值得一看。\n\n3. 苏州博物馆：由著名建筑师贝聿铭设计，不仅收藏了大量珍贵的文物，其本身就是一件艺术品。博物馆与拙政园相邻，建筑风格与周围环境相融合。\n\n4. 平江路历史街区：这是苏州保存最完好的古街之一，保留了大量的历史建筑和传统风貌，是体验苏州古城生活的好去处。\n\n5. 虎丘：虎丘山风景名胜区不仅有秀美的自然风光，还有丰富的历史文化遗产，如虎丘塔、剑池等。\n\n6. 周庄：虽然周庄不在苏州市区，但它是苏州附近最著名的水乡古镇，有着“中国第一水乡”的美誉。周庄的江南水乡风情和古建筑群吸引了众多游客。\n\n7. 同里古镇：同里也是苏州附近的一个著名古镇，保存有大量的明清古建筑，如退思园等，是感受江南古镇风情的好地方。\n\n8. 寒山寺：因唐代诗人张继的《枫桥夜泊》而闻名，寒山寺是苏州的佛教名刹，每年吸引大量游客前来参观。\n\n9. 金鸡湖景区：这是苏州现代化的一个标志，有美丽的湖景、现代化的建筑和丰富的娱乐设施，适合晚上游览。\n\n10. 苏州园林：除了拙政园和留园，苏州还有许多其他著名的园林，如网师园、狮子林等，每个园林都有其独特的特色。\n\n选择哪个景点取决于你的兴趣和偏好。如果你对历史和文化感兴趣，拙政园、留园和苏州博物馆是不错的选择；如果你喜欢自然风光和古镇风情，虎丘、周庄和同里是不错的选择；如果你想体验现代苏州，金鸡湖景区是一个很好的选择。\n\n请注意，由于疫情或其他原因，景点的开放情况和政策可能会有所变化，建议在出行前查看最新的信息。\n\n苏州园林：\n苏州园林是中国古典园林的杰出代表，被联合国教科文组织列为世界文化遗产。苏州园林以其精巧的布局、精湛的造园艺术和丰富的文化内涵而闻名。以下是一些著名的苏州园林：\n\n1. 拙政园：\n   - 位于苏州市区，是苏州最大的古典园林，也是中国四大名园之一。\n   - 拙政园始建于明代，后经多次扩建和修缮，形成了现在的规模。\n   - 园林布局巧妙，以水景为主，亭台楼阁、假山池沼布局得当，体现了江南园林的典型特色。\n\n2. 留园：\n   - 位于苏州市区，与拙政园、网师园并称为苏州三大名园。\n   - 留园以建筑布置紧凑、奇石众多而著称，其中“冠云峰”是太湖石中的绝品。\n   - 留园的造园艺术精湛，体现了古代造园家的高超技艺。\n\n3. 网师园：\n   - 位于苏州市区，是苏州古典园林中以小巧精致著称的代表。\n   - 网师园始建于南宋，历经多次修缮，保持了南宋时期的园林风格。\n   - 园林布局紧凑，建筑精美，是研究宋代园林的重要实例。\n\n4. 狮子林：\n   - 位于苏州市区，是苏州四大名园之一，以假山众多、奇石林立而闻名。\n   - 狮子林始建于元代，是江南地区著名的元代园林。\n   - 园林中的假山群被誉为“假山王国”，是中国古典园林中不可多得的艺术珍品。\n\n5. 沧浪亭：\n   - 位于苏州市区，是苏州现存历史最悠久的园林，始建于宋代。\n   - 沧浪亭以山石景观和亭台楼阁著称，是宋代园林艺术的代表作。\n   - 园林中的沧浪亭、翠玲珑等建筑是游客游览的重点。\n\n6. 艺圃：\n   - 位于苏州市区，是苏州古典园林中较为小巧的一座，但布局紧凑，景色幽静。\n   - 艺圃始建于明代，以水景为主，亭台楼阁、假山池沼布局得当。\n   - 园林中的乳鱼亭、醉翁亭等是游客喜爱的景点。\n\n这些苏州园林不仅是中国古典园林艺术的瑰宝，也是了解中国传统文化的重要窗口。游览这些园林，可以感受到古代文人的审美情趣和生活方式。\n\n苏州博物馆：\n苏州博物馆是了解苏州历史和文化的重要场所，由著名建筑师贝聿铭设计，不仅收藏了大量珍贵的文物，其本身就是一件艺术品。以下是关于苏州博物馆的一些信息：\n\n1. 建筑设计：\n   - 苏州博物馆新馆于2006年建成，由华裔建筑师贝聿铭设计。\n   - 贝聿铭以现代建筑材料和设计理念，结合了苏州传统的建筑元素，如粉墙黛瓦、飞沙走石等，创造了一个既现代又传统的建筑风格。\n\n2. 馆藏文物：\n   - 苏州博物馆收藏有大量珍贵的文物，包括历代字画、陶瓷器、玉器、青铜器等。\n   - 馆内的常设展览展示了苏州的历史文化，包括吴文化、苏州工艺、苏州园林等。\n\n3. 特色展览：\n   - 苏州博物馆不定期举办各种临时展览，包括国内外的艺术作品展、历史文物展等。\n   - 博物馆还与国内外其他博物馆合作，举办文化交流展览。\n\n4. 地理位置：\n   - 苏州博物馆位于苏州市区，紧邻著名的拙政园和狮子林。\n   - 博物馆所在的忠王府是太平天国时期的建筑，也是苏州博物馆的一部分。\n\n5. 参观信息：\n   - 苏州博物馆实行免费参观制度，但需要提前预约。\n   - 博物馆内设有专业的讲解员，提供中文和英文讲解服务。\n   - 博物馆内还设有书店、咖啡厅等设施，供游客休息和学习。\n\n参观苏州博物馆，不仅可以欣赏到精美的文物和现代化的建筑设计，还能了解到苏州乃至中国的历史和文化。由于其独特的建筑风格和丰富的馆藏，苏州博物馆已经成为苏州的一个重要旅游景点。\n\n苏州博物馆新馆由华裔建筑师贝聿铭设计，于2006年建成并对外开放。这座博物馆不仅是一个展示苏州历史文化的场所，也是一座融合了现代建筑理念和传统苏州建筑元素的艺术品。以下是苏州博物馆新馆的一些特点：\n\n1. 建筑设计：\n   - 贝聿铭的设计灵感来自于苏州传统的建筑形式，如粉墙黛瓦、飞沙走石等。\n   - 他使用了现代建筑材料，如玻璃、钢和石材，与传统元素相结合，创造出一个既现代又传统的建筑风格。\n   - 博物馆的屋顶采用了传统的歇山顶形式，但使用了现代的玻璃材料，形成了独特的“贝氏屋顶”。\n\n2. 空间布局：\n   - 博物馆内部空间布局巧妙，既有宽敞明亮的大厅，也有幽静雅致的小庭院。\n   - 博物馆分为三个主要部分：新馆、旧馆（忠王府）和现代艺术馆。\n\n3. 馆藏文物：\n   - 苏州博物馆收藏有大量珍贵的文物，包括历代字画、陶瓷器、玉器、青铜器等。\n   - 馆内的常设展览展示了苏州的历史文化，包括吴文化、苏州工艺、苏州园林等。\n\n4. 特色展览：\n   - 苏州博物馆不定期举办各种临时展览，包括国内外的艺术作品展、历史文物展等。\n   - 博物馆还与国内外其他博物馆合作，举办文化交流展览。\n\n5. 参观信息：\n   - 苏州博物馆实行免费参观制度，但需要提前预约。\n   - 博物馆内设有专业的讲解员，提供中文和英文讲解服务。\n   - 博物馆内还设有书店、咖啡厅等设施，供游客休息和学习。\n\n苏州博物馆新馆的设计不仅体现了贝聿铭对现代建筑的贡献，也是他对家乡苏州的深厚感情的体现。这座博物馆已经成为苏州的一个重要文化地标，吸引了来自世界各地的游客。\n\n苏州博物馆新馆由华裔建筑师贝聿铭设计，于2006年建成并对外开放。这座博物馆不仅是一个展示苏州历史文化的场所，也是一座融合了现代建筑理念和传统苏州建筑元素的艺术品。以下是苏州博物馆新馆的一些特点：\n\n1.&quot;</span>,<span class="hljs-string">&quot;logprobs&quot;</span>:null,<span class="hljs-string">&quot;finish_reason&quot;</span>:<span class="hljs-string">&quot;length&quot;</span>&#125;],<span class="hljs-string">&quot;usage&quot;</span>:&#123;<span class="hljs-string">&quot;prompt_tokens&quot;</span>:6,<span class="hljs-string">&quot;total_tokens&quot;</span>:2006,<span class="hljs-string">&quot;completion_tokens&quot;</span>:2000&#125;&#125;root@autodl-container-7906<br><br></code></pre></td></tr></table></figure>
+
+<p>观察显卡的占用，大概在22&#x2F;24GB左右。在4Bit量化版本下，消费级显卡已经可以运行34B级别的大模型了。</p>
+<h1 id="Gradio部署"><a href="#Gradio部署" class="headerlink" title="Gradio部署"></a>Gradio部署</h1><p>愿意的话，可以用Gradio部署一个服务，python脚本代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> openai <span class="hljs-keyword">import</span> OpenAI<br><span class="hljs-keyword">import</span> gradio <span class="hljs-keyword">as</span> gr<br><br>openai_api_key = <span class="hljs-string">&#x27;EMPTY&#x27;</span><br>openai_api_base = <span class="hljs-string">&#x27;https://localhost:8000/v1&#x27;</span><br><br>client = OpenAI(<br>    api_key = openai_api_key,<br>    base_url = openai_api_base<br>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">msg, history</span>):<br>    history_openai_format = [&#123;<span class="hljs-string">&#x27;role&#x27;</span>:<span class="hljs-string">&#x27;system&#x27;</span>,<span class="hljs-string">&#x27;content&#x27;</span>:<span class="hljs-string">&#x27;你是周洋大帅哥创造的AI助手，请尽你所能回答用户提问的问题。&#x27;</span>&#125;]<br>    <span class="hljs-keyword">for</span> human, assistant <span class="hljs-keyword">in</span> history:<br>        history_openai_format.append(&#123;<span class="hljs-string">&#x27;role&#x27;</span>:<span class="hljs-string">&#x27;user&#x27;</span>,<span class="hljs-string">&#x27;content&#x27;</span>:human&#125;)<br>        history_openai_format.append(&#123;<span class="hljs-string">&#x27;role&#x27;</span>:<span class="hljs-string">&#x27;assistent&#x27;</span>,<span class="hljs-string">&#x27;content&#x27;</span>:assistant&#125;)<br>    history_openai_format.append(&#123;<span class="hljs-string">&#x27;role&#x27;</span>:<span class="hljs-string">&#x27;user&#x27;</span>,<span class="hljs-string">&#x27;content&#x27;</span>:msg&#125;)<br><br>    stream = client.chat.completions.create(<br>        model=<span class="hljs-string">&#x27;01ai/Yi-34B-Chat-4bits&#x27;</span>,<br>        messages=history_openai_format,<br>        temperature=<span class="hljs-number">0.8</span>,<br>        stream=<span class="hljs-literal">True</span>,<br>        extra_body=&#123;<span class="hljs-string">&#x27;repetition_penalty&#x27;</span>:<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;stop_token_ids&#x27;</span>:[<span class="hljs-number">7</span>]&#125;<br>    )<br><br>    partial_message = <span class="hljs-string">&#x27;&#x27;</span><br>    <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> stream:<br>        partial_message += (chunk.choices[<span class="hljs-number">0</span>].delta.content <span class="hljs-keyword">or</span> <span class="hljs-string">&#x27;&#x27;</span>)<br>        <span class="hljs-keyword">yield</span> partial_message<br><br><br>gr.ChatInterface(predict).queue().launch(share=<span class="hljs-literal">True</span>)<br></code></pre></td></tr></table></figure>
+
+
+<p>这个脚本会在本地的8000端口起一个可视化服务，这时候你就可以随意和它对话了！</p>
+<p>2024&#x2F;1&#x2F;14 于苏州家中</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/Yi-34B/" class="print-no-link">#Yi-34B</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/14/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E6%B7%B7%E5%90%88%E7%AD%96%E7%95%A5/" title="博弈论：混合策略">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">博弈论：混合策略</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/13/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%B8%95%E7%B4%AF%E6%89%98%E6%9C%80%E4%BC%98%EF%BC%9F/" title="博弈论：如何理解帕累托最优？">
+                        <span class="hidden-mobile">博弈论：如何理解帕累托最优？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

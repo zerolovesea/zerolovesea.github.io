@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="如何正确，高效地编写Dockerfile。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Dockfile编写指南">
+<meta property="og:url" content="http://example.com/2024/01/27/Dockfile%E7%BC%96%E5%86%99%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="如何正确，高效地编写Dockerfile。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/docker.jpg">
+<meta property="article:published_time" content="2024-01-27T01:22:24.000Z">
+<meta property="article:modified_time" content="2024-01-27T04:17:47.312Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="工程实践">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/docker.jpg">
+  
+  
+  
+  <title>Dockfile编写指南 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Dockfile编写指南"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-27 09:22" pubdate>
+          2024年1月27日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Dockfile编写指南</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Docker篇的第五篇，学习一下怎么编写Dockerfile。</p>
+<h1 id="不要过多的叠加层数"><a href="#不要过多的叠加层数" class="headerlink" title="不要过多的叠加层数"></a>不要过多的叠加层数</h1><p>Docker 镜像是分层的，Dockerfile 中的每个指令都会创建一个新的镜像层。每一层都是前一层变化的增量。</p>
+<p>以下是一个Dockerfile的例子：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update<br>RUN apt-get upgrade -y<br>RUN apt-get install -y nodejs ssh mysql<br>RUN <span class="hljs-built_in">cd</span> /app &amp;&amp; npm install<br><br>CMD mysql &amp; sshd &amp; npm start<br></code></pre></td></tr></table></figure>
+
+<p>在上面这个Dockerfile里，每执行一次<code>RUN</code>，就会在镜像中多增加一层，最高层是127层。如果添加过多的层数会导致镜像过大。因此应当尽可能的将<code>RUN</code>指令写成一行，如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">FROM ubuntu<br><br>ADD . /app<br><br>RUN apt-get update \<br>    &amp;&amp; apt-get install -y nodejs \<br>    &amp;&amp; <span class="hljs-built_in">cd</span> /app \<br>    &amp;&amp; npm install<br><br>CMD npm start<br></code></pre></td></tr></table></figure>
+
+<h1 id="使用-dockerignore忽略文件"><a href="#使用-dockerignore忽略文件" class="headerlink" title="使用.dockerignore忽略文件"></a>使用.dockerignore忽略文件</h1><p>和.gitignore一样，有时候在打包时，不需要将一些文件拷贝进镜像以防止镜像过大，例如一些Readme，或者.git文件，这时候就需要用到.dockerignore。语法是类似的，例如要忽略后缀是“swp”“sh”的文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># docker ignore</span><br>*.swp<br>*.sh<br></code></pre></td></tr></table></figure>
+
+<p>例如不需要.git目录，或者某个文件夹，则如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">.git/<br>node_modules/<br></code></pre></td></tr></table></figure>
+
+<h1 id="Dockerfile命令"><a href="#Dockerfile命令" class="headerlink" title="Dockerfile命令"></a>Dockerfile命令</h1><p>下面是Dockerfile的一些常用命令</p>
+<table>
+<thead>
+<tr>
+<th>FROM</th>
+<th>基于哪个镜像来实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>LABEL</td>
+<td>给构建的镜像打标签</td>
+</tr>
+<tr>
+<td>ENV</td>
+<td>声明环境变量</td>
+</tr>
+<tr>
+<td>ARG</td>
+<td>指定了用户在 <code>docker build --build-arg</code> 时可以使用的参数</td>
+</tr>
+<tr>
+<td>RUN</td>
+<td>执行的命令</td>
+</tr>
+<tr>
+<td>CMD</td>
+<td>run后面跟启动命令会被覆盖掉</td>
+</tr>
+<tr>
+<td>ENTRYPOINT</td>
+<td>与CMD功能相同，但需docker run 不会覆盖，如果需要覆盖可增加参数-entrypoint来覆盖</td>
+</tr>
+<tr>
+<td>ADD</td>
+<td>添加宿主机文件到容器里，有需要解压的文件会自动解压</td>
+</tr>
+<tr>
+<td>COPY</td>
+<td>添加宿主机文件到容器里</td>
+</tr>
+<tr>
+<td>WORKDIR</td>
+<td>工作目录</td>
+</tr>
+<tr>
+<td>EXPOSE</td>
+<td>容器内应用可使用的端口容器启动后所执行的程序，如果执行docker</td>
+</tr>
+<tr>
+<td>VOLUME</td>
+<td>将宿主机的目录挂载到容器里</td>
+</tr>
+<tr>
+<td>USER</td>
+<td>为接下来的Dockerfile指令指定用户</td>
+</tr>
+</tbody></table>
+<h1 id="ARG指令"><a href="#ARG指令" class="headerlink" title="ARG指令"></a>ARG指令</h1><p><code>ARG</code> 指令用于定义构建参数，用来在构建过程中被使用，但在运行时不会保留在最终的镜像中。这对于在构建过程中传递一些动态值是非常有用的。</p>
+<p>以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用 ARG 指令定义构建参数</span><br><span class="hljs-keyword">ARG</span> BASE_IMAGE=alpine:latest<br><br><span class="hljs-comment"># 使用构建参数作为基础镜像</span><br><span class="hljs-keyword">FROM</span> $BASE_IMAGE<br><br><span class="hljs-comment"># 在容器中创建一个文件，内容为构建参数值</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;The base image is: <span class="hljs-variable">$BASE_IMAGE</span>&quot;</span> &gt; /output.txt</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的Dockerfile中，我们设定了默认的<code>BASE_IMAGE</code>为<code>alpine:latest</code>，因此当我们执行<code>docker build -t my-image .</code>时，会使用默认的<code>alphine:latest</code>构建镜像。如果要从外部传入自定义的参数，可以执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker build -t my-image --build-arg BASE_IMAGE=ubuntu:latest .<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，<code>--build-arg</code>这个指令将会解析传入的参数。</p>
+<h1 id="ENV指令"><a href="#ENV指令" class="headerlink" title="ENV指令"></a>ENV指令</h1><p><code>ENV</code> 指令用于设置环境变量。这些环境变量可以在构建过程中以及运行容器时使用。</p>
+<p>以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用基础镜像</span><br><span class="hljs-keyword">FROM</span> ubuntu:<span class="hljs-number">20.04</span><br><br><span class="hljs-comment"># 设置环境变量</span><br><span class="hljs-keyword">ENV</span> MY_VAR=<span class="hljs-string">&quot;Hello Docker&quot;</span> \<br>    ANOTHER_VAR=<span class="hljs-number">42</span><br><br><span class="hljs-comment"># 执行一些操作</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;My variable is: <span class="hljs-variable">$MY_VAR</span>&quot;</span></span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Another variable is: <span class="hljs-variable">$ANOTHER_VAR</span>&quot;</span></span><br><br><span class="hljs-comment"># 在容器启动时执行的命令</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;echo&quot;</span>, <span class="hljs-string">&quot;Container is running!&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<p>其中，<code>ENV</code> 指令用于设置两个环境变量，<code>MY_VAR</code> 和 <code>ANOTHER_VAR</code>。当运行时，需要执行<code>-e</code>来输入环境变量：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -e MY_VAR=<span class="hljs-string">&quot;Custom Value&quot;</span> -e ANOTHER_VAR=99 my-image<br></code></pre></td></tr></table></figure>
+
+<div class="note note-warning">
+            <p><code>ARG</code>和<code>ENV</code>的区别主要在，<code>ARG</code> 用于在构建过程中传递参数，而这些参数仅在构建时有效。而<code>ENV</code> 用于设置环境变量，可以在容器启动时访问。</p><p>也就是说，在<code>RUN</code>时，Docker只会使用<code>ARG</code>的默认值，而不是传入的值。但是会使用<code>ENV</code>传入的值。</p><p>因此，<code>ARG</code>常被用在设置软件版本、构建路径。而<code>ENV</code>被用在配置应用程序、传递参数（例如数据库密码，用户名等）。</p>
+          </div>
+
+<h1 id="RUN和CMD的区别是什么"><a href="#RUN和CMD的区别是什么" class="headerlink" title="RUN和CMD的区别是什么"></a>RUN和CMD的区别是什么</h1><p><code>RUN</code>指令在Dockerfile的作用主要是执行一些构建Docker时必要的动作，例如下载，安装等等，例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 安装</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> apt-get update &amp;&amp; apt-get install -y \</span><br><span class="language-bash">    package1 \</span><br><span class="language-bash">    package2 \</span><br><span class="language-bash">    &amp;&amp; <span class="hljs-built_in">rm</span> -rf /var/lib/apt/lists/*</span><br><br><span class="hljs-comment"># 下载软件</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> curl -O https://example.com/file.tar.gz \</span><br><span class="language-bash">    &amp;&amp; tar -xzvf file.tar.gz \</span><br><span class="language-bash">    &amp;&amp; <span class="hljs-built_in">rm</span> file.tar.gz</span><br><br><span class="hljs-comment"># 执行编译</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> make</span><br><br><span class="hljs-comment"># 结合ARG执行</span><br><span class="hljs-keyword">ARG</span> VERSION=latest<br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;Version is <span class="hljs-variable">$VERSION</span>&quot;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>而<code>CMD</code>则用于最后容器启动时要进行的操作，例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;./start.sh&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="VOLUME指令"><a href="#VOLUME指令" class="headerlink" title="VOLUME指令"></a>VOLUME指令</h1><p><code>VOLUME</code> 指令用于在容器中创建挂载，并指定容器中的目录应该被挂载到主机的哪个位置。也就是说，将容器内的数据关联到外部的文件，例如，修改配置文件时就不需要进入容器进行修改，以下是一个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> ubuntu:<span class="hljs-number">20.04</span><br><br><span class="hljs-comment"># 创建挂载点</span><br><span class="hljs-keyword">VOLUME</span><span class="language-bash"> [<span class="hljs-string">&quot;/app/data&quot;</span>]</span><br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制应用程序代码到容器中</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . /app</span><br></code></pre></td></tr></table></figure>
+
+<p>上述操作中的<code>VOLUME [&quot;/app/data&quot;]</code>实际上是在容器内部的 <code>/app/data</code> 目录创建一个卷（Volume）。当在命令行执行以下代码时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -v /host/path:/app/data my-image<br></code></pre></td></tr></table></figure>
+
+<p>就会把容器中的 <code>/app/data</code> 映射到主机上的 <code>/host/path</code>。这意味着容器中写入 <code>/app/data</code> 的数据将实际上存储在主机的 <code>/host/path</code> 目录中。</p>
+<h2 id="在容器内读取宿主机的配置文件"><a href="#在容器内读取宿主机的配置文件" class="headerlink" title="在容器内读取宿主机的配置文件"></a>在容器内读取宿主机的配置文件</h2><p>我们可以通过运行以下指令来挂载卷：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -v /host/config:/container/config my-image<br></code></pre></td></tr></table></figure>
+
+<p>上述指令会将宿主机的&#x2F;host&#x2F;config与容器的&#x2F;config进行映射。假设宿主机的路径下的配置文件是 <code>my-config.conf</code>，在容器内读取该配置文件的路径是 <code>/container/config/my-config.conf</code>。容器内的应用程序应该使用这个路径来访问配置文件。</p>
+<p>2024&#x2F;1&#x2F;27 于苏州家中</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="category-chain-item">工程实践</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Docker/" class="print-no-link">#Docker</a>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/31/Python%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%EF%BC%9A%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%AE%9E%E7%8E%B0/" title="Python并发编程：多线程实现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python并发编程：多线程实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/27/Docker%E5%AE%9E%E8%B7%B5%E6%8C%96%E5%9D%91%E7%BB%86%E8%8A%82/" title="Docker实践挖坑细节">
+                        <span class="hidden-mobile">Docker实践挖坑细节</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

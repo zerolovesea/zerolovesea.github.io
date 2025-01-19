@@ -1,0 +1,866 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="NeuralCF的原理，设计理念及Python实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统：NeuralCF的实现">
+<meta property="og:url" content="http://example.com/2024/10/03/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ANeuralCF%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="NeuralCF的原理，设计理念及Python实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="article:published_time" content="2024-10-03T00:19:04.000Z">
+<meta property="article:modified_time" content="2024-10-03T00:58:46.152Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="特征工程">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="NeuralCF">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
+  
+  
+  
+  <title>推荐系统：NeuralCF的实现 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="推荐系统：NeuralCF的实现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-10-03 08:19" pubdate>
+          2024年10月3日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          22 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">推荐系统：NeuralCF的实现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在Github上看到一张不错的思维导图，摘录至此：</p>
+<p><img src="/images/neuralcf.png" srcset="/img/loading.gif" lazyload></p>
+<p>这张图概述了整个推荐系统的学习框架。这次要学习的NeuralCF正属于协同过滤家族下，属于深度学习运用协同过滤的思想诞生的产物。</p>
+<p>原论文地址：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1708.05031">Neural Collaborative Filtering</a></p>
+<p>翻译论文地址：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/HolyShine/p/6728999.html">【翻译】Neural Collaborative Filtering–神经协同过滤</a></p>
+<h1 id="论文思想"><a href="#论文思想" class="headerlink" title="论文思想"></a>论文思想</h1><p>原论文发表于2017年，作者的观点是：传统矩阵分解使用隐向量的内积来计算特征交互，这种计算方式可以用神经网络来替代，因为理论上DNN能拟合所有函数，它的表达能力比单纯内积要更好。</p>
+<blockquote>
+<p>简单地将潜在特征的乘积线性组合的内积可能不足以捕捉用户交互数据的复杂结构。</p>
+</blockquote>
+<p>因此作者提出了NCF，名字是神经协同过滤，核心思想是通过一个多层MLP来学习User-Item的交互。</p>
+<p>原文用配图展示了共现矩阵对比隐向量（Latent space）的表现能力不足。具体而言是用了一个热门用户，表现为该用户什么都喜欢，使用内积会导致他的相似用户和真实情况有偏差，这实际上是因为只考虑点击的单个维度导致的。现在为了解决这个问题，可以扩大隐向量维度来增加信息。</p>
+<p>论文中的实现方式是将输入分成两个部分，GMF和MLP部分。</p>
+<p><img src="/images/neuralcf1.png" srcset="/img/loading.gif" lazyload></p>
+<p>GMF可以视作传统的MF，MLP对User&#x2F;Item进行更深层的特征提取。</p>
+<p>细看一下MLP部分，输入是用户和商品的One Hot编码，经过嵌入后直接Concat后输入网络，得到用户购买商品的概率。<br><img src="/images/neuralcf2.png" srcset="/img/loading.gif" lazyload></p>
+<p>GMF部分的输入也是用户和商品的One Hot编码，经过嵌入后得到User&#x2F;Item向量$p_{u},q_{i}$。GMF模型的输出则为$\hat y_{ui}&#x3D;a_{out}(h^{T}(p_{u}\odot q_{i}))$。其中$a_{out}$是激活函数，$h^{T}$是边权重。当激活函数是一个恒等函数，并且权重为1时，GMF就退化为MF模型。</p>
+<p>两边其实都用了嵌入层，不过作者将两边分开学习独立的Embedding，并通过连接最后一个隐藏层来组合模型，实际上就是融合了两个模型。在实际融合的时候，使用了一个超参数来权衡两个模型的权重。</p>
+<h1 id="不足"><a href="#不足" class="headerlink" title="不足"></a>不足</h1><p>模型的输入只有User和Item ID，显然又丢失了很多其他特征，核心还是从共现关系中挖掘更多的信息。完全利用嵌入导致可解释性远远不如特征更多的LR以及各种树模型。</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>使用经典数据集MovieLens作为测试数据集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">from</span> copy <span class="hljs-keyword">import</span> deepcopy<br><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> DataLoader, Dataset<br></code></pre></td></tr></table></figure>
+
+<p>读一下文件，然后需要做一些预处理。MovieLens的用户&#x2F;物品Index是从1开始计数的，我们需要调整到从0开始。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">data_root = <span class="hljs-string">r&#x27;C:\Users\ZeroLoveSeA\Desktop\Datasets\ml-1m&#x27;</span><br>ml1m_dir = data_root + <span class="hljs-string">r&#x27;\ratings.dat&#x27;</span><br>ml1m_rating = pd.read_csv(ml1m_dir, sep=<span class="hljs-string">&#x27;::&#x27;</span>, header=<span class="hljs-literal">None</span>, names=[<span class="hljs-string">&#x27;uid&#x27;</span>, <span class="hljs-string">&#x27;mid&#x27;</span>, <span class="hljs-string">&#x27;rating&#x27;</span>, <span class="hljs-string">&#x27;timestamp&#x27;</span>], engine=<span class="hljs-string">&#x27;python&#x27;</span>)<br><br>ml1m_rating[<span class="hljs-string">&#x27;userId&#x27;</span>], _ = pd.factorize(ml1m_rating[<span class="hljs-string">&#x27;uid&#x27;</span>])<br>ml1m_rating[<span class="hljs-string">&#x27;itemId&#x27;</span>], _ = pd.factorize(ml1m_rating[<span class="hljs-string">&#x27;mid&#x27;</span>])<br><br>ml1m_rating = ml1m_rating[[<span class="hljs-string">&#x27;userId&#x27;</span>, <span class="hljs-string">&#x27;itemId&#x27;</span>, <span class="hljs-string">&#x27;rating&#x27;</span>, <span class="hljs-string">&#x27;timestamp&#x27;</span>]]<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Range of userId is [&#123;&#125;, &#123;&#125;]&#x27;</span>.<span class="hljs-built_in">format</span>(ml1m_rating.userId.<span class="hljs-built_in">min</span>(), ml1m_rating.userId.<span class="hljs-built_in">max</span>()))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Range of itemId is [&#123;&#125;, &#123;&#125;]&#x27;</span>.<span class="hljs-built_in">format</span>(ml1m_rating.itemId.<span class="hljs-built_in">min</span>(), ml1m_rating.itemId.<span class="hljs-built_in">max</span>()))<br><br><span class="hljs-comment"># Range of userId is [0, 6039]</span><br><span class="hljs-comment"># Range of itemId is [0, 3705]</span><br></code></pre></td></tr></table></figure>
+
+<p>写一下Dataset：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">NCFData</span>(<span class="hljs-title class_ inherited__">Dataset</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, user_tensor, item_tensor, rating_tensor</span>):<br>        self.user_tensor = user_tensor<br>        self.item_tensor = item_tensor<br>        self.target_tensor = rating_tensor<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__len__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.user_tensor)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__getitem__</span>(<span class="hljs-params">self, idx</span>):<br>        <span class="hljs-keyword">return</span> self.user_tensor[idx], self.item_tensor[idx], self.target_tensor[idx]<br></code></pre></td></tr></table></figure>
+
+<p>然后是DataLoader，我们为每个正样本分配一定数量的负样本，并且需要对评分进行二值化。除此之外，再写一个验证数据集的属性，可以在eval的时候直接调用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># SampleGenerator</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SampleGenerator</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, ratings</span>):<br>        self.ratings = ratings<br>        self.preprocess_ratings = self._binarize(self.ratings)<br>        self.user_pool = <span class="hljs-built_in">set</span>(self.ratings[<span class="hljs-string">&#x27;userId&#x27;</span>].unique()) <br>        self.item_pool = <span class="hljs-built_in">set</span>(self.ratings[<span class="hljs-string">&#x27;itemId&#x27;</span>].unique())<br><br>        self.negatives = self._sample_negative(self.ratings)<br>        self.train_ratings, self.test_ratings = self._split_loo(self.preprocess_ratings)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_binarize</span>(<span class="hljs-params">self, ratings</span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;将评分二值化，大于0的评分映射为1&#x27;&#x27;&#x27;</span><br>        ratings[<span class="hljs-string">&#x27;rating&#x27;</span>] = (ratings[<span class="hljs-string">&#x27;rating&#x27;</span>] &gt; <span class="hljs-number">0</span>).astype(<span class="hljs-built_in">float</span>)<br>        <span class="hljs-keyword">return</span> ratings<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_sample_negative</span>(<span class="hljs-params">self, ratings</span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;负采样&#x27;&#x27;&#x27;</span><br>        interact_status = ratings.groupby(<span class="hljs-string">&#x27;userId&#x27;</span>)[<span class="hljs-string">&#x27;itemId&#x27;</span>].apply(<span class="hljs-built_in">set</span>).reset_index().rename(<br>            columns=&#123;<span class="hljs-string">&#x27;itemId&#x27;</span>: <span class="hljs-string">&#x27;interacted_items&#x27;</span>&#125;)<br>        <span class="hljs-comment"># 将用户没有交互过的物品作为负样本</span><br>        interact_status[<span class="hljs-string">&#x27;negative_items&#x27;</span>] = interact_status[<span class="hljs-string">&#x27;interacted_items&#x27;</span>].apply(<span class="hljs-keyword">lambda</span> x: self.item_pool - x)<br>        <span class="hljs-comment"># 从负样本中随机采样99个</span><br>        interact_status[<span class="hljs-string">&#x27;negative_samples&#x27;</span>] = interact_status[<span class="hljs-string">&#x27;negative_items&#x27;</span>].apply(<span class="hljs-keyword">lambda</span> x: random.sample(<span class="hljs-built_in">list</span>(x), <span class="hljs-number">99</span>))<br>        <span class="hljs-keyword">return</span> interact_status[[<span class="hljs-string">&#x27;userId&#x27;</span>, <span class="hljs-string">&#x27;negative_items&#x27;</span>, <span class="hljs-string">&#x27;negative_samples&#x27;</span>]]        <br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_split_loo</span>(<span class="hljs-params">self, ratings</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;Leave-One-Out evaluation&quot;&quot;&quot;</span><br>        ratings[<span class="hljs-string">&#x27;rank_latest&#x27;</span>] = ratings.groupby([<span class="hljs-string">&#x27;userId&#x27;</span>])[<span class="hljs-string">&#x27;timestamp&#x27;</span>].rank(method=<span class="hljs-string">&#x27;first&#x27;</span>, ascending=<span class="hljs-literal">False</span>)<br>        test = ratings[ratings[<span class="hljs-string">&#x27;rank_latest&#x27;</span>] == <span class="hljs-number">1</span>]<br>        train = ratings[ratings[<span class="hljs-string">&#x27;rank_latest&#x27;</span>] &gt; <span class="hljs-number">1</span>]<br>        <span class="hljs-keyword">assert</span> train[<span class="hljs-string">&#x27;userId&#x27;</span>].nunique() == test[<span class="hljs-string">&#x27;userId&#x27;</span>].nunique(), <span class="hljs-string">&#x27;Not Match Train User with Test User&#x27;</span><br>        <span class="hljs-keyword">return</span> train[[<span class="hljs-string">&#x27;userId&#x27;</span>, <span class="hljs-string">&#x27;itemId&#x27;</span>, <span class="hljs-string">&#x27;rating&#x27;</span>]], test[[<span class="hljs-string">&#x27;userId&#x27;</span>, <span class="hljs-string">&#x27;itemId&#x27;</span>, <span class="hljs-string">&#x27;rating&#x27;</span>]]<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">instance_a_train_loader</span>(<span class="hljs-params">self, num_negatives, batch_size</span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;构建训练数据集&#x27;&#x27;&#x27;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Load train data&#x27;</span>)<br>        users, items, ratings = [], [], []<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Sample negative items&#x27;</span>)<br>        <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> self.train_ratings.itertuples():<br>            users.append(<span class="hljs-built_in">int</span>(row.userId))<br>            items.append(<span class="hljs-built_in">int</span>(row.itemId))<br>            ratings.append(<span class="hljs-built_in">float</span>(row.rating))<br><br>            negatives = random.sample(self.negatives[self.negatives[<span class="hljs-string">&#x27;userId&#x27;</span>] == row.userId][<span class="hljs-string">&#x27;negative_samples&#x27;</span>].iloc[<span class="hljs-number">0</span>], num_negatives)<br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_negatives):<br>                users.append(row.userId)<br>                items.append(negatives[i])<br>                ratings.append(<span class="hljs-number">0</span>) <span class="hljs-comment"># 负样本的评分为0</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Construct DataLoader&#x27;</span>)<br>        dataset = NCFData(user_tensor=torch.tensor(users), item_tensor=torch.tensor(items), rating_tensor=torch.tensor(ratings))<br>        <span class="hljs-keyword">return</span> DataLoader(dataset, batch_size=batch_size, shuffle=<span class="hljs-literal">True</span>)<br>    <br><span class="hljs-meta">    @property</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate_data</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;构建测试数据集&#x27;&#x27;&#x27;</span><br>        test_ratings = self.test_ratings.merge(self.negatives[[<span class="hljs-string">&#x27;userId&#x27;</span>, <span class="hljs-string">&#x27;negative_samples&#x27;</span>]], on=<span class="hljs-string">&#x27;userId&#x27;</span>)<br>        test_users, test_items, negative_users, negative_items = [], [], [], []<br>        <br>        <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> test_ratings.itertuples():<br>            test_users.append(row.userId)<br>            test_items.append(row.itemId)<br>            negative_users.extend([row.userId] * <span class="hljs-built_in">len</span>(row.negative_samples))<br>            negative_items.extend(row.negative_samples)<br>        <br>        <span class="hljs-keyword">return</span> [torch.tensor(test_users), torch.tensor(test_items),<br>                torch.tensor(negative_users), torch.tensor(negative_items)]<br></code></pre></td></tr></table></figure>
+
+<p>实例化一下Dataloader和验证数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">sample_generator = SampleGenerator(ml1m_rating)<br>evaluate_data = sample_generator.evaluate_data<br></code></pre></td></tr></table></figure>
+
+<p>接下来写模型，包括forward，train和evaluate。模型架构本身没什么说的，基本上就是Embedding进两个网络，最后Concat后进Sigmoid得到一个Logit。</p>
+<p>训练包括了训练单个batch和一个epoch的部分。验证时计算命中率和NDCG。命中率的计算方式是，只要预测的正样本在排名Top k中，则分子+1，分母为所有预测数。NDCG是DCG的归一化，每个样本单独计算其贡献度，即分子为当前样本是否为正样本，是则为1。分母是对样本的index+1取log，也就是当前样本越靠后，分母越大，样本的整体得分越小，相当于一个加权计算。最后将每个样本的贡献度求和，就是DCG。</p>
+<p>要求得NDCG，需要对DCG除以一个标准化的系数，IDCG，IDCG和DCG基本一致，只不过分子是理想下的DCG值，即样本真实的DCG值。最终，如果预测和理想完全一致，NDCG的值为1。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> nn<br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">from</span> tensorboardX <span class="hljs-keyword">import</span> SummaryWriter<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">NeuMF</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, num_users, num_items, latent_dim_mf, latent_dim_mlp, config_layers, learning_rate</span>):<br>        <span class="hljs-built_in">super</span>(NeuMF, self).__init__()<br>        self.num_users = num_users<br>        self.num_items = num_items<br>        self.latent_dim_mf = latent_dim_mf<br>        self.latent_dim_mlp = latent_dim_mlp<br>        self.config_layers = config_layers<br>        self.learning_rate = learning_rate<br>        self._writer = SummaryWriter(log_dir=<span class="hljs-string">&#x27;logs&#x27;</span>)<br><br>        <span class="hljs-comment"># 嵌入层</span><br>        self.embedding_user_mlp = nn.Embedding(num_embeddings=self.num_users, embedding_dim=self.latent_dim_mlp)<br>        self.embedding_item_mlp = nn.Embedding(num_embeddings=self.num_items, embedding_dim=self.latent_dim_mlp)<br>        self.embedding_user_mf = nn.Embedding(num_embeddings=self.num_users, embedding_dim=self.latent_dim_mf)<br>        self.embedding_item_mf = nn.Embedding(num_embeddings=self.num_items, embedding_dim=self.latent_dim_mf)<br><br>        <span class="hljs-comment"># MLP layers: 输入层是用户和物品的嵌入向量，输出层是一个数值</span><br>        self.fc_layers = nn.ModuleList()<br>        input_size = self.latent_dim_mlp * <span class="hljs-number">2</span>  <span class="hljs-comment"># 合并用户和物品的嵌入向量</span><br>        <span class="hljs-keyword">for</span> output_size <span class="hljs-keyword">in</span> self.config_layers:<br>            self.fc_layers.append(nn.Linear(input_size, output_size))<br>            input_size = output_size<br><br>        <span class="hljs-comment"># Output layer: 输出层的输入是MLP的输出和MF的输出</span><br>        self.output_layer = nn.Linear(self.config_layers[-<span class="hljs-number">1</span>] + self.latent_dim_mf, <span class="hljs-number">1</span>)<br><br>        <span class="hljs-comment"># 损失函数和优化器</span><br>        self.loss = nn.BCELoss()<br>        self.optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)<br>        <br>        <span class="hljs-comment"># 评估指标</span><br>        self._metrics = Metrics(top_k=<span class="hljs-number">10</span>)<br>        <br>        <span class="hljs-comment"># 初始化权重</span><br>        self._init_weight_()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_init_weight_</span>(<span class="hljs-params">self</span>):<br>        nn.init.normal_(self.embedding_user_mlp.weight, std=<span class="hljs-number">0.01</span>)<br>        nn.init.normal_(self.embedding_item_mlp.weight, std=<span class="hljs-number">0.01</span>)<br>        nn.init.normal_(self.embedding_user_mf.weight, std=<span class="hljs-number">0.01</span>)<br>        nn.init.normal_(self.embedding_item_mf.weight, std=<span class="hljs-number">0.01</span>)<br><br>        <span class="hljs-keyword">for</span> fc <span class="hljs-keyword">in</span> self.fc_layers:<br>            nn.init.xavier_uniform_(fc.weight)<br>            nn.init.zeros_(fc.bias)<br><br>        nn.init.kaiming_uniform_(self.output_layer.weight, nonlinearity=<span class="hljs-string">&#x27;sigmoid&#x27;</span>)<br>        nn.init.zeros_(self.output_layer.bias)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, user, item</span>):<br>        <span class="hljs-comment"># MLP part</span><br>        user_mlp = self.embedding_user_mlp(user)<br>        item_mlp = self.embedding_item_mlp(item)<br>        mlp_vector = torch.cat([user_mlp, item_mlp], dim=-<span class="hljs-number">1</span>)<br><br>        <span class="hljs-keyword">for</span> fc <span class="hljs-keyword">in</span> self.fc_layers:<br>            mlp_vector = torch.relu(fc(mlp_vector))<br><br>        <span class="hljs-comment"># MF part</span><br>        user_mf = self.embedding_user_mf(user)<br>        item_mf = self.embedding_item_mf(item)<br>        mf_vector = torch.mul(user_mf, item_mf)<br><br>        <span class="hljs-comment"># 合并MLP和MF的输出</span><br>        output_vector = torch.cat([mlp_vector, mf_vector], dim=-<span class="hljs-number">1</span>)<br><br>        <span class="hljs-comment"># 最终输出</span><br>        rating_logit = torch.sigmoid(self.output_layer(output_vector))<br>        <span class="hljs-keyword">return</span> rating_logit<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train_single_batch</span>(<span class="hljs-params">self, users, items, ratings</span>):<br>        <span class="hljs-keyword">if</span> torch.cuda.is_available():<br>            users, items, ratings = users.cuda(), items.cuda(), ratings.cuda()<br><br>        self.train()<br>        self.optimizer.zero_grad()<br>        ratings_pred = self.forward(users, items)<br>        loss = self.loss(ratings_pred.view(-<span class="hljs-number">1</span>), ratings)<br>        loss.backward()<br>        self.optimizer.step()<br>        <span class="hljs-keyword">return</span> loss.item()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train_single_epoch</span>(<span class="hljs-params">self, train_loader, epoch_id</span>):<br>        self.train()<br>        total_loss = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> batch_id, (users, items, ratings) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(train_loader):<br>            loss = self.train_single_batch(users, items, ratings)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Epoch &#123;&#125; Batch &#123;&#125; Loss &#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(epoch_id, batch_id, loss))<br>            total_loss += loss<br>        self._writer.add_scalar(<span class="hljs-string">&#x27;model/loss&#x27;</span>, total_loss, epoch_id)<br>        <span class="hljs-keyword">return</span> total_loss<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate</span>(<span class="hljs-params">self, evaluate_data</span>):<br>        self.<span class="hljs-built_in">eval</span>()<br>        test_users, test_items, negative_users, negative_items = evaluate_data<br>        <span class="hljs-keyword">if</span> torch.cuda.is_available():<br>            test_users, test_items, negative_users, negative_items = test_users.cuda(), test_items.cuda(), negative_users.cuda(), negative_items.cuda()<br><br>        <span class="hljs-comment"># 计算测试样本和负样本的预测分数</span><br>        test_scores = self.forward(test_users, test_items)<br>        negative_scores = self.forward(negative_users, negative_items)<br><br>        <span class="hljs-comment"># 设置 metrics 中的 subjects</span><br>        self._metrics.set_subjects(<br>            test_users=test_users.cpu(),<br>            test_items=test_items.cpu(),<br>            test_scores=test_scores.cpu(),<br>            negative_users=negative_users.cpu(),<br>            negative_items=negative_items.cpu(),<br>            negative_scores=negative_scores.cpu()<br>        )<br><br>        <span class="hljs-comment"># 计算命中率和NDCG</span><br>        hit_ratio = self._metrics.cal_hit_ratio()<br>        ndcg = self._metrics.cal_ndcg()<br><br>        self._writer.add_scalar(<span class="hljs-string">&#x27;model/hit_ratio&#x27;</span>, hit_ratio, <span class="hljs-number">0</span>)<br>        self._writer.add_scalar(<span class="hljs-string">&#x27;model/ndcg&#x27;</span>, ndcg, <span class="hljs-number">0</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Hit Ratio is &#123;:.6f&#125;, NDCG is &#123;:.6f&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(hit_ratio, ndcg))<br>        <span class="hljs-keyword">return</span> hit_ratio, ndcg<br><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Metrics</span>(<span class="hljs-title class_ inherited__">object</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, top_k</span>):<br>        self._top_k = top_k<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">set_subjects</span>(<span class="hljs-params">self, test_users, test_items, test_scores, negative_users, negative_items, negative_scores</span>):<br>        self._subjects = []<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(test_users)):<br>            user = test_users[i].item()<br>            test_item = test_items[i].item()<br>            <span class="hljs-comment"># test_score 是一维的</span><br>            test_score = test_scores[i].view(-<span class="hljs-number">1</span>).item()  <span class="hljs-comment"># 确保 test_score 是标量</span><br>            <span class="hljs-comment"># neg_items 是负样本的物品ID</span><br>            neg_items = negative_items[i*<span class="hljs-number">99</span>:(i+<span class="hljs-number">1</span>)*<span class="hljs-number">99</span>].detach().numpy()<br>            <span class="hljs-comment"># neg_scores 是针对负样本的评分，需展平为一维</span><br>            neg_scores = negative_scores[i*<span class="hljs-number">99</span>:(i+<span class="hljs-number">1</span>)*<span class="hljs-number">99</span>].view(-<span class="hljs-number">1</span>).detach().numpy()<br><br>            <span class="hljs-comment"># 合并正样本和负样本的物品及其对应分数</span><br>            items = np.concatenate(([test_item], neg_items))<br>            scores = np.concatenate(([test_score], neg_scores))<br><br>            <span class="hljs-comment"># 按得分排序</span><br>            ranked_idx = np.argsort(-scores)<br>            ranked_items = items[ranked_idx]<br>            <br>            self._subjects.append(&#123;<br>                <span class="hljs-string">&#x27;user&#x27;</span>: user,<br>                <span class="hljs-string">&#x27;ranked_items&#x27;</span>: ranked_items,<br>                <span class="hljs-string">&#x27;test_item&#x27;</span>: test_item<br>            &#125;)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">cal_hit_ratio</span>(<span class="hljs-params">self</span>):<br>        hits = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> subject <span class="hljs-keyword">in</span> self._subjects:<br>            <span class="hljs-comment"># 如果正样本的物品在排名前top_k之内，则命中</span><br>            <span class="hljs-keyword">if</span> subject[<span class="hljs-string">&#x27;test_item&#x27;</span>] <span class="hljs-keyword">in</span> subject[<span class="hljs-string">&#x27;ranked_items&#x27;</span>][:self._top_k]:<br>                hits += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">return</span> hits / <span class="hljs-built_in">len</span>(self._subjects)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">cal_ndcg</span>(<span class="hljs-params">self</span>):<br>        total_ndcg = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> subject <span class="hljs-keyword">in</span> self._subjects:<br>            <span class="hljs-keyword">try</span>:<br>                rank = np.where(subject[<span class="hljs-string">&#x27;ranked_items&#x27;</span>] == subject[<span class="hljs-string">&#x27;test_item&#x27;</span>])[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] + <span class="hljs-number">1</span><br>                total_ndcg += math.log(<span class="hljs-number">2</span>) / math.log(<span class="hljs-number">1</span> + rank)<br>            <span class="hljs-keyword">except</span> IndexError:<br>                <span class="hljs-keyword">continue</span><br>        <span class="hljs-keyword">return</span> total_ndcg / <span class="hljs-built_in">len</span>(self._subjects)<br><br></code></pre></td></tr></table></figure>
+
+<p>我们训练一个Epoch试一下，设置MF和MLP的隐向量维度都为8，BS为64：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python">num_users = ml1m_rating[<span class="hljs-string">&#x27;userId&#x27;</span>].nunique()<br>num_items = ml1m_rating[<span class="hljs-string">&#x27;itemId&#x27;</span>].nunique()<br>num_factors_mf = <span class="hljs-number">8</span><br>num_factors_mlp = <span class="hljs-number">8</span><br>layers = [<span class="hljs-number">16</span>, <span class="hljs-number">64</span>, <span class="hljs-number">32</span>, <span class="hljs-number">16</span>, <span class="hljs-number">8</span>]<br>learning_rate = <span class="hljs-number">0.001</span><br>batch_size = <span class="hljs-number">64</span><br><br>num_negatives = <span class="hljs-number">4</span><br><br>neumf = NeuMF(num_users=num_users, <br>              num_items=num_items, <br>              latent_dim_mf=num_factors_mf, <br>              latent_dim_mlp=num_factors_mlp, <br>              config_layers=layers, <br>              learning_rate=learning_rate)<br><br><span class="hljs-keyword">if</span> torch.cuda.is_available():<br>    neumf = neumf.cuda()<br><br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>):<br>    train_loader = sample_generator.instance_a_train_loader(num_negatives, batch_size)<br>    loss = neumf.train_single_epoch(train_loader, epoch)<br>    hit_ratio, ndcg = neumf.evaluate(evaluate_data)<br>    <br><span class="hljs-comment"># Epoch 0 Batch 24 Loss 0.6258940696716309</span><br>...<br><span class="hljs-comment"># Epoch 0 Batch 77667 Loss 0.38616734743118286</span><br><span class="hljs-comment"># Epoch 0 Batch 77668 Loss 0.2662082016468048</span><br><span class="hljs-comment"># Epoch 0 Batch 77669 Loss 0.12284557521343231</span><br><span class="hljs-comment"># Hit Ratio is 0.617384, NDCG is 0.464588</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>2024&#x2F;10&#x2F;3 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/" class="print-no-link">#特征工程</a>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="print-no-link">#机器学习</a>
+      
+        <a href="/tags/NeuralCF/" class="print-no-link">#NeuralCF</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/12/14/What-goes-up-must-come-down/" title="What goes up must come down">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">What goes up must come down</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/30/%E6%9C%89%E4%BA%9B%E5%BF%99%E7%A2%8C%E7%9A%84%E8%BF%91%E6%9C%9F/" title="有些忙碌的近期">
+                        <span class="hidden-mobile">有些忙碌的近期</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

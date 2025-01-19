@@ -1,0 +1,865 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Yolo v5的超参数设置相关内容。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yolo v5的工程代码实现：超参数与优化策略">
+<meta property="og:url" content="http://example.com/2024/04/05/Yolo-v5%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9A%E8%B6%85%E5%8F%82%E6%95%B0%E4%B8%8E%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Yolo v5的超参数设置相关内容。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/yolov5.png">
+<meta property="article:published_time" content="2024-04-04T23:47:34.000Z">
+<meta property="article:modified_time" content="2024-04-20T00:08:00.027Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="CV">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="Yolo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/yolov5.png">
+  
+  
+  
+  <title>Yolo v5的工程代码实现：超参数与优化策略 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Yolo v5的工程代码实现：超参数与优化策略"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-05 07:47" pubdate>
+          2024年4月5日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          14 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Yolo v5的工程代码实现：超参数与优化策略</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在Yolo v5的代码中，训练时有几个需要配置的文件。一个是模型的yaml文件，当中包含了多个参数。</p>
+<h1 id="Model-yaml"><a href="#Model-yaml" class="headerlink" title="Model.yaml"></a>Model.yaml</h1><p>我们以最小的yolov5s.yaml为例，它的配置文件如下所示：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">nc:</span> <span class="hljs-number">80</span> <span class="hljs-comment"># 需要预测的分类数</span><br><span class="hljs-attr">depth_multiple:</span> <span class="hljs-number">0.33</span> <span class="hljs-comment"># 网络深度的系数</span><br><span class="hljs-attr">width_multiple:</span> <span class="hljs-number">0.50</span> <span class="hljs-comment"># 网络宽度的系数</span><br><br><span class="hljs-comment"># 先验框配置，也可以直接写数字表示聚类数</span><br><span class="hljs-attr">anchors:</span> <span class="hljs-comment"># 9个anchor，其中P表示特征图的层级，P3/8该层特征图缩放为1/8,是第3层特征</span><br>  <span class="hljs-bullet">-</span> [<span class="hljs-number">10</span>, <span class="hljs-number">13</span>, <span class="hljs-number">16</span>, <span class="hljs-number">30</span>, <span class="hljs-number">33</span>, <span class="hljs-number">23</span>] <span class="hljs-comment"># P3/8 FPN接主干网络下采样8倍后的anchor大小,检测小目标,10,13是一组尺寸，总共三组检测小目标</span><br>  <span class="hljs-bullet">-</span> [<span class="hljs-number">30</span>, <span class="hljs-number">61</span>, <span class="hljs-number">62</span>, <span class="hljs-number">45</span>, <span class="hljs-number">59</span>, <span class="hljs-number">119</span>] <span class="hljs-comment"># P4/16 FPN接主干网络下采样4倍后的anchor大小,检测中目标，共三组</span><br>  <span class="hljs-bullet">-</span> [<span class="hljs-number">116</span>, <span class="hljs-number">90</span>, <span class="hljs-number">156</span>, <span class="hljs-number">198</span>, <span class="hljs-number">373</span>, <span class="hljs-number">326</span>] <span class="hljs-comment"># P5/32 FPN接主干网络下采样2倍后的anchor大小,检测大目标，共三组</span><br><br><span class="hljs-attr">backbone:</span><br>  <span class="hljs-comment"># [from, number, module, args]</span><br>  [<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">64</span>, <span class="hljs-number">6</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>]], <span class="hljs-comment"># 0-P1/2</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">128</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]], <span class="hljs-comment"># 1-P2/4</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">128</span>]],<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">256</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]], <span class="hljs-comment"># 3-P3/8</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">6</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">256</span>]],<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">512</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]], <span class="hljs-comment"># 5-P4/16</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">9</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">512</span>]],<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">1024</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]], <span class="hljs-comment"># 7-P5/32</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">1024</span>]],<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">SPPF</span>, [<span class="hljs-number">1024</span>, <span class="hljs-number">5</span>]], <span class="hljs-comment"># 9</span><br>  ]<br><br><span class="hljs-attr">head:</span> [<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">512</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]],<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">nn.Upsample</span>, [<span class="hljs-string">None</span>, <span class="hljs-number">2</span>, <span class="hljs-string">&quot;nearest&quot;</span>]],<br>    [[<span class="hljs-number">-1</span>, <span class="hljs-number">6</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]], <span class="hljs-comment"># cat backbone P4</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">512</span>, <span class="hljs-literal">False</span>]], <span class="hljs-comment"># 13</span><br><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">256</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]],<br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">nn.Upsample</span>, [<span class="hljs-string">None</span>, <span class="hljs-number">2</span>, <span class="hljs-string">&quot;nearest&quot;</span>]],<br>    [[<span class="hljs-number">-1</span>, <span class="hljs-number">4</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]], <span class="hljs-comment"># cat backbone P3</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">256</span>, <span class="hljs-literal">False</span>]], <span class="hljs-comment"># 17 (P3/8-small)</span><br><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">256</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],<br>    [[<span class="hljs-number">-1</span>, <span class="hljs-number">14</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]], <span class="hljs-comment"># cat head P4</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">512</span>, <span class="hljs-literal">False</span>]], <span class="hljs-comment"># 20 (P4/16-medium)</span><br><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">512</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],<br>    [[<span class="hljs-number">-1</span>, <span class="hljs-number">10</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]], <span class="hljs-comment"># cat head P5</span><br>    [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">1024</span>, <span class="hljs-literal">False</span>]], <span class="hljs-comment"># 23 (P5/32-large)</span><br><br>    [[<span class="hljs-number">17</span>, <span class="hljs-number">20</span>, <span class="hljs-number">23</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Detect</span>, [<span class="hljs-string">nc</span>, <span class="hljs-string">anchors</span>]], <span class="hljs-comment"># Detect(P3, P4, P5)</span><br>  ]<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="网络深度与宽度"><a href="#网络深度与宽度" class="headerlink" title="网络深度与宽度"></a>网络深度与宽度</h2><p>第一个需要了解的是这里的是<code>depth_multiple</code> 和<code>width_multiple</code> 。</p>
+<p><code>depth_multiple</code>: 有些模块需要重复n次，这时就会将<code>depth_multiple</code>$&#x2F;times$n来控制模块重复的次数。例如在模型架构图中，包含C3模块如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># ...省略其余模块</span><br>[<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">128</span>]<br>[<span class="hljs-number">-1</span>, <span class="hljs-number">6</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">128</span>]<br>[<span class="hljs-number">-1</span>, <span class="hljs-number">9</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">128</span>]<br>[<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">128</span>]<br></code></pre></td></tr></table></figure>
+
+<p>这里的第二个数字用来控制C3模块中残差模块的个数。这时就将<code>depth_multiple</code>乘以它来控制重复的次数，这时实际的残差模块的重复次数为<code>1,2,3,1</code>，网络的深度就变浅了。当然，本来就为1的不会变。</p>
+<blockquote>
+<p>C3模块是一个含有3个卷积层的bottleneck模块。留着以后学习。</p>
+</blockquote>
+<p><img src="/images/c3.png" srcset="/img/loading.gif" lazyload alt="C3"></p>
+<p><code>width_multiple</code>: 控制某些模块输出的channel数。例如卷积层的channel数，用于控制网络宽度。例如卷积层：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs yaml">[<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">64</span>, <span class="hljs-number">6</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>]]<br></code></pre></td></tr></table></figure>
+
+<p>其中的<code>[64, 6, 2, 2]</code>代表输出通道数，卷积核，步长，Padding。当<code>width_multiple</code>为0.5时，输出通道数即为32。</p>
+<h2 id="Anchor"><a href="#Anchor" class="headerlink" title="Anchor"></a>Anchor</h2><p>引用链接：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_46110834/article/details/111410923">锚框(anchor box)&#x2F;先验框(prior bounding box)概念介绍及其生成-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/63024247">锚框：Anchor box综述 - 知乎 (zhihu.com)</a></p>
+<p>Yolov5中使用K-means的聚类来初始化9个锚框。这九个锚框分别在三个检测层的Feature Map上被使用。</p>
+<p>尺度越大，Feature Map越大，对原图的下采样越小，感受野也越小，设置的Anchor也越小，对原图的小物体预测效果更好。</p>
+<blockquote>
+<p>锚框又称为先验框，在Faster R-CNN中被提出。原先的目标检测方法需要使用固定尺寸的滑动窗口，遍历固定大小的窗口里的像素来判断是否是目标。这样会导致不适合形变较大的物体，并且计算量过大。</p>
+<p>因此Faster R-CNN中加入了RPN（Regional Proposal），区域候选框。它负责找到图像中最可能出现目标分类的候选区域。</p>
+<p>锚框则是人为预先选择好的不同大小的候选框。模型去预测Grounding Truth和锚框的偏移量。</p>
+<p>篇幅有限，之后再学习。</p>
+</blockquote>
+<p>总之，这个参数是对预测图片中的物体大小进行适配。如果检测物体较小，则需要调小。Yolo v5中，如果Anchor只设置为数字，则会调用AutoAnchor，找到最佳的锚框。</p>
+<p>在Yaml文件中，Anchors可以看到包含三个列表，表示给三个尺度分配，这三个尺度在[[17, 20, 23], 1, Detect, [nc, anchors]] 指明，分别是网络的第17、20和23层。注释P3&#x2F;8是指输入下采样了23 &#x3D; 8倍，我们也可以发现网络的第17层特征图为输入的1&#x2F;8。</p>
+<p>[[17, 20, 23], 1, Detect, [nc, anchors]] 表示把第17、20和23三层作为Detect模块的输入， [nc, anchors]是初始化Detect模块的参数。Detect模块在model&#x2F;yolo.py中声明，相当于从模型中提出想要的层作为输入，转换为相应的检测头，其输出用来计算loss。</p>
+<h2 id="网络架构"><a href="#网络架构" class="headerlink" title="网络架构"></a>网络架构</h2><p>网络架构分为了Backbone和Head，这两个写法是一样。Yolov5按照配置文件实例化各个层，每行的列表中的四个元素分别代表：[from, number, module, args]：</p>
+<ul>
+<li>from：该层的输入，-1代表上一层</li>
+<li>number：该层的数量</li>
+<li>module：类名</li>
+<li>args：类的初始化参数</li>
+</ul>
+<h1 id="hyp-scrach-yaml"><a href="#hyp-scrach-yaml" class="headerlink" title="hyp.scrach.yaml"></a>hyp.scrach.yaml</h1><p><code>data/hyps</code>中存放了默认的初始化超参数。示例如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">lr0:</span> <span class="hljs-number">0.01</span>  <span class="hljs-comment"># 初始学习率 (SGD=1E-2, Adam=1E-3)</span><br><span class="hljs-attr">lrf:</span> <span class="hljs-number">0.2</span>  <span class="hljs-comment"># 循环学习率 (lr0 * lrf)</span><br><span class="hljs-attr">momentum:</span> <span class="hljs-number">0.937</span>  <span class="hljs-comment"># SGD momentum/Adam beta1 学习率动量</span><br><span class="hljs-attr">weight_decay:</span> <span class="hljs-number">0.0005</span>  <span class="hljs-comment"># 权重衰减系数 </span><br><span class="hljs-attr">warmup_epochs:</span> <span class="hljs-number">3.0</span>  <span class="hljs-comment"># 预热学习 (fractions ok)</span><br><span class="hljs-attr">warmup_momentum:</span> <span class="hljs-number">0.8</span>  <span class="hljs-comment"># 预热学习动量</span><br><span class="hljs-attr">warmup_bias_lr:</span> <span class="hljs-number">0.1</span>  <span class="hljs-comment"># 预热初始学习率</span><br><span class="hljs-attr">box:</span> <span class="hljs-number">0.05</span>  <span class="hljs-comment"># iou损失系数</span><br><span class="hljs-attr">cls:</span> <span class="hljs-number">0.5</span>  <span class="hljs-comment"># cls损失系数</span><br><span class="hljs-attr">cls_pw:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># cls BCELoss正样本权重</span><br><span class="hljs-attr">obj:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># 有无物体系数(scale with pixels)</span><br><span class="hljs-attr">obj_pw:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># 有无物体BCELoss正样本权重</span><br><span class="hljs-attr">iou_t:</span> <span class="hljs-number">0.20</span>  <span class="hljs-comment"># IoU训练时的阈值</span><br><span class="hljs-attr">anchor_t:</span> <span class="hljs-number">4.0</span>  <span class="hljs-comment"># anchor的长宽比（长:宽 = 4:1）</span><br><span class="hljs-comment"># anchors: 3  # 每个输出层的anchors数量(0 to ignore)</span><br></code></pre></td></tr></table></figure>
+
+<p>以下系数是数据增强系数，包括颜色空间和图片空间：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">fl_gamma:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># focal loss gamma (efficientDet default gamma=1.5)</span><br><span class="hljs-attr">hsv_h:</span> <span class="hljs-number">0.015</span>  <span class="hljs-comment"># 色调 (fraction)</span><br><span class="hljs-attr">hsv_s:</span> <span class="hljs-number">0.7</span>  <span class="hljs-comment"># 饱和度 (fraction)</span><br><span class="hljs-attr">hsv_v:</span> <span class="hljs-number">0.4</span>  <span class="hljs-comment"># 亮度 (fraction)</span><br><span class="hljs-attr">degrees:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># 旋转角度 (+/- deg)</span><br><span class="hljs-attr">translate:</span> <span class="hljs-number">0.1</span>  <span class="hljs-comment"># 平移(+/- fraction)</span><br><span class="hljs-attr">scale:</span> <span class="hljs-number">0.5</span>  <span class="hljs-comment"># 图像缩放 (+/- gain)</span><br><span class="hljs-attr">shear:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># 图像剪切 (+/- deg)</span><br><span class="hljs-attr">perspective:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># 透明度 (+/- fraction), range 0-0.001</span><br><span class="hljs-attr">flipud:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># 进行上下翻转概率 (probability)</span><br><span class="hljs-attr">fliplr:</span> <span class="hljs-number">0.5</span>  <span class="hljs-comment"># 进行左右翻转概率 (probability)</span><br><span class="hljs-attr">mosaic:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># 进行Mosaic概率 (probability)</span><br><span class="hljs-attr">mixup:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># 进行图像混叠概率（即，多张图像重叠在一起） (probability)</span><br></code></pre></td></tr></table></figure>
+
+<p>此外，在训练时，还可以调整训练超参数，包括训练图片的尺寸，Batch，Epoch等等。</p>
+<p>2024&#x2F;4&#x2F;8 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CV/" class="category-chain-item">CV</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CV/" class="print-no-link">#CV</a>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/Yolo/" class="print-no-link">#Yolo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/04/10/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%9AMoE%E4%B8%93%E5%AE%B6%E6%9E%B6%E6%9E%84/" title="源码分析：MoE专家架构">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">源码分析：MoE专家架构</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/03/Yolo-v5%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9Atrain-py/" title="Yolo v5的工程代码实现：train.py">
+                        <span class="hidden-mobile">Yolo v5的工程代码实现：train.py</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

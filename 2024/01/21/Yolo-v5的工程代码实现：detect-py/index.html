@@ -1,0 +1,935 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Yolo v5的推理代码解读与debug。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yolo v5的工程代码实现：detect.py">
+<meta property="og:url" content="http://example.com/2024/01/21/Yolo-v5%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9Adetect-py/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Yolo v5的推理代码解读与debug。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/yolov5.png">
+<meta property="article:published_time" content="2024-01-21T00:56:26.000Z">
+<meta property="article:modified_time" content="2024-01-21T10:28:46.726Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="CV">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="Yolo">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/yolov5.png">
+  
+  
+  
+  <title>Yolo v5的工程代码实现：detect.py - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Yolo v5的工程代码实现：detect.py"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-21 08:56" pubdate>
+          2024年1月21日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          73 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Yolo v5的工程代码实现：detect.py</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Yolo简史"><a href="#Yolo简史" class="headerlink" title="Yolo简史"></a>Yolo简史</h1><p>Yolo系列可谓是无数CVer的入门之作，也是广大研究生，小厂商的救命稻草。我原先也精读过Yolo v1的论文，不过今天先逐步解析一下Yolo v5的工程代码。</p>
+<p>Yolo v1-v3都是由原作者Joseph Redmon开发，2020年，他宣称拒绝该技术被美国军方使用，停止了个人开发。后续的开发由各个企业&#x2F;开发者维系。</p>
+<p>Yolo v4由Yolo Darknet的维护者Alexy Bochkoviskiy发布；Yolo v5&#x2F;v8由西班牙公司Ulterlytics开发；Yolo v6由美团发布，Yolo v7则继续由Alexy Bochkoviskiy发布。事实上，Alexy Bochkoviskiy目前被广泛认为是Yolo的官方开发者。</p>
+<h1 id="代码架构"><a href="#代码架构" class="headerlink" title="代码架构"></a>代码架构</h1><p>Yolo v5的官方仓库中主要由以下架构组成：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">/yolov5<br>│<br>├── classify <span class="hljs-comment"># 分类模型的训练/推理/验证/教程代码</span><br>├── data <span class="hljs-comment"># 数据集配置文件/超参数配置文件/测试图片</span><br>├── models <span class="hljs-comment"># 模型配置文件</span><br>├── segment <span class="hljs-comment"># 图形分割模型的训练/推理/验证/教程代码</span><br>├── utils <span class="hljs-comment"># 工具代码</span><br>├── benchmarks.py <span class="hljs-comment"># 评估代码</span><br>├── detect.py <span class="hljs-comment"># 预测代码</span><br>├── export.py <span class="hljs-comment"># 模型转换代码</span><br>├── hubconf.py <span class="hljs-comment"># 从torch.hub导入模型的代码</span><br>├── train.py <span class="hljs-comment"># 训练代码</span><br>├── val.py <span class="hljs-comment"># 验证代码</span><br>└── tutorial.ipynb <span class="hljs-comment"># 教程代码</span><br></code></pre></td></tr></table></figure>
+
+<p>今天分析的是其中的<code>detect.py</code>，这是yolo v5的推理代码，总共只有200多行代码，所以并不复杂。</p>
+<h2 id="依赖包"><a href="#依赖包" class="headerlink" title="依赖包"></a>依赖包</h2><p>首先是导入依赖包：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> argparse<br><span class="hljs-keyword">import</span> csv<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> platform<br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">from</span> pathlib <span class="hljs-keyword">import</span> Path<br><br><span class="hljs-keyword">import</span> torch<br><br><span class="hljs-comment">#获取detect.py在电脑中的绝对路径</span><br>FILE = Path(__file__).resolve() <br><br><span class="hljs-comment"># 获取detect.py的父目录（绝对路径）：YOLOv5 root directory</span><br>ROOT = FILE.parents[<span class="hljs-number">0</span>]  <br><br><span class="hljs-keyword">if</span> <span class="hljs-built_in">str</span>(ROOT) <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sys.path: <br>	<span class="hljs-comment"># 添加yolov5根目录到系统路径中</span><br>    sys.path.append(<span class="hljs-built_in">str</span>(ROOT))  <br>    <br><span class="hljs-comment"># 将绝对路径转换为相对路径</span><br>ROOT = Path(os.path.relpath(ROOT, Path.cwd())) <br></code></pre></td></tr></table></figure>
+
+<p>这里值得学习的是路径的导入：通过当前文件的路径找到项目母路径，添加到系统变量，并转化为相对路径。这时，ROOT就变成了项目根目录的相对路径，引用的时候需要从根目录考虑位置。</p>
+<p>接下来是导入自定义的库：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> ultralytics.utils.plotting <span class="hljs-keyword">import</span> Annotator, colors, save_one_box<br><br><span class="hljs-keyword">from</span> models.common <span class="hljs-keyword">import</span> DetectMultiBackend<br><span class="hljs-keyword">from</span> utils.dataloaders <span class="hljs-keyword">import</span> IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams<br><span class="hljs-keyword">from</span> utils.general <span class="hljs-keyword">import</span> (<br>    LOGGER,<br>    Profile,<br>    check_file,<br>    check_img_size,<br>    check_imshow,<br>    check_requirements,<br>    colorstr,<br>    cv2,<br>    increment_path,<br>    non_max_suppression,<br>    print_args,<br>    scale_boxes,<br>    strip_optimizer,<br>    xyxy2xywh,<br>)<br><span class="hljs-keyword">from</span> utils.torch_utils <span class="hljs-keyword">import</span> select_device, smart_inference_mode<br></code></pre></td></tr></table></figure>
+
+<p>这些自定义库的内容如下：</p>
+<ul>
+<li><strong>models.common.py：</strong> 这个文件定义了模型的层结构，以及一些通用的函数和类，比如图像的处理、非极大值抑制等等。</li>
+<li><strong>utils.dataloaders.py：</strong> 这个文件定义了dataloader和dataset。其中定义了一些常用的类：LoadStream，LoadImages，LoadScreenshots，LoadImagesAndLabels，这些是用来导入数据的类。</li>
+<li><strong>utils.general.py：</strong> 这个文件定义了一些常用的工具函数，比如判断语句、检查文件是否存在、检查图像大小是否符合要求、打印命令行参数等等。</li>
+<li><strong>utils.plots.py：</strong> 这个文件定义了Annotator类，可以在图像上绘制矩形框和标注信息。</li>
+<li><strong>utils.torch_utils.py：</strong> 这个文件定义了一些与PyTorch有关的工具函数，比如选择设备、同步时间等等。</li>
+</ul>
+<h2 id="配置参数"><a href="#配置参数" class="headerlink" title="配置参数"></a>配置参数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@smart_inference_mode()</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params"></span><br><span class="hljs-params">    weights=ROOT / <span class="hljs-string">&quot;yolov5s.pt&quot;</span>,  <span class="hljs-comment"># 权重路径</span></span><br><span class="hljs-params">    source=ROOT / <span class="hljs-string">&quot;data/images&quot;</span>,  <span class="hljs-comment"># file/dir/URL/glob/screen/0(本机的摄像头)</span></span><br><span class="hljs-params">    data=ROOT / <span class="hljs-string">&quot;data/coco128.yaml&quot;</span>,  <span class="hljs-comment"># 配置数据文件路径，包括image/label/classes等信息，训练自己的文件，需要作相应更改</span></span><br><span class="hljs-params">    imgsz=(<span class="hljs-params"><span class="hljs-number">640</span>, <span class="hljs-number">640</span></span>),  <span class="hljs-comment"># 预测时网络输入图片的尺寸大小 (height, width)</span></span><br><span class="hljs-params">    conf_thres=<span class="hljs-number">0.25</span>,  <span class="hljs-comment"># 置信度阈值</span></span><br><span class="hljs-params">    iou_thres=<span class="hljs-number">0.45</span>,  <span class="hljs-comment"># 非极大值抑制的阈值</span></span><br><span class="hljs-params">    max_det=<span class="hljs-number">1000</span>,  <span class="hljs-comment"># 每张图片最大保留的检测框数量</span></span><br><span class="hljs-params">    device=<span class="hljs-string">&quot;&quot;</span>,  <span class="hljs-comment"># cuda device, i.e. 0 or 0,1,2,3 or cpu</span></span><br><span class="hljs-params">    view_img=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否展示预测之后的图片/视频</span></span><br><span class="hljs-params">    save_txt=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否将预测的框坐标以txt文件形式保存，使用--save-txt 将会在路径runs/detect/exp*/labels/*.txt下生成每张图片预测的txt文件</span></span><br><span class="hljs-params">    save_csv=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否将预测结果保存到csv文件</span></span><br><span class="hljs-params">    save_conf=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否保存检测结果的置信度到 txt文件</span></span><br><span class="hljs-params">    save_crop=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否保存裁剪预测框图片，使用--save-crop 在runs/detect/exp*/crop/剪切类别文件夹/ 路径下会保存每个接下来的目标</span></span><br><span class="hljs-params">    nosave=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 不保存图片、视频，使用--nosave 在runs/detect/exp*/就不会出现预测的结果</span></span><br><span class="hljs-params">    classes=<span class="hljs-literal">None</span>,  <span class="hljs-comment"># 可以过滤检测结果，只检测指定类别</span></span><br><span class="hljs-params">    agnostic_nms=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否使用类别不敏感的非极大抑制（即不考虑类别信息）</span></span><br><span class="hljs-params">    augment=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否使用数据增强进行推理</span></span><br><span class="hljs-params">    visualize=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否可视化特征图</span></span><br><span class="hljs-params">    update=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 如果为True，则对所有模型进行strip_optimizer操作，去除pt文件中的优化器等信息</span></span><br><span class="hljs-params">    project=ROOT / <span class="hljs-string">&quot;runs/detect&quot;</span>,  <span class="hljs-comment"># 结果保存的项目目录路径，默认为 &#x27;ROOT/runs/detect&#x27;</span></span><br><span class="hljs-params">    name=<span class="hljs-string">&quot;exp&quot;</span>,  <span class="hljs-comment"># 结果保存的子目录名称，默认为 &#x27;exp&#x27;</span></span><br><span class="hljs-params">    exist_ok=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否覆盖已有结果，默认为 False</span></span><br><span class="hljs-params">    line_thickness=<span class="hljs-number">3</span>,  <span class="hljs-comment">#  画 bounding box 时的线条宽度</span></span><br><span class="hljs-params">    hide_labels=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否隐藏标签信息</span></span><br><span class="hljs-params">    hide_conf=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否隐藏置信度信息</span></span><br><span class="hljs-params">    half=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否使用 FP16 半精度进行推理</span></span><br><span class="hljs-params">    dnn=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 是否使用 OpenCV DNN 进行 ONNX 推理</span></span><br><span class="hljs-params">    vid_stride=<span class="hljs-number">1</span>,  <span class="hljs-comment"># 视频流的帧步</span></span><br><span class="hljs-params"></span>):<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="初始设置"><a href="#初始设置" class="headerlink" title="初始设置"></a>初始设置</h2><p>接下来进入代码块，第一个部分是推理的基础设置，代码如下：</p>
+<figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs py"><span class="hljs-comment"># 将source转换为字符串</span><br><span class="hljs-comment"># source 为命令行传入的图片或者视频，例如：python detect.py --source data/images/bus.jpg</span><br>source = <span class="hljs-built_in">str</span>(source) <span class="hljs-comment"># 图片路径 &#x27;data/images&#x27;</span><br><br><span class="hljs-comment"># 是否保存预测后的图片，nosave为false，则not nosave为true</span><br><span class="hljs-comment"># source传入的是照片而不是txt则为true，最后则表示需要存储最后的预测结果</span><br>save_img = <span class="hljs-keyword">not</span> nosave <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> source.endswith(<span class="hljs-string">&#x27;.txt&#x27;</span>)  <br><br><span class="hljs-comment"># Path(source)：为文件地址，例如：data/images/bus.jpg</span><br><span class="hljs-comment"># suffix[1:]：截取文件后缀，即为bus.jpg，而[1:]则为jpg后，最后输出为jpg</span><br><span class="hljs-comment"># 判断该jpg是否在(IMG_FORMATS + VID_FORMATS) 该列表内，该列表可参照下一个代码模块。最后输出为true</span><br>is_file = Path(source).suffix[<span class="hljs-number">1</span>:] <span class="hljs-keyword">in</span> (IMG_FORMATS + VID_FORMATS)<br><br><span class="hljs-comment"># 判断是否为网络流地址或者是网络的图片地址</span><br><span class="hljs-comment"># 将其地址转换为小写，并且判断开头是否包括如下网络流开头的</span><br>is_url = source.lower().startswith((<span class="hljs-string">&#x27;rtsp://&#x27;</span>, <span class="hljs-string">&#x27;rtmp://&#x27;</span>, <span class="hljs-string">&#x27;http://&#x27;</span>, <span class="hljs-string">&#x27;https://&#x27;</span>))<br><br><span class="hljs-comment"># 是否是使用webcam数据，一般为false</span><br><span class="hljs-comment"># 判断source是否为数值（0为摄像头路径）或者 txt文件 或者 网络流并且不是文件地址</span><br>webcam = source.isnumeric() <span class="hljs-keyword">or</span> source.endswith(<span class="hljs-string">&#x27;.txt&#x27;</span>) <span class="hljs-keyword">or</span> (is_url <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> is_file)<br><br><span class="hljs-comment"># 是否传入的为屏幕快照文件</span><br>screenshot = source.lower().startswith(<span class="hljs-string">&#x27;screen&#x27;</span>)<br><br><span class="hljs-comment"># 如果是网络流地址 以及文件，则对应下载该文件</span><br><span class="hljs-keyword">if</span> is_url <span class="hljs-keyword">and</span> is_file:<br>    <span class="hljs-comment"># 下载，该函数在下文中有所讲解</span><br>    source = check_file(source) <br></code></pre></td></tr></table></figure>
+
+<p>图片和视频的格式分别如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 包括的图片后缀</span><br>IMG_FORMATS = <span class="hljs-string">&#x27;bmp&#x27;</span>, <span class="hljs-string">&#x27;dng&#x27;</span>, <span class="hljs-string">&#x27;jpeg&#x27;</span>, <span class="hljs-string">&#x27;jpg&#x27;</span>, <span class="hljs-string">&#x27;mpo&#x27;</span>, <span class="hljs-string">&#x27;png&#x27;</span>, <span class="hljs-string">&#x27;tif&#x27;</span>, <span class="hljs-string">&#x27;tiff&#x27;</span>, <span class="hljs-string">&#x27;webp&#x27;</span>, <span class="hljs-string">&#x27;pfm&#x27;</span>  <br><br><span class="hljs-comment"># 包括的视频后缀</span><br>VID_FORMATS = <span class="hljs-string">&#x27;asf&#x27;</span>, <span class="hljs-string">&#x27;avi&#x27;</span>, <span class="hljs-string">&#x27;gif&#x27;</span>, <span class="hljs-string">&#x27;m4v&#x27;</span>, <span class="hljs-string">&#x27;mkv&#x27;</span>, <span class="hljs-string">&#x27;mov&#x27;</span>, <span class="hljs-string">&#x27;mp4&#x27;</span>, <span class="hljs-string">&#x27;mpeg&#x27;</span>, <span class="hljs-string">&#x27;mpg&#x27;</span>, <span class="hljs-string">&#x27;ts&#x27;</span>, <span class="hljs-string">&#x27;wmv&#x27;</span> <br></code></pre></td></tr></table></figure>
+
+<p>根据source的类型，会确定输入数据的类型：</p>
+<ul>
+<li>如果source的后缀是图像或视频格式之一，那么将is_file设置为True；</li>
+<li>如果source以rtsp等开头，那么将is_url设置为True；</li>
+<li>如果source是数字或以.txt结尾或是一个URL，那么将webcam设置为True；</li>
+<li>如果source既是文件又是URL，那么会调用check_file函数下载文件。</li>
+</ul>
+<p><code>check_file(source)</code>的函数代码如下，如果输入不是url地址，可以忽略：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 该函数主要的核心功能为：找到文件或者下载文件</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_file</span>(<span class="hljs-params">file, suffix=<span class="hljs-string">&#x27;&#x27;</span></span>):<br>    <span class="hljs-comment"># 如果文件后缀符合指定的后缀列表，则没有任何返回</span><br>    <span class="hljs-comment"># 如果文件后缀不符合指定的后缀列表，会抛出一个AssertionError</span><br>    check_suffix(file, suffix) <br>    <span class="hljs-comment"># 转换文件为字符串</span><br>    file = <span class="hljs-built_in">str</span>(file) <br><br>	<span class="hljs-comment"># 如果文件存在 或者 不是一个文件，则直接返回文件</span><br>    <span class="hljs-keyword">if</span> os.path.isfile(file) <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> file:  <span class="hljs-comment"># exists</span><br>        <span class="hljs-keyword">return</span> file<br>        <br>	<span class="hljs-comment"># 如果文件的前缀为网络流信息，则对应进行下载</span><br>    <span class="hljs-keyword">elif</span> file.startswith((<span class="hljs-string">&#x27;http:/&#x27;</span>, <span class="hljs-string">&#x27;https:/&#x27;</span>)): <br>        url = file  <br>        <span class="hljs-comment"># urllib.parse.unquote(file) 相当于JS中的urldecode()，对url进行解码</span><br>        <span class="hljs-comment"># 类似https://url.com/file.txt?auth 结果为https://url.com/file.txt</span><br>        file = Path(urllib.parse.unquote(file).split(<span class="hljs-string">&#x27;?&#x27;</span>)[<span class="hljs-number">0</span>]).name  <br>        <span class="hljs-comment"># 如果文件存在，则输出logger日志</span><br>        <span class="hljs-keyword">if</span> os.path.isfile(file):<br>            LOGGER.info(<span class="hljs-string">f&#x27;Found <span class="hljs-subst">&#123;url&#125;</span> locally at <span class="hljs-subst">&#123;file&#125;</span>&#x27;</span>) <br>       	<span class="hljs-comment"># 如果文件不存在，则对应下载文件</span><br>        <span class="hljs-keyword">else</span>:<br>            LOGGER.info(<span class="hljs-string">f&#x27;Downloading <span class="hljs-subst">&#123;url&#125;</span> to <span class="hljs-subst">&#123;file&#125;</span>...&#x27;</span>)<br>            torch.hub.download_url_to_file(url, file)<br>            <span class="hljs-keyword">assert</span> Path(file).exists() <span class="hljs-keyword">and</span> Path(file).stat().st_size &gt; <span class="hljs-number">0</span>, <span class="hljs-string">f&#x27;File download failed: <span class="hljs-subst">&#123;url&#125;</span>&#x27;</span>  <span class="hljs-comment"># check</span><br>        <span class="hljs-keyword">return</span> file<br><br>	<span class="hljs-comment"># 如果文件前缀为ClearML Dataset，设置断言，表明没有安装，需要用pip进行安装</span><br>    <span class="hljs-keyword">elif</span> file.startswith(<span class="hljs-string">&#x27;clearml://&#x27;</span>):  <span class="hljs-comment"># ClearML Dataset ID</span><br>        <span class="hljs-keyword">assert</span> <span class="hljs-string">&#x27;clearml&#x27;</span> <span class="hljs-keyword">in</span> sys.modules, <span class="hljs-string">&quot;ClearML is not installed, so cannot use ClearML dataset. Try running &#x27;pip install clearml&#x27;.&quot;</span><br>        <span class="hljs-keyword">return</span> file<br><br>	<span class="hljs-comment"># 都不是以上的情况，则对应搜索目录，找到该文件，并且返回该文件</span><br>    <span class="hljs-keyword">else</span>:  <br>        files = []<br>        <span class="hljs-comment"># 搜索这些目录</span><br>        <span class="hljs-keyword">for</span> d <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-string">&#x27;models&#x27;</span>, <span class="hljs-string">&#x27;utils&#x27;</span>:  <br>        	<span class="hljs-comment"># 模糊搜索，并且添加到files的列表中</span><br>            files.extend(glob.glob(<span class="hljs-built_in">str</span>(ROOT / d / <span class="hljs-string">&#x27;**&#x27;</span> / file), recursive=<span class="hljs-literal">True</span>))  <br>        <span class="hljs-comment"># 设置断言</span><br>        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(files), <span class="hljs-string">f&#x27;File not found: <span class="hljs-subst">&#123;file&#125;</span>&#x27;</span>  <span class="hljs-comment"># assert file was found</span><br>        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(files) == <span class="hljs-number">1</span>, <span class="hljs-string">f&quot;Multiple files match &#x27;<span class="hljs-subst">&#123;file&#125;</span>&#x27;, specify exact path: <span class="hljs-subst">&#123;files&#125;</span>&quot;</span>  <span class="hljs-comment"># assert unique</span><br>        <span class="hljs-keyword">return</span> files[<span class="hljs-number">0</span>]  <span class="hljs-comment"># return file</span><br></code></pre></td></tr></table></figure>
+
+<p><code>check_suffix(file, suffix)</code>代码如下，这个函数的主要作用是判断文件后缀是否符合指定的后缀列表。如果符合就不会返回任何信息，否则会报错：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 默认按照传参进行设置，如果不传参则赋以下默认值</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_suffix</span>(<span class="hljs-params">file=<span class="hljs-string">&#x27;yolov5s.pt&#x27;</span>, suffix=(<span class="hljs-params"><span class="hljs-string">&#x27;.pt&#x27;</span>,</span>), msg=<span class="hljs-string">&#x27;&#x27;</span></span>):<br>    <span class="hljs-comment"># 在可用的文件后缀中检查后缀</span><br>    <span class="hljs-keyword">if</span> file <span class="hljs-keyword">and</span> suffix:<br>    	<span class="hljs-comment"># 如果文件后缀为str字符串，则转换为列表</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(suffix, <span class="hljs-built_in">str</span>):<br>            suffix = [suffix]<br>		<br>		<span class="hljs-comment"># 如果文件为列表或者元组则遍历文件，否则将其文件变为列表来遍历</span><br>        <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> file <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(file, (<span class="hljs-built_in">list</span>, <span class="hljs-built_in">tuple</span>)) <span class="hljs-keyword">else</span> [file]:<br>        	<span class="hljs-comment"># 找到文件后缀 并且小写</span><br>            s = Path(f).suffix.lower()  <br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(s):<br>                <span class="hljs-keyword">assert</span> s <span class="hljs-keyword">in</span> suffix, <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;msg&#125;</span><span class="hljs-subst">&#123;f&#125;</span> acceptable suffix is <span class="hljs-subst">&#123;suffix&#125;</span>&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>接下来是创建保存输出结果文件夹的代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 创建文件夹</span><br><br><span class="hljs-comment"># Path(project) 为一开始定义的：   project=ROOT / &#x27;runs/detect&#x27;</span><br><span class="hljs-comment"># name为保存的项目名：   name=&#x27;exp&#x27;</span><br><span class="hljs-comment"># 表示两者的拼接 ：runs/detect/exp</span><br>save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  <br><span class="hljs-built_in">print</span>(save_dir) <span class="hljs-comment"># runs/detect/exp</span><br><br><span class="hljs-comment"># 传入的命令参数save_txt 为false，则直接创建exp文件夹</span><br><span class="hljs-comment"># 传入的命令参数save_txt 为 true，则直接拼接一个/ &#x27;labels 创建文件夹</span><br>(save_dir / <span class="hljs-string">&#x27;labels&#x27;</span> <span class="hljs-keyword">if</span> save_txt <span class="hljs-keyword">else</span> save_dir).mkdir(parents=<span class="hljs-literal">True</span>, exist_ok=<span class="hljs-literal">True</span>)  <span class="hljs-comment"># make dir</span><br></code></pre></td></tr></table></figure>
+
+<p>这里用到的<code>increment_path</code>的函数如下，其实就是创建组合一下创建文件夹：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 递增路径 如 run/train/exp --&gt; runs/train/exp&#123;sep&#125;0, runs/exp&#123;sep&#125;1 etc.</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">increment_path</span>(<span class="hljs-params">path, exist_ok=<span class="hljs-literal">False</span>, sep=<span class="hljs-string">&#x27;&#x27;</span>, mkdir=<span class="hljs-literal">False</span></span>):<br>    <span class="hljs-comment"># string/win路径 -&gt; win路径</span><br>    path = Path(path) <br><br>	<span class="hljs-comment">#如果文件路径存在</span><br>    <span class="hljs-keyword">if</span> path.exists() <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> exist_ok:<br>    	<span class="hljs-comment"># 文件path路径为：.with_suffix 将路径添加一个后缀 &#x27;&#x27;</span><br>    	<span class="hljs-comment"># 文件后缀为：path的后缀 </span><br>        path, suffix = (path.with_suffix(<span class="hljs-string">&#x27;&#x27;</span>), path.suffix) <span class="hljs-keyword">if</span> path.is_file() <span class="hljs-keyword">else</span> (path, <span class="hljs-string">&#x27;&#x27;</span>)<br><br>        <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>, <span class="hljs-number">9999</span>):<br>        	<span class="hljs-comment"># f开头表示字符串内支持大括号的python表达式</span><br>        	<span class="hljs-comment"># increment</span><br>            p = <span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;path&#125;</span><span class="hljs-subst">&#123;sep&#125;</span><span class="hljs-subst">&#123;n&#125;</span><span class="hljs-subst">&#123;suffix&#125;</span>&#x27;</span><br>            <span class="hljs-comment"># 如果不存在该路径，则break退出  </span><br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(p):  <br>                <span class="hljs-keyword">break</span><br>        path = Path(p)<br>	<br>	<span class="hljs-comment"># 默认mkdir为false，先不创建dir</span><br>    <span class="hljs-keyword">if</span> mkdir:<br>        path.mkdir(parents=<span class="hljs-literal">True</span>, exist_ok=<span class="hljs-literal">True</span>)  <br><br>    <span class="hljs-keyword">return</span> path<br></code></pre></td></tr></table></figure>
+
+<h2 id="加载模型"><a href="#加载模型" class="headerlink" title="加载模型"></a>加载模型</h2><p>接下来是加载模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 模型加载</span><br><br><span class="hljs-comment"># 选择CPU或者GPU，主要为逻辑判断</span><br><span class="hljs-comment"># 此处的device 为 None or &#x27;cpu&#x27; or 0 or &#x27;0&#x27; or &#x27;0,1,2,3&#x27;</span><br>device = select_device(device)<br><br><span class="hljs-comment"># 模型后端框架，传入对应的参数</span><br>model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)<br><br><span class="hljs-comment">#加载完模型之后，对应读取模型的步长、类别名、pytorch模型类型</span><br>stride, names, pt = model.stride, model.names, model.pt<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;stride:<span class="hljs-subst">&#123;stride&#125;</span>,names:<span class="hljs-subst">&#123;names&#125;</span>,pt:<span class="hljs-subst">&#123;pt&#125;</span>&#x27;</span>) <span class="hljs-comment"># stride 32, name &#123;0:&#x27;person&#x27;, 1:&#x27;bicycle&#x27;&#125;, pt True</span><br><br><span class="hljs-comment"># 判断模型步长是否为32的倍数</span><br>imgsz = check_img_size(imgsz, s=stride) <br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;imgsz:<span class="hljs-subst">&#123;imgsz&#125;</span>&#x27;</span>) <span class="hljs-comment"># imgsz 640</span><br></code></pre></td></tr></table></figure>
+
+<p>上面这段代码主要是使用DetectMultiBackend类来加载模型，从模型中提取了三个参数是：</p>
+<ul>
+<li>stride：推理时所用到的步长，默认为32， 大步长适合于大目标，小步长适合于小目标</li>
+<li>names：保存推理结果名的列表，比如默认模型的值是[‘person’, ‘bicycle’, ‘car’, …]</li>
+<li>pt: 加载的是否是pytorch模型（也就是pt格式的文件）</li>
+</ul>
+<p>最后确保输入图片的尺寸imgsz能整除stride&#x3D;32 如果不能则调整为能被整除并返回。</p>
+<p>看一下<code>DetectMultiBackend</code>的源码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">DetectMultiBackend</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, weights=<span class="hljs-string">&#x27;yolov5s.pt&#x27;</span>, device=torch.device(<span class="hljs-params"><span class="hljs-string">&#x27;cpu&#x27;</span></span>), dnn=<span class="hljs-literal">False</span>, data=<span class="hljs-literal">None</span>, fp16=<span class="hljs-literal">False</span>, fuse=<span class="hljs-literal">True</span></span>):<br>		<span class="hljs-comment"># 限定了作用域以避免循环导入</span><br>        <span class="hljs-keyword">from</span> models.experimental <span class="hljs-keyword">import</span> attempt_download, attempt_load  <br>		<span class="hljs-comment"># 父函数初始化</span><br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-comment"># 如果weights权重为列表则取出第一个，否则直接取出weights</span><br>        w = <span class="hljs-built_in">str</span>(weights[<span class="hljs-number">0</span>] <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(weights, <span class="hljs-built_in">list</span>) <span class="hljs-keyword">else</span> weights)<br>        <span class="hljs-comment"># 判断框架模型，本身就是pt了</span><br>        pt, jit, onnx, xml, engine, coreml, saved_model, pb, tflite, edgetpu, tfjs, paddle, triton = self._model_type(w)<br>        fp16 &amp;= pt <span class="hljs-keyword">or</span> jit <span class="hljs-keyword">or</span> onnx <span class="hljs-keyword">or</span> engine  <br>        <span class="hljs-comment"># BHWC formats (vs torch BCWH)</span><br>        nhwc = coreml <span class="hljs-keyword">or</span> saved_model <span class="hljs-keyword">or</span> pb <span class="hljs-keyword">or</span> tflite <span class="hljs-keyword">or</span> edgetpu  <br>        <span class="hljs-comment"># 初始步长为32</span><br>        stride = <span class="hljs-number">32</span>  <br>        cuda = torch.cuda.is_available() <span class="hljs-keyword">and</span> device.<span class="hljs-built_in">type</span> != <span class="hljs-string">&#x27;cpu&#x27;</span>  <span class="hljs-comment"># use CUDA</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> (pt <span class="hljs-keyword">or</span> triton):<br>        	<span class="hljs-comment"># 如果不在本地会在网络进行下载，如果存在本地则加载权重文件</span><br>            w = attempt_download(w)<br><br>        <span class="hljs-keyword">if</span> pt:  <span class="hljs-comment"># PyTorch</span><br>        	<span class="hljs-comment"># 加载模型权重</span><br>            model = attempt_load(weights <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(weights, <span class="hljs-built_in">list</span>) <span class="hljs-keyword">else</span> w, device=device, inplace=<span class="hljs-literal">True</span>, fuse=fuse)<br>			<span class="hljs-comment"># 模型的最大权重</span><br>            stride = <span class="hljs-built_in">max</span>(<span class="hljs-built_in">int</span>(model.stride.<span class="hljs-built_in">max</span>()), <span class="hljs-number">32</span>)  <br>            <span class="hljs-comment"># 如果不用COCO数据集或者ImageNet数据集的标签，加载模型pt权重</span><br>            names = model.module.names <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(model, <span class="hljs-string">&#x27;module&#x27;</span>) <span class="hljs-keyword">else</span> model.names  <br>            <span class="hljs-comment"># 用fp16则用半精度推理，没有则用float</span><br>            model.half() <span class="hljs-keyword">if</span> fp16 <span class="hljs-keyword">else</span> model.<span class="hljs-built_in">float</span>()<br>            <span class="hljs-comment"># 得到加载好的模型</span><br>            self.model = model  <span class="hljs-comment"># explicitly assign for to(), cpu(), cuda(), half()</span><br>		<span class="hljs-keyword">elif</span> ...<br>		<span class="hljs-comment"># 省略其他情况（大同小异）</span><br><br>     <span class="hljs-comment"># 生成class name</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;names&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">locals</span>():<br>    	<span class="hljs-comment"># 生成对应的 999个标签</span><br>        names = yaml_load(data)[<span class="hljs-string">&#x27;names&#x27;</span>] <span class="hljs-keyword">if</span> data <span class="hljs-keyword">else</span> &#123;i: <span class="hljs-string">f&#x27;class<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span> <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">999</span>)&#125;<br>    <span class="hljs-keyword">if</span> names[<span class="hljs-number">0</span>] == <span class="hljs-string">&#x27;n01440764&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(names) == <span class="hljs-number">1000</span>:  <span class="hljs-comment"># ImageNet</span><br>        names = yaml_load(ROOT / <span class="hljs-string">&#x27;data/ImageNet.yaml&#x27;</span>)[<span class="hljs-string">&#x27;names&#x27;</span>]  <span class="hljs-comment"># human-readable names</span><br><br>    self.__dict__.update(<span class="hljs-built_in">locals</span>())  <span class="hljs-comment"># assign all variables to self</span><br></code></pre></td></tr></table></figure>
+<p>加载数据配置文件的方法是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">yaml_load</span>(<span class="hljs-params">file=<span class="hljs-string">&quot;data.yaml&quot;</span></span>):<br>    <span class="hljs-comment"># Single-line safe yaml loading</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file, errors=<span class="hljs-string">&quot;ignore&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">return</span> yaml.safe_load(f)        <br></code></pre></td></tr></table></figure>
+
+<p>对应的COCO128.yaml文件长这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 数据集源路径root、训练集、验证集、测试集地址</span><br><br><span class="hljs-comment"># 数据集源路径root dir</span><br>path: ../datasets/coco128  <br><span class="hljs-comment"># root下的训练集地址 128 images</span><br>train: images/train2017 <br><span class="hljs-comment"># root下的验证集地址 128 images</span><br>val: images/train2017  <br><span class="hljs-comment"># root下的验证集地址 128 images</span><br>test:                <br><br><span class="hljs-comment"># 数据集类别信息</span><br>nc: <span class="hljs-number">80</span>  <span class="hljs-comment"># 数据集类别数量</span><br>names: [ <span class="hljs-string">&#x27;person&#x27;</span>, <span class="hljs-string">&#x27;bicycle&#x27;</span>, <span class="hljs-string">&#x27;car&#x27;</span>, <span class="hljs-string">&#x27;motorcycle&#x27;</span>, <span class="hljs-string">&#x27;airplane&#x27;</span>, <span class="hljs-string">&#x27;bus&#x27;</span>, <span class="hljs-string">&#x27;train&#x27;</span>, <span class="hljs-string">&#x27;truck&#x27;</span>, <span class="hljs-string">&#x27;boat&#x27;</span>, <span class="hljs-string">&#x27;traffic light&#x27;</span>,<br>         <span class="hljs-string">&#x27;fire hydrant&#x27;</span>, <span class="hljs-string">&#x27;stop sign&#x27;</span>, <span class="hljs-string">&#x27;parking meter&#x27;</span>, <span class="hljs-string">&#x27;bench&#x27;</span>, <span class="hljs-string">&#x27;bird&#x27;</span>, <span class="hljs-string">&#x27;cat&#x27;</span>, <span class="hljs-string">&#x27;dog&#x27;</span>, <span class="hljs-string">&#x27;horse&#x27;</span>, <span class="hljs-string">&#x27;sheep&#x27;</span>, <span class="hljs-string">&#x27;cow&#x27;</span>,<br>         <span class="hljs-string">&#x27;elephant&#x27;</span>, <span class="hljs-string">&#x27;bear&#x27;</span>, <span class="hljs-string">&#x27;zebra&#x27;</span>, <span class="hljs-string">&#x27;giraffe&#x27;</span>, <span class="hljs-string">&#x27;backpack&#x27;</span>, <span class="hljs-string">&#x27;umbrella&#x27;</span>, <span class="hljs-string">&#x27;handbag&#x27;</span>, <span class="hljs-string">&#x27;tie&#x27;</span>, <span class="hljs-string">&#x27;suitcase&#x27;</span>, <span class="hljs-string">&#x27;frisbee&#x27;</span>,<br>         <span class="hljs-string">&#x27;skis&#x27;</span>, <span class="hljs-string">&#x27;snowboard&#x27;</span>, <span class="hljs-string">&#x27;sports ball&#x27;</span>, <span class="hljs-string">&#x27;kite&#x27;</span>, <span class="hljs-string">&#x27;baseball bat&#x27;</span>, <span class="hljs-string">&#x27;baseball glove&#x27;</span>, <span class="hljs-string">&#x27;skateboard&#x27;</span>, <span class="hljs-string">&#x27;surfboard&#x27;</span>,<br>         <span class="hljs-string">&#x27;tennis racket&#x27;</span>, <span class="hljs-string">&#x27;bottle&#x27;</span>, <span class="hljs-string">&#x27;wine glass&#x27;</span>, <span class="hljs-string">&#x27;cup&#x27;</span>, <span class="hljs-string">&#x27;fork&#x27;</span>, <span class="hljs-string">&#x27;knife&#x27;</span>, <span class="hljs-string">&#x27;spoon&#x27;</span>, <span class="hljs-string">&#x27;bowl&#x27;</span>, <span class="hljs-string">&#x27;banana&#x27;</span>, <span class="hljs-string">&#x27;apple&#x27;</span>,<br>         <span class="hljs-string">&#x27;sandwich&#x27;</span>, <span class="hljs-string">&#x27;orange&#x27;</span>, <span class="hljs-string">&#x27;broccoli&#x27;</span>, <span class="hljs-string">&#x27;carrot&#x27;</span>, <span class="hljs-string">&#x27;hot dog&#x27;</span>, <span class="hljs-string">&#x27;pizza&#x27;</span>, <span class="hljs-string">&#x27;donut&#x27;</span>, <span class="hljs-string">&#x27;cake&#x27;</span>, <span class="hljs-string">&#x27;chair&#x27;</span>, <span class="hljs-string">&#x27;couch&#x27;</span>,<br>         <span class="hljs-string">&#x27;potted plant&#x27;</span>, <span class="hljs-string">&#x27;bed&#x27;</span>, <span class="hljs-string">&#x27;dining table&#x27;</span>, <span class="hljs-string">&#x27;toilet&#x27;</span>, <span class="hljs-string">&#x27;tv&#x27;</span>, <span class="hljs-string">&#x27;laptop&#x27;</span>, <span class="hljs-string">&#x27;mouse&#x27;</span>, <span class="hljs-string">&#x27;remote&#x27;</span>, <span class="hljs-string">&#x27;keyboard&#x27;</span>, <span class="hljs-string">&#x27;cell phone&#x27;</span>,<br>         <span class="hljs-string">&#x27;microwave&#x27;</span>, <span class="hljs-string">&#x27;oven&#x27;</span>, <span class="hljs-string">&#x27;toaster&#x27;</span>, <span class="hljs-string">&#x27;sink&#x27;</span>, <span class="hljs-string">&#x27;refrigerator&#x27;</span>, <span class="hljs-string">&#x27;book&#x27;</span>, <span class="hljs-string">&#x27;clock&#x27;</span>, <span class="hljs-string">&#x27;vase&#x27;</span>, <span class="hljs-string">&#x27;scissors&#x27;</span>, <span class="hljs-string">&#x27;teddy bear&#x27;</span>,<br>         <span class="hljs-string">&#x27;hair drier&#x27;</span>, <span class="hljs-string">&#x27;toothbrush&#x27;</span> ]  <span class="hljs-comment"># 数据集类别名</span><br></code></pre></td></tr></table></figure>
+
+<p><code>check_img_size</code>的源码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 验证图像大小是每个维度步幅的倍数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_img_size</span>(<span class="hljs-params">imgsz, s=<span class="hljs-number">32</span>, floor=<span class="hljs-number">0</span></span>):<br>    <span class="hljs-comment"># 如果尺寸类型为int</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(imgsz, <span class="hljs-built_in">int</span>):  <br>    	<span class="hljs-comment"># 返回能被除数整除的最接近的x</span><br>        new_size = <span class="hljs-built_in">max</span>(make_divisible(imgsz, <span class="hljs-built_in">int</span>(s)), floor)<br>        <br>    <span class="hljs-comment"># 尺寸类型为其他，转换为列表：img_size=[640, 480]</span><br>    <span class="hljs-keyword">else</span>:  <br>        imgsz = <span class="hljs-built_in">list</span>(imgsz)  <span class="hljs-comment"># convert to list if tuple</span><br>        <span class="hljs-comment"># 新的尺寸对应for遍历循环</span><br>        new_size = [<span class="hljs-built_in">max</span>(make_divisible(x, <span class="hljs-built_in">int</span>(s)), floor) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> imgsz]<br>    <span class="hljs-keyword">if</span> new_size != imgsz:<br>        LOGGER.warning(<span class="hljs-string">f&#x27;WARNING ⚠️ --img-size <span class="hljs-subst">&#123;imgsz&#125;</span> must be multiple of max stride <span class="hljs-subst">&#123;s&#125;</span>, updating to <span class="hljs-subst">&#123;new_size&#125;</span>&#x27;</span>)<br>    <span class="hljs-keyword">return</span> new_size<br>    <br><span class="hljs-comment"># 返回能被除数整除的最接近的x</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">make_divisible</span>(<span class="hljs-params">x, divisor</span>):<br>	<span class="hljs-comment"># 本身传入的参数为32，32为torch.Tensor的类型，则将其转换为int类型  </span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(divisor, torch.Tensor):<br>        divisor = <span class="hljs-built_in">int</span>(divisor.<span class="hljs-built_in">max</span>())  <span class="hljs-comment"># to int</span><br>   <br>    <span class="hljs-keyword">return</span> math.ceil(x / divisor) * divisor<br></code></pre></td></tr></table></figure>
+
+<h2 id="加载预测数据"><a href="#加载预测数据" class="headerlink" title="加载预测数据"></a>加载预测数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 数据加载</span><br>bs = <span class="hljs-number">1</span>  <span class="hljs-comment"># batch_size</span><br><span class="hljs-keyword">if</span> webcam:<br><br>	<span class="hljs-comment"># 检测cv2.imshow()方法是否可以执行，不能执行则抛出异常</span><br>    view_img = check_imshow(warn=<span class="hljs-literal">True</span>)  <br>    <br>    <span class="hljs-comment"># 加载输入的数据集</span><br>    dataset = LoadStreams(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride) <br>    <br>    <span class="hljs-comment"># 如果是加载进来的，就根据视频流的帧数设置bs</span><br>    bs = <span class="hljs-built_in">len</span>(dataset) <br><span class="hljs-keyword">elif</span> screenshot:<br>    dataset = LoadScreenshots(source, img_size=imgsz, stride=stride, auto=pt) <br><span class="hljs-keyword">else</span>:<br>    dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)<br>    <br><span class="hljs-comment"># 保存视频的路径</span><br>vid_path, vid_writer = [<span class="hljs-literal">None</span>] * bs, [<span class="hljs-literal">None</span>] * bs <span class="hljs-comment"># 前者是视频路径,后者是一个cv2.VideoWriter对象</span><br></code></pre></td></tr></table></figure>
+
+<p>这段代码根据输入的 source 参数来判断是否是通过 webcam 摄像头捕捉视频流：</p>
+<ul>
+<li>如果是，则使用 LoadStreams 加载视频流</li>
+<li>如果是截屏，则使用LoadScreenshots加载截屏</li>
+<li>否则，使用 LoadImages 加载图像<br>bs 表示 batch_size（批量大小），这里是 1 或视频流中的帧数。vid_path 和 vid_writer 分别是视频路径和视频编写器，初始化为长度为 batch_size 的空列表。</li>
+</ul>
+<p>vid_path 和 vid_writer 分别是视频路径和视频编写器，初始化为长度为 batch_size 的空列表。</p>
+<p>其中用到的<code>LoadImages</code>函数是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LoadImages</span>:<br>    <span class="hljs-comment"># 执行代码：python detect.py --source image.jpg/vid.mp4</span><br>    <br>    <span class="hljs-comment"># 初始化字段，本身传入的参数如下：</span><br>    <span class="hljs-comment"># path：data\images\bus.jpg, img_size：传入的为【640，640】列表, stride步长32</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, path, img_size=<span class="hljs-number">640</span>, stride=<span class="hljs-number">32</span>, auto=<span class="hljs-literal">True</span>, transforms=<span class="hljs-literal">None</span>, vid_stride=<span class="hljs-number">1</span></span>):<br>    	<span class="hljs-comment"># 定义一个文件的空列表</span><br>        files = []<br>        <span class="hljs-comment"># 遍历path路径</span><br>        <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> <span class="hljs-built_in">sorted</span>(path) <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(path, (<span class="hljs-built_in">list</span>, <span class="hljs-built_in">tuple</span>)) <span class="hljs-keyword">else</span> [path]:<br>        	<span class="hljs-comment"># 通过相对路径得到绝对路径</span><br>            p = <span class="hljs-built_in">str</span>(Path(p).resolve())<br>            <span class="hljs-comment"># 判断路径是否有带*</span><br>            <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;*&#x27;</span> <span class="hljs-keyword">in</span> p:<br>            	<span class="hljs-comment"># 如果p是采样正则化表达式提取图片/视频, 可以使用glob获取文件路径</span><br>                files.extend(<span class="hljs-built_in">sorted</span>(glob.glob(p, recursive=<span class="hljs-literal">True</span>)))  <br>            <span class="hljs-comment"># 判断路径是否为文件夹</span><br>            <span class="hljs-keyword">elif</span> os.path.isdir(p):<br>            	<span class="hljs-comment"># 如果p是一个文件夹，使用glob获取全部文件路径</span><br>                files.extend(<span class="hljs-built_in">sorted</span>(glob.glob(os.path.join(p, <span class="hljs-string">&#x27;*.*&#x27;</span>))))  <br>            <span class="hljs-comment"># 判断路径是否为文件</span><br>            <span class="hljs-keyword">elif</span> os.path.isfile(p):<br>            	<span class="hljs-comment"># 对应添加文件到列表中，本身也是转化为列表</span><br>                files.append(p) <br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-keyword">raise</span> FileNotFoundError(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;p&#125;</span> does not exist&#x27;</span>)<br>		<br>		<span class="hljs-comment"># 图片后缀判断是否在IMG_FORMATS，视频后缀判断是否在VID_FORMATS </span><br>        images = [x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> files <span class="hljs-keyword">if</span> x.split(<span class="hljs-string">&#x27;.&#x27;</span>)[-<span class="hljs-number">1</span>].lower() <span class="hljs-keyword">in</span> IMG_FORMATS]<br>        videos = [x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> files <span class="hljs-keyword">if</span> x.split(<span class="hljs-string">&#x27;.&#x27;</span>)[-<span class="hljs-number">1</span>].lower() <span class="hljs-keyword">in</span> VID_FORMATS]<br>        <span class="hljs-comment"># 图片与视频数量</span><br>        ni, nv = <span class="hljs-built_in">len</span>(images), <span class="hljs-built_in">len</span>(videos)<br><br>        self.img_size = img_size<br>        self.stride = stride<br>        self.files = images + videos<br>        self.nf = ni + nv  <span class="hljs-comment"># number of files</span><br>        <span class="hljs-comment"># 此处为标志， 是不是video</span><br>        self.video_flag = [<span class="hljs-literal">False</span>] * ni + [<span class="hljs-literal">True</span>] * nv<br>        self.mode = <span class="hljs-string">&#x27;image&#x27;</span><br>        <span class="hljs-comment"># 默认值为true</span><br>        self.auto = auto<br>        self.transforms = transforms  <span class="hljs-comment"># optional</span><br>        self.vid_stride = vid_stride  <span class="hljs-comment"># video frame-rate stride</span><br>        <span class="hljs-comment"># 判断videos有无值（此处明显为空）</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">any</span>(videos):<br>        	<span class="hljs-comment"># 判断有没有video文件  如果包含video文件，则初始化opencv中的视频模块，cap=cv2.VideoCapture等</span><br>            self._new_video(videos[<span class="hljs-number">0</span>])  <br>        <span class="hljs-keyword">else</span>:<br>            self.cap = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">assert</span> self.nf &gt; <span class="hljs-number">0</span>, <span class="hljs-string">f&#x27;No images or videos found in <span class="hljs-subst">&#123;p&#125;</span>. &#x27;</span> \<br>                            <span class="hljs-string">f&#x27;Supported formats are:\nimages: <span class="hljs-subst">&#123;IMG_FORMATS&#125;</span>\nvideos: <span class="hljs-subst">&#123;VID_FORMATS&#125;</span>&#x27;</span><br>	<br>	<span class="hljs-comment"># 迭代器</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__iter__</span>(<span class="hljs-params">self</span>):<br>    	<span class="hljs-comment"># 调用该类别的时候都会执行一次count计数</span><br>       self.count = <span class="hljs-number">0</span><br>       <span class="hljs-keyword">return</span> self<br><br>	<span class="hljs-comment"># 与iter一起用</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__next__</span>(<span class="hljs-params">self</span>):<br>    	<span class="hljs-comment"># 判断计数是否与总文件数一样，如果一样则表明已经迭代结束</span><br>        <span class="hljs-keyword">if</span> self.count == self.nf:<br>            <span class="hljs-keyword">raise</span> StopIteration<br>        <span class="hljs-comment"># 读取当前文件路径</span><br>        path = self.files[self.count]<br>		<br>		<span class="hljs-comment"># 判断当前文件是否是视频</span><br>        <span class="hljs-keyword">if</span> self.video_flag[self.count]:<br>            <span class="hljs-comment"># Read video</span><br>            self.mode = <span class="hljs-string">&#x27;video&#x27;</span><br>            <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.vid_stride):<br>                self.cap.grab()<br>            <span class="hljs-comment"># 获取当前帧画面，ret_val为一个bool变量，直到视频读取完毕之前都为True</span><br>            ret_val, im0 = self.cap.retrieve()<br>            <span class="hljs-comment"># 如果当前视频读取结束，则读取下一个视频</span><br>            <span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> ret_val:<br>                self.count += <span class="hljs-number">1</span><br>                self.cap.release()<br>                <span class="hljs-comment"># 表明已经读取完</span><br>                <span class="hljs-keyword">if</span> self.count == self.nf:  <span class="hljs-comment"># last video</span><br>                    <span class="hljs-keyword">raise</span> StopIteration<br>                path = self.files[self.count]<br>                self._new_video(path)<br>                ret_val, im0 = self.cap.read()<br>			<br>			<span class="hljs-comment"># 当前读取视频的帧数</span><br>            self.frame += <span class="hljs-number">1</span><br>            <span class="hljs-comment"># im0 = self._cv2_rotate(im0)  # for use if cv2 autorotation is False</span><br>            s = <span class="hljs-string">f&#x27;video <span class="hljs-subst">&#123;self.count + <span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;self.nf&#125;</span> (<span class="hljs-subst">&#123;self.frame&#125;</span>/<span class="hljs-subst">&#123;self.frames&#125;</span>) <span class="hljs-subst">&#123;path&#125;</span>: &#x27;</span><br><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-comment"># Read image</span><br>            self.count += <span class="hljs-number">1</span><br>            im0 = cv2.imread(path)  <span class="hljs-comment"># BGR</span><br>            <span class="hljs-keyword">assert</span> im0 <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>, <span class="hljs-string">f&#x27;Image Not Found <span class="hljs-subst">&#123;path&#125;</span>&#x27;</span><br>            s = <span class="hljs-string">f&#x27;image <span class="hljs-subst">&#123;self.count&#125;</span>/<span class="hljs-subst">&#123;self.nf&#125;</span> <span class="hljs-subst">&#123;path&#125;</span>: &#x27;</span><br><br>        <span class="hljs-keyword">if</span> self.transforms:<br>            im = self.transforms(im0)  <span class="hljs-comment"># transforms</span><br>        <span class="hljs-keyword">else</span>:<br>        	<span class="hljs-comment"># 填充resize，将其原图变为resize后的图片</span><br>            im = letterbox(im0, self.img_size, stride=self.stride, auto=self.auto)[<span class="hljs-number">0</span>]  <span class="hljs-comment"># padded resize</span><br>            <br>            <span class="hljs-comment"># 转换，习惯把通道数放置在前面</span><br>            im = im.transpose((<span class="hljs-number">2</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>))[::-<span class="hljs-number">1</span>]  <span class="hljs-comment"># HWC to CHW, BGR to RGB</span><br>            im = np.ascontiguousarray(im)  <span class="hljs-comment"># contiguous</span><br>		<br>		<span class="hljs-comment"># 返回最后的路径、resize + pad的图片、原始图片、视频对象、s为字符串（后续方便输出）</span><br>        <span class="hljs-keyword">return</span> path, im, im0, self.cap, s<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">new_video</span>(<span class="hljs-params">self, path</span>):<br>        <span class="hljs-comment"># 记录帧数</span><br>        self.frame = <span class="hljs-number">0</span><br>        <span class="hljs-comment"># 初始化视频对象</span><br>        self.cap = cv2.VideoCapture(path)<br>        <span class="hljs-comment"># 得到视频文件中的总帧数</span><br>        self.frames = <span class="hljs-built_in">int</span>(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))<br>	<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_cv2_rotate</span>(<span class="hljs-params">self, im</span>):<br>       <span class="hljs-comment"># Rotate a cv2 video manually</span><br>       <span class="hljs-keyword">if</span> self.orientation == <span class="hljs-number">0</span>:<br>           <span class="hljs-keyword">return</span> cv2.rotate(im, cv2.ROTATE_90_CLOCKWISE)<br>       <span class="hljs-keyword">elif</span> self.orientation == <span class="hljs-number">180</span>:<br>           <span class="hljs-keyword">return</span> cv2.rotate(im, cv2.ROTATE_90_COUNTERCLOCKWISE)<br>       <span class="hljs-keyword">elif</span> self.orientation == <span class="hljs-number">90</span>:<br>           <span class="hljs-keyword">return</span> cv2.rotate(im, cv2.ROTATE_180)<br>       <span class="hljs-keyword">return</span> im<br>       <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__len__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> self.nf  <span class="hljs-comment"># number of files</span><br></code></pre></td></tr></table></figure>
+
+<p>其中使用了一个填充函数<code>letterbox</code>，例如<code>im = letterbox(im0, self.img_size, stride=self.stride, auto=self.auto)[0]</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 将图片缩放到指定大小</span><br><br><span class="hljs-comment"># img: 原图 hwc</span><br><span class="hljs-comment"># new_shape: 缩放后的最长边大小</span><br><span class="hljs-comment"># color: 填充的颜色</span><br><br><span class="hljs-comment"># auto: True，保证缩放后的图片保持原图的比例 即 将原图最长边缩放到指定大小，再将原图较短边按原图比例缩放（不会失真）</span><br>	  <span class="hljs-comment"># False，将原图最长边缩放到指定大小，再将原图较短边按原图比例缩放,最后将较短边两边pad操作缩放到最长边大小（不会失真）</span><br><br><span class="hljs-comment"># scale_fill: True 直接将原图resize到指定的大小，没有pad操作（失真）</span><br><br><span class="hljs-comment"># scale_up: True  对于小于new_shape的原图进行缩放,大于的不变</span><br>          <span class="hljs-comment"># False 对于大于new_shape的原图进行缩放,小于的不变</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">letterbox</span>(<span class="hljs-params">im, new_shape=(<span class="hljs-params"><span class="hljs-number">640</span>, <span class="hljs-number">640</span></span>), color=(<span class="hljs-params"><span class="hljs-number">114</span>, <span class="hljs-number">114</span>, <span class="hljs-number">114</span></span>), auto=<span class="hljs-literal">True</span>, scaleFill=<span class="hljs-literal">False</span>, scaleup=<span class="hljs-literal">True</span>, stride=<span class="hljs-number">32</span></span>):<br>    <span class="hljs-comment"># （1000，810）</span><br>    shape = im.shape[:<span class="hljs-number">2</span>]  <span class="hljs-comment"># current shape [height, width]</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(new_shape, <span class="hljs-built_in">int</span>):<br>    	<span class="hljs-comment"># (512, 512)</span><br>        new_shape = (new_shape, new_shape)<br><br>    <span class="hljs-comment"># 也就是640 /1000 以及 640 / 810 求出最小</span><br>    <span class="hljs-comment"># 对于大于new_shape（r&lt;1）的原图进行缩放,小于new_shape（r&gt;1）的不变</span><br>    <span class="hljs-comment"># 总的来说，就是按照长边缩放，短边补零</span><br>    r = <span class="hljs-built_in">min</span>(new_shape[<span class="hljs-number">0</span>] / shape[<span class="hljs-number">0</span>], new_shape[<span class="hljs-number">1</span>] / shape[<span class="hljs-number">1</span>])<br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> scaleup:  <span class="hljs-comment"># only scale down, do not scale up (for better val mAP)</span><br>    	<span class="hljs-comment"># 只进行下采样 因为上采样会让图片模糊</span><br>        r = <span class="hljs-built_in">min</span>(r, <span class="hljs-number">1.0</span>)<br><br>    <span class="hljs-comment"># Compute padding</span><br>    <span class="hljs-comment"># 此时按照长边的比例进行缩放</span><br>    ratio = r, r  <span class="hljs-comment"># width, height ratios，(1, 1)</span><br>    <span class="hljs-comment"># 缩放过后的图片尺寸为width, height：（480，640）</span><br>    <span class="hljs-comment"># shape[1]在前，shape[0]在后，大致将其宽和高颠倒过来</span><br>    new_unpad = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(shape[<span class="hljs-number">1</span>] * r)), <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(shape[<span class="hljs-number">0</span>] * r))<br>    dw, dh = new_shape[<span class="hljs-number">1</span>] - new_unpad[<span class="hljs-number">0</span>], new_shape[<span class="hljs-number">0</span>] - new_unpad[<span class="hljs-number">1</span>]  <span class="hljs-comment"># 用原图减去缩放后的图，也就是160，0</span><br>    <br>    <span class="hljs-comment"># 输入的只要是32倍的系数，就可输入到图形预测</span><br>    <span class="hljs-comment"># 保证原图比例不变，将图像最大边缩放到指定大小</span><br>    <span class="hljs-keyword">if</span> auto:  <span class="hljs-comment"># minimum rectangle</span><br>    	<span class="hljs-comment"># 取余操作可保证padding后的图片是32的整数倍</span><br>        dw, dh = np.mod(dw, stride), np.mod(dh, stride)  <span class="hljs-comment"># wh padding</span><br>    <span class="hljs-comment"># stretch 直接将图片缩放到指定尺寸</span><br>    <span class="hljs-keyword">elif</span> scaleFill:  <span class="hljs-comment"># stretch</span><br>        dw, dh = <span class="hljs-number">0.0</span>, <span class="hljs-number">0.0</span><br>        new_unpad = (new_shape[<span class="hljs-number">1</span>], new_shape[<span class="hljs-number">0</span>])<br>        ratio = new_shape[<span class="hljs-number">1</span>] / shape[<span class="hljs-number">1</span>], new_shape[<span class="hljs-number">0</span>] / shape[<span class="hljs-number">0</span>]  <span class="hljs-comment"># width, height ratios</span><br>	<br>	<span class="hljs-comment"># 此时的宽和高是32的倍数，所以不用进行填充</span><br>    dw /= <span class="hljs-number">2</span>  <span class="hljs-comment"># divide padding into 2 sides</span><br>    dh /= <span class="hljs-number">2</span><br>    <br>	<span class="hljs-comment"># shape:[h, w]  new_unpad:[w, h]</span><br>    <span class="hljs-keyword">if</span> shape[::-<span class="hljs-number">1</span>] != new_unpad:  <span class="hljs-comment"># resize</span><br>    	<span class="hljs-comment"># 将原图resize到new_unpad（长边相同，比例相同的新图）</span><br>        im = cv2.resize(im, new_unpad, interpolation=cv2.INTER_LINEAR)<br>    <span class="hljs-comment"># 计算上下两侧的padding  # top=0 bottom=0     </span><br>    top, bottom = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(dh - <span class="hljs-number">0.1</span>)), <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(dh + <span class="hljs-number">0.1</span>))<br>    <span class="hljs-comment"># 计算左右两侧的padding  # left=0 right=0</span><br>    left, right = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(dw - <span class="hljs-number">0.1</span>)), <span class="hljs-built_in">int</span>(<span class="hljs-built_in">round</span>(dw + <span class="hljs-number">0.1</span>))<br>    <span class="hljs-comment"># 也就是此处的值没有padding</span><br>    im = cv2.copyMakeBorder(im, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)  <span class="hljs-comment"># add border</span><br><br>	<span class="hljs-comment"># img: (480, 640, 3)</span><br>    <span class="hljs-keyword">return</span> im, ratio, (dw, dh)<br></code></pre></td></tr></table></figure>
+
+<p>返回到主体函数即为 <code>640 * 480 * 3</code>。</p>
+<h2 id="推理代码"><a href="#推理代码" class="headerlink" title="推理代码"></a>推理代码</h2><p>推理代码作为核心部分，会通过for循环对加载的数据进行遍历，一帧一帧地推理，进行NMS非极大值抑制、绘制bounding box、预测类别。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 通过运行一次推理来预热模型（内部初始化一张空白图预热模型）</span><br>model.warmup(imgsz=(<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> pt <span class="hljs-keyword">or</span> model.triton <span class="hljs-keyword">else</span> bs, <span class="hljs-number">3</span>, *imgsz))  <br><br><br>seen, windows, dt = <span class="hljs-number">0</span>, [], (Profile(device=device), Profile(device=device), Profile(device=device))<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;seen:<span class="hljs-subst">&#123;seen&#125;</span>,windows:<span class="hljs-subst">&#123;windows&#125;</span>,dt:<span class="hljs-subst">&#123;dt&#125;</span>&#x27;</span>) <span class="hljs-comment"># seen 0 windows [] dt (Profile(device=&#x27;cpu&#x27;), Profile(device=&#x27;cpu&#x27;), Profile(device=&#x27;cpu&#x27;))</span><br><br><span class="hljs-comment"># dataset数据集遍历，path为图片路径</span><br><span class="hljs-comment"># im为压缩后的图片， 640 * 480 * 3</span><br><span class="hljs-comment"># im0s为原图，1080 * 810 </span><br><span class="hljs-comment"># vid_cap 空</span><br><span class="hljs-comment"># s 打印图片的信息</span><br><span class="hljs-keyword">for</span> path, im, im0s, vid_cap, s <span class="hljs-keyword">in</span> dataset:<br>    <br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;path:<span class="hljs-subst">&#123;path&#125;</span>&#x27;</span>) <span class="hljs-comment"># path data/images/bus.jpg</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;im:<span class="hljs-subst">&#123;im&#125;</span>&#x27;</span>) <span class="hljs-comment"># [[[]]] </span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;im0s:<span class="hljs-subst">&#123;im0s&#125;</span>&#x27;</span>) <span class="hljs-comment"># [[[]]]</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;vid_cap:<span class="hljs-subst">&#123;vid_cap&#125;</span>&#x27;</span>) <span class="hljs-comment"># None</span><br>    <br>    <span class="hljs-keyword">with</span> dt[<span class="hljs-number">0</span>]:<br>    	<span class="hljs-comment"># numpy array to tensor and device</span><br>    	<span class="hljs-comment"># 在模型中运算，需要转换成pytorch，从numpy转成pytorch，再将其数据放入cpu或者gpu中</span><br>        im = torch.from_numpy(im).to(model.device)<br>        <span class="hljs-comment"># 半精度训练 uint8 to fp16/32</span><br>        im = im.half() <span class="hljs-keyword">if</span> model.fp16 <span class="hljs-keyword">else</span> im.<span class="hljs-built_in">float</span>() <br>        <span class="hljs-comment"># 归一化</span><br>        im /= <span class="hljs-number">255</span>  <span class="hljs-comment"># 0 - 255 to 0.0 - 1.0</span><br>		<span class="hljs-comment"># 图片为3维(RGB)，在前面添加一个维度，batch_size=1。本身输入网络的图片需要是4维， [batch_size, channel, w, h]</span><br>		<span class="hljs-comment"># [1，3，640，480]</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(im.shape) == <span class="hljs-number">3</span>:<br>            im = im[<span class="hljs-literal">None</span>]  <span class="hljs-comment"># expand for batch dim</span><br>            <br>        <span class="hljs-comment"># 检查模型的xml属性是否为真，且第一个维度是否大于1</span><br>        <span class="hljs-comment"># 如果条件满足，会使用torch.chunk函数将im按行分割成多个张量，并将这些张量存储在名为ims的列表中</span><br>        <span class="hljs-keyword">if</span> model.xml <span class="hljs-keyword">and</span> im.shape[<span class="hljs-number">0</span>] &gt; <span class="hljs-number">1</span>:<br>            ims = torch.chunk(im, im.shape[<span class="hljs-number">0</span>], <span class="hljs-number">0</span>)<br><br>    <span class="hljs-comment"># Inference</span><br>    <span class="hljs-comment"># visualize 一开始为false，如果为true则对应会保存一些特征</span><br>    <span class="hljs-keyword">with</span> dt[<span class="hljs-number">1</span>]:<br>        visualize = increment_path(save_dir / Path(path).stem, mkdir=<span class="hljs-literal">True</span>) <span class="hljs-keyword">if</span> visualize <span class="hljs-keyword">else</span> <span class="hljs-literal">False</span><br>        <span class="hljs-comment"># 数据的推断增强，但也会降低速度。最后检测出的结果为18900个框</span><br>        <span class="hljs-comment"># 结果为[1，18900，85]，预训练有85个预测信息，4个坐标 + 1个置信度 +80各类别</span><br>        pred = model(im, augment=augment, visualize=visualize)<br>	<br>	<span class="hljs-comment"># NMS非极大值阈值过滤</span><br>	<span class="hljs-comment"># conf_thres: 置信度阈值；iou_thres: iou阈值</span><br>    <span class="hljs-comment"># classes: 是否只保留特定的类别 默认为None</span><br>    <span class="hljs-comment"># agnostic_nms: 进行nms是否也去除不同类别之间的框 默认False</span><br>    <span class="hljs-comment"># max_det: 每张图片的最大目标个数 默认1000，超过1000就会过滤</span><br>    <span class="hljs-comment"># pred: [1,num_obj,6] = [1,5,6] 这里的预测信息pred还是相对于 img_size(640)。本身一开始18900变为了5个框，6为每个框的 x左右y左右 以及 置信度 类别值</span><br>    <span class="hljs-keyword">with</span> dt[<span class="hljs-number">2</span>]:<br>        pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)<br>        <br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;pred:<span class="hljs-subst">&#123;pred&#125;</span>&#x27;</span>) <span class="hljs-comment"># 张量，shape为(1, 1000, 6)，1000为预测框的数量，6为每个预测框的信息（x1,y1,x2,y2,confidence,class）</span><br><br><br></code></pre></td></tr></table></figure>
+
+<p><code>Profile()</code>是ultralytics定义的一个类，是一个简单的上下文管理器（Context Manager）装饰器（Decorator），用于在代码中测量运行时间。内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Profile</span>(contextlib.ContextDecorator):<br>    <span class="hljs-comment"># YOLOv5 Profile class. Usage: @Profile() decorator or &#x27;with Profile():&#x27; context manager</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, t=<span class="hljs-number">0.0</span>, device: torch.device = <span class="hljs-literal">None</span></span>):<br>        self.t = t<br>        self.device = device<br>        self.cuda = <span class="hljs-built_in">bool</span>(device <span class="hljs-keyword">and</span> <span class="hljs-built_in">str</span>(device).startswith(<span class="hljs-string">&quot;cuda&quot;</span>))<br>	<br>	<span class="hljs-comment"># 被调用当进入 with 语句块时，它记录当前时间戳，并将其保存在 self.start 属性中</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__enter__</span>(<span class="hljs-params">self</span>):<br>        self.start = self.time()<br>        <span class="hljs-keyword">return</span> self<br>	<span class="hljs-comment"># 被调用当退出 with 语句块时，计算从进入到退出的时间差，保存在 self.dt 中，并将其累积到 self.t 中</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__exit__</span>(<span class="hljs-params">self, <span class="hljs-built_in">type</span>, value, traceback</span>):<br>        self.dt = self.time() - self.start  <span class="hljs-comment"># delta-time</span><br>        self.t += self.dt  <span class="hljs-comment"># accumulate dt</span><br>        <br>	<span class="hljs-comment"># 返回当前时间戳，如果 self.cuda 为 True（即运行在 CUDA 设备上），则在返回前调用了 torch.cuda.synchronize 以确保测量的时间准确</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">time</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">if</span> self.cuda:<br>            torch.cuda.synchronize(self.device)<br>        <span class="hljs-keyword">return</span> time.time()<br></code></pre></td></tr></table></figure>
+
+<p>核心代码中，包含一个预热函数<code>warmup</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 通过运行一次推理来预热模型</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">warmup</span>(<span class="hljs-params">self, imgsz=(<span class="hljs-params"><span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">640</span>, <span class="hljs-number">640</span></span>)</span>):<br>    <span class="hljs-comment"># Warmup model by running inference once</span><br>    warmup_types = self.pt, self.jit, self.onnx, self.engine, self.saved_model, self.pb, self.triton<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">any</span>(warmup_types) <span class="hljs-keyword">and</span> (self.device.<span class="hljs-built_in">type</span> != <span class="hljs-string">&#x27;cpu&#x27;</span> <span class="hljs-keyword">or</span> self.triton):<br>        im = torch.empty(*imgsz, dtype=torch.half <span class="hljs-keyword">if</span> self.fp16 <span class="hljs-keyword">else</span> torch.<span class="hljs-built_in">float</span>, device=self.device)  <span class="hljs-comment"># input</span><br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span> <span class="hljs-keyword">if</span> self.jit <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>):  <br>            self.forward(im)  <span class="hljs-comment"># warmup</span><br></code></pre></td></tr></table></figure>
+
+<p>接下来是保存为csv文件的代码，只有当前面选择<code>save_csv</code>时才会执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># Define the path for the CSV file</span><br>csv_path = save_dir / <span class="hljs-string">&quot;predictions.csv&quot;</span><br><br><span class="hljs-comment"># Create or append to the CSV file</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">write_to_csv</span>(<span class="hljs-params">image_name, prediction, confidence</span>):<br>    data = &#123;<span class="hljs-string">&quot;Image Name&quot;</span>: image_name, <span class="hljs-string">&quot;Prediction&quot;</span>: prediction, <span class="hljs-string">&quot;Confidence&quot;</span>: confidence&#125;<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(csv_path, mode=<span class="hljs-string">&quot;a&quot;</span>, newline=<span class="hljs-string">&quot;&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        writer = csv.DictWriter(f, fieldnames=data.keys())<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> csv_path.is_file():<br>            writer.writeheader()<br>        writer.writerow(data)<br></code></pre></td></tr></table></figure>
+
+<p>继续处理推理信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># Process predictions</span><br><br><span class="hljs-comment"># 对每张图片进行处理，将pred(相对img_size 640)映射回原图img0 size</span><br><span class="hljs-comment"># 此处的det，表示5个检测框中的信息，i是每个batch的信息</span><br><span class="hljs-keyword">for</span> i, det <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(pred): <br>    <br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;正在进入Pred迭代...&#x27;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;i:<span class="hljs-subst">&#123;i&#125;</span>,det:<span class="hljs-subst">&#123;det&#125;</span>&#x27;</span>) <span class="hljs-comment"># i:0</span><br>    <br>	<span class="hljs-comment"># 每处理一张图片，就会加1 </span><br>    seen += <span class="hljs-number">1</span><br>    <span class="hljs-comment"># 输入源是网页，对应取出dataset中的一张照片</span><br>    <span class="hljs-keyword">if</span> webcam:  <span class="hljs-comment"># batch_size &gt;= 1</span><br>        p, im0, frame = path[i], im0s[i].copy(), dataset.count<br>        s += <span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;i&#125;</span>: &#x27;</span><br>    <span class="hljs-keyword">else</span>:<br>    	<span class="hljs-comment"># p为当前图片或者视频绝对路径</span><br>    	<span class="hljs-comment"># im0原始图片</span><br>    	<span class="hljs-comment"># frame: 初始为0  可能是当前图片属于视频中的第几帧</span><br>        p, im0, frame = path, im0s.copy(), <span class="hljs-built_in">getattr</span>(dataset, <span class="hljs-string">&#x27;frame&#x27;</span>, <span class="hljs-number">0</span>)<br>        <br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;p:<span class="hljs-subst">&#123;p&#125;</span>,im0:<span class="hljs-subst">&#123;im0&#125;</span>,frame:<span class="hljs-subst">&#123;frame&#125;</span>&#x27;</span>) <span class="hljs-comment"># p data/images/bus.jpg im0 [[[[]]]] frame 0</span><br><br></code></pre></td></tr></table></figure>
+
+<p>上面这段代码，实际上是在迭代<code>pred</code>这个对象。<code>pred</code>是什么呢？就是模型输出的一个batch里的预测数据，当bs为1，或者只有一张图片时，这个pred就只是由一个多维张量组成的列表。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python">   p = Path(p)  <span class="hljs-comment"># to Path</span><br>   <span class="hljs-comment"># 图片的保存路径</span><br>   save_path = <span class="hljs-built_in">str</span>(save_dir / p.name)  <span class="hljs-comment"># im.jpg</span><br>   <span class="hljs-comment"># txt 保存路径（保存预测框的坐标）</span><br>   txt_path = <span class="hljs-built_in">str</span>(save_dir / <span class="hljs-string">&#x27;labels&#x27;</span> / p.stem) + (<span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">if</span> dataset.mode == <span class="hljs-string">&#x27;image&#x27;</span> <span class="hljs-keyword">else</span> <span class="hljs-string">f&#x27;_<span class="hljs-subst">&#123;frame&#125;</span>&#x27;</span>)  <span class="hljs-comment"># im.txt</span><br><br><span class="hljs-comment"># 输出图片shape (w, h)</span><br>   s += <span class="hljs-string">&#x27;%gx%g &#x27;</span> % im.shape[<span class="hljs-number">2</span>:]  <span class="hljs-comment"># print string</span><br>   <span class="hljs-comment"># gn = [w, h, w, h]  用于后面的归一化</span><br>   gn = torch.tensor(im0.shape)[[<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>]]  <span class="hljs-comment"># normalization gain whwh</span><br>   <span class="hljs-comment"># imc: for save_crop 在save_crop中使用</span><br>   imc = im0.copy() <span class="hljs-keyword">if</span> save_crop <span class="hljs-keyword">else</span> im0  <span class="hljs-comment"># for save_crop</span><br><br><span class="hljs-comment"># 自定义的绘图工具，入参是图片，画图检测框的粗细，以及数字-标签对应的字典</span><br>   annotator = Annotator(im0, line_width=line_thickness, example=<span class="hljs-built_in">str</span>(names))<br>   <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(det):<br>       <br>       <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;正在进入scale_boxes...&#x27;</span>)<br>       <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;det:<span class="hljs-subst">&#123;det&#125;</span>&#x27;</span>) <span class="hljs-comment"># [[],[],[]] 张量，每个子列表为一个预测框的信息（x1,y1,x2,y2,confidence,class）</span><br><br>       <span class="hljs-comment"># Rescale boxes from img_size to im0 size</span><br>       <span class="hljs-comment"># 将预测信息（相对img_size 640）映射回原图 img0 size</span><br>       det[:, :<span class="hljs-number">4</span>] = scale_boxes(im.shape[<span class="hljs-number">2</span>:], det[:, :<span class="hljs-number">4</span>], im0.shape).<span class="hljs-built_in">round</span>()<br>       <br>       <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;已经完成了scale_boxes...&#x27;</span>)<br>       <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;det:<span class="hljs-subst">&#123;det&#125;</span>&#x27;</span>) <span class="hljs-comment"># [[],[],[]] 张量，每个子列表为一个预测框的信息（x1,y1,x2,y2,confidence,class）</span><br><br>       <span class="hljs-comment"># Print results</span><br>       <span class="hljs-comment"># 统计每个框的类别</span><br>       <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> det[:, <span class="hljs-number">5</span>].unique():<br>           n = (det[:, <span class="hljs-number">5</span>] == c).<span class="hljs-built_in">sum</span>()  <span class="hljs-comment"># detections per class</span><br>           s += <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;n&#125;</span> <span class="hljs-subst">&#123;names[<span class="hljs-built_in">int</span>(c)]&#125;</span><span class="hljs-subst">&#123;<span class="hljs-string">&#x27;s&#x27;</span> * (n &gt; <span class="hljs-number">1</span>)&#125;</span>, &quot;</span>  <span class="hljs-comment"># add to string</span><br><br>       <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;s:<span class="hljs-subst">&#123;s&#125;</span>&#x27;</span>) <span class="hljs-comment"># s image 1/2 C:\Users\ZeroLoveSeA\Desktop\学习\CV\yolov5\data\images\bus.jpg: 640x480 4 persons, 1 bus</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="绘制预测图"><a href="#绘制预测图" class="headerlink" title="绘制预测图"></a>绘制预测图</h2><p>前面得到了预测的结果<code>det</code>，也就是一个多张量的列表，其中每个子列表为一个预测框的信息（x1,y1,x2,y2,confidence,class），接下来就需要遍历这个列表里面的每一个预测框，在一张图片上绘图。</p>
+<p>这里用到了<code>reversed</code>这个方法，用来将一个张量里的所有元素都进行倒序排列。我理解这样可以进行后续的操作<code>for *xyxy, conf, cls in reversed(det)</code>，可以直接拿到最后两位作为置信度和分类标签。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><code class="hljs python">        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;reversed(det):<span class="hljs-subst">&#123;<span class="hljs-built_in">reversed</span>(det)&#125;</span>&#x27;</span>) <span class="hljs-comment"># 反向张量，每个子列表为一个预测框的信息(class, confidence, y2,y1,x2,x1)</span><br><br>        <span class="hljs-comment"># 保存预测信息: txt、img0上画框、crop_img</span><br>        <span class="hljs-comment"># 迭代每个预测框，*xyxy是前四位，conf是第五位，cls是第六位</span><br>        <span class="hljs-keyword">for</span> *xyxy, conf, cls <span class="hljs-keyword">in</span> <span class="hljs-built_in">reversed</span>(det):<br>        	<span class="hljs-comment"># 将每个图片的预测信息分别存入save_dir/labels下的xxx.txt中 每行: class_id+score+xywh</span><br>            <span class="hljs-keyword">if</span> save_txt:  <span class="hljs-comment"># Write to file</span><br>            	<span class="hljs-comment"># 将xyxy(左上角 + 右下角)格式转换为xywh(中心的 + 宽高)格式 并除以gn(whwh)做归一化 转为list再保存</span><br>                xywh = (xyxy2xywh(torch.tensor(xyxy).view(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)) / gn).view(-<span class="hljs-number">1</span>).tolist()  <span class="hljs-comment"># normalized xywh</span><br>                line = (cls, *xywh, conf) <span class="hljs-keyword">if</span> save_conf <span class="hljs-keyword">else</span> (cls, *xywh)  <span class="hljs-comment"># label format</span><br>                <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;txt_path&#125;</span>.txt&#x27;</span>, <span class="hljs-string">&#x27;a&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>                    f.write((<span class="hljs-string">&#x27;%g &#x27;</span> * <span class="hljs-built_in">len</span>(line)).rstrip() % line + <span class="hljs-string">&#x27;\n&#x27;</span>)<br>	<br>			<span class="hljs-comment"># 在原图上画框 + 将预测到的目标剪切出来 保存成图片 保存在save_dir/crops下</span><br>            <span class="hljs-keyword">if</span> save_img <span class="hljs-keyword">or</span> save_crop <span class="hljs-keyword">or</span> view_img:  <span class="hljs-comment"># Add bbox to image</span><br>                c = <span class="hljs-built_in">int</span>(cls)  <span class="hljs-comment"># integer class</span><br>                label = <span class="hljs-literal">None</span> <span class="hljs-keyword">if</span> hide_labels <span class="hljs-keyword">else</span> (names[c] <span class="hljs-keyword">if</span> hide_conf <span class="hljs-keyword">else</span> <span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;names[c]&#125;</span> <span class="hljs-subst">&#123;conf:<span class="hljs-number">.2</span>f&#125;</span>&#x27;</span>)<br>                <br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;正在绘制框...&#x27;</span>)<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;xyxy:<span class="hljs-subst">&#123;xyxy&#125;</span>,label:<span class="hljs-subst">&#123;label&#125;</span>,color:<span class="hljs-subst">&#123;colors(c, <span class="hljs-literal">True</span>)&#125;</span>&#x27;</span>)<br>                <span class="hljs-comment"># xyxy:[tensor(0.), tensor(552.), tensor(68.), tensor(875.)],label:person 0.53,color:(56, 56, 255)</span><br> 				<br> 				<span class="hljs-comment"># 使用了自定义库中的box_label方法来进行绘图，color中的c参数是cls的个数</span><br>                annotator.box_label(xyxy, label, color=colors(c, <span class="hljs-literal">True</span>))		<br>           <span class="hljs-comment"># 如果需要就将预测到的目标剪切出来 保存成图片 保存在save_dir/crops下</span><br>            <span class="hljs-keyword">if</span> save_crop:<br>                save_one_box(xyxy, imc, file=save_dir / <span class="hljs-string">&#x27;crops&#x27;</span> / names[c] / <span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;p.stem&#125;</span>.jpg&#x27;</span>, BGR=<span class="hljs-literal">True</span>)<br><br>    <span class="hljs-comment"># Stream results</span><br>    im0 = annotator.result()<br>    <span class="hljs-keyword">if</span> view_img:<br>        <span class="hljs-keyword">if</span> platform.system() == <span class="hljs-string">&#x27;Linux&#x27;</span> <span class="hljs-keyword">and</span> p <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> windows:<br>            windows.append(p)<br>            cv2.namedWindow(<span class="hljs-built_in">str</span>(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  <span class="hljs-comment"># allow window resize (Linux)</span><br>            cv2.resizeWindow(<span class="hljs-built_in">str</span>(p), im0.shape[<span class="hljs-number">1</span>], im0.shape[<span class="hljs-number">0</span>])<br>        <span class="hljs-comment"># 通过imshow显示出框</span><br>        cv2.imshow(<span class="hljs-built_in">str</span>(p), im0)<br>        cv2.waitKey(<span class="hljs-number">1</span>)  <span class="hljs-comment"># 1 millisecond</span><br><br>    <span class="hljs-comment"># 是否需要保存图片或视频（检测后的图片/视频 里面已经被我们画好了框的） img0</span><br>    <span class="hljs-keyword">if</span> save_img:<br>        <span class="hljs-keyword">if</span> dataset.mode == <span class="hljs-string">&#x27;image&#x27;</span>:<br>            cv2.imwrite(save_path, im0)<br>        <span class="hljs-keyword">else</span>:  <span class="hljs-comment"># &#x27;video&#x27; or &#x27;stream&#x27;</span><br>            <span class="hljs-keyword">if</span> vid_path[i] != save_path:  <span class="hljs-comment"># new video</span><br>                vid_path[i] = save_path<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(vid_writer[i], cv2.VideoWriter):<br>                    vid_writer[i].release()  <span class="hljs-comment"># release previous video writer</span><br>                <span class="hljs-keyword">if</span> vid_cap:  <span class="hljs-comment"># video</span><br>                    fps = vid_cap.get(cv2.CAP_PROP_FPS)<br>                    w = <span class="hljs-built_in">int</span>(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))<br>                    h = <span class="hljs-built_in">int</span>(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))<br>                <span class="hljs-keyword">else</span>:  <span class="hljs-comment"># stream</span><br>                    fps, w, h = <span class="hljs-number">30</span>, im0.shape[<span class="hljs-number">1</span>], im0.shape[<span class="hljs-number">0</span>]<br>                save_path = <span class="hljs-built_in">str</span>(Path(save_path).with_suffix(<span class="hljs-string">&#x27;.mp4&#x27;</span>))  <span class="hljs-comment"># force *.mp4 suffix on results videos</span><br>                vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*<span class="hljs-string">&#x27;mp4v&#x27;</span>), fps, (w, h))<br>            vid_writer[i].write(im0)<br><br><span class="hljs-comment"># Print time (inference-only)</span><br>LOGGER.info(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;s&#125;</span><span class="hljs-subst">&#123;<span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(det) <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;(no detections), &#x27;</span>&#125;</span><span class="hljs-subst">&#123;dt[<span class="hljs-number">1</span>].dt * <span class="hljs-number">1E3</span>:<span class="hljs-number">.1</span>f&#125;</span>ms&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<h2 id="打印信息"><a href="#打印信息" class="headerlink" title="打印信息"></a>打印信息</h2><p>最后输出打印的信息：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># seen为预测图片总数，dt为耗时时间，求出平均时间</span><br>t = <span class="hljs-built_in">tuple</span>(x.t / seen * <span class="hljs-number">1E3</span> <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> dt)  <span class="hljs-comment"># speeds per image</span><br>LOGGER.info(<span class="hljs-string">f&#x27;Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS per image at shape <span class="hljs-subst">&#123;(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>, *imgsz)&#125;</span>&#x27;</span> % t)<br><br><span class="hljs-comment"># 保存预测的label信息 xywh等   save_txt</span><br><span class="hljs-keyword">if</span> save_txt <span class="hljs-keyword">or</span> save_img:<br>    s = <span class="hljs-string">f&quot;\n<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(<span class="hljs-built_in">list</span>(save_dir.glob(<span class="hljs-string">&#x27;labels/*.txt&#x27;</span>)))&#125;</span> labels saved to <span class="hljs-subst">&#123;save_dir / <span class="hljs-string">&#x27;labels&#x27;</span>&#125;</span>&quot;</span> <span class="hljs-keyword">if</span> save_txt <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;&#x27;</span><br>    LOGGER.info(<span class="hljs-string">f&quot;Results saved to <span class="hljs-subst">&#123;colorstr(<span class="hljs-string">&#x27;bold&#x27;</span>, save_dir)&#125;</span><span class="hljs-subst">&#123;s&#125;</span>&quot;</span>)<br><span class="hljs-keyword">if</span> update:<br>	<span class="hljs-comment"># strip_optimizer函数将optimizer从ckpt中删除  更新模型</span><br>    strip_optimizer(weights[<span class="hljs-number">0</span>])  <span class="hljs-comment"># update model (to fix SourceChangeWarning)</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="参数导入"><a href="#参数导入" class="headerlink" title="参数导入"></a>参数导入</h2><p>这里没啥好说的，单纯导入参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">parse_opt</span>():<br>    parser = argparse.ArgumentParser()<br>    parser.add_argument(<span class="hljs-string">&quot;--weights&quot;</span>, nargs=<span class="hljs-string">&quot;+&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>, default=ROOT / <span class="hljs-string">&quot;yolov5s.pt&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;model path or triton URL&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--source&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>, default=ROOT / <span class="hljs-string">&quot;data/images&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;file/dir/URL/glob/screen/0(webcam)&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--data&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">str</span>, default=ROOT / <span class="hljs-string">&quot;data/coco128.yaml&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;(optional) dataset.yaml path&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--imgsz&quot;</span>, <span class="hljs-string">&quot;--img&quot;</span>, <span class="hljs-string">&quot;--img-size&quot;</span>, nargs=<span class="hljs-string">&quot;+&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>, default=[<span class="hljs-number">640</span>], <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;inference size h,w&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--conf-thres&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">float</span>, default=<span class="hljs-number">0.25</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;confidence threshold&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--iou-thres&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">float</span>, default=<span class="hljs-number">0.45</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;NMS IoU threshold&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--max-det&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>, default=<span class="hljs-number">1000</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;maximum detections per image&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--device&quot;</span>, default=<span class="hljs-string">&quot;&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;cuda device, i.e. 0 or 0,1,2,3 or cpu&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--view-img&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;show results&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--save-txt&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;save results to *.txt&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--save-csv&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;save results in CSV format&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--save-conf&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;save confidences in --save-txt labels&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--save-crop&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;save cropped prediction boxes&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--nosave&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;do not save images/videos&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--classes&quot;</span>, nargs=<span class="hljs-string">&quot;+&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;filter by class: --classes 0, or --classes 0 2 3&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--agnostic-nms&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;class-agnostic NMS&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--augment&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;augmented inference&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--visualize&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;visualize features&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--update&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;update all models&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--project&quot;</span>, default=ROOT / <span class="hljs-string">&quot;runs/detect&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;save results to project/name&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--name&quot;</span>, default=<span class="hljs-string">&quot;exp&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;save results to project/name&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--exist-ok&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;existing project/name ok, do not increment&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--line-thickness&quot;</span>, default=<span class="hljs-number">3</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;bounding box thickness (pixels)&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--hide-labels&quot;</span>, default=<span class="hljs-literal">False</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;hide labels&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--hide-conf&quot;</span>, default=<span class="hljs-literal">False</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;hide confidences&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--half&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;use FP16 half-precision inference&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--dnn&quot;</span>, action=<span class="hljs-string">&quot;store_true&quot;</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;use OpenCV DNN for ONNX inference&quot;</span>)<br>    parser.add_argument(<span class="hljs-string">&quot;--vid-stride&quot;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">int</span>, default=<span class="hljs-number">1</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&quot;video frame-rate stride&quot;</span>)<br>    opt = parser.parse_args()<br>    opt.imgsz *= <span class="hljs-number">2</span> <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(opt.imgsz) == <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span>  <span class="hljs-comment"># expand</span><br>    print_args(<span class="hljs-built_in">vars</span>(opt))<br>    <span class="hljs-keyword">return</span> opt<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>(<span class="hljs-params">opt</span>):<br>	<span class="hljs-comment"># 检查是否安装依赖项</span><br>    check_requirements(ROOT / <span class="hljs-string">&quot;requirements.txt&quot;</span>, exclude=(<span class="hljs-string">&quot;tensorboard&quot;</span>, <span class="hljs-string">&quot;thop&quot;</span>)) <br>    run(**<span class="hljs-built_in">vars</span>(opt))<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    opt = parse_opt()<br>    main(opt)<br></code></pre></td></tr></table></figure>
+
+<p>整体看下来，代码逻辑是比较清晰易懂的。记得我第一次看这个代码的时候，被里面很多python的用法都吓到了，现在回过头看看，并不是很复杂，难点主要在怎么对张量进行变换。</p>
+<p>2024&#x2F;1&#x2F;21 于苏州家中</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CV/" class="category-chain-item">CV</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CV/" class="print-no-link">#CV</a>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/Yolo/" class="print-no-link">#Yolo</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/23/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9ADocker%E5%85%A5%E9%97%A8%E6%8A%80%E5%B7%A7/" title="工程实践：Docker入门技巧">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">工程实践：Docker入门技巧</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BD%BF%E7%94%A8Docker%E6%89%93%E5%8C%85%E8%87%AA%E5%B7%B1%E7%9A%84%E9%A1%B9%E7%9B%AE/" title="工程实践：使用Docker打包自己的项目">
+                        <span class="hidden-mobile">工程实践：使用Docker打包自己的项目</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

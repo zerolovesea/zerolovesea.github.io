@@ -1,0 +1,867 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="探究Github上的热门项目，Andrej Karpathy大神实现的最简BPE算法代码。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MiniBPE：探究Github上最简单的BPE实现代码">
+<meta property="og:url" content="http://example.com/2024/03/09/MiniBPE%EF%BC%9A%E6%8E%A2%E7%A9%B6Github%E4%B8%8A%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84BPE%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%A0%81/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="探究Github上的热门项目，Andrej Karpathy大神实现的最简BPE算法代码。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/llm.png">
+<meta property="article:published_time" content="2024-03-09T14:12:43.000Z">
+<meta property="article:modified_time" content="2024-03-10T02:42:57.702Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="BPE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/llm.png">
+  
+  
+  
+  <title>MiniBPE：探究Github上最简单的BPE实现代码 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="MiniBPE：探究Github上最简单的BPE实现代码"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-09 22:12" pubdate>
+          2024年3月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">MiniBPE：探究Github上最简单的BPE实现代码</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>之前在<a target="_blank" rel="noopener" href="https://zerolovesea.github.io/2024/01/01/%E5%9F%BA%E4%BA%8E%E5%AD%97%E8%AF%8D%E7%9A%84%E5%88%86%E8%AF%8D%E6%96%B9%E6%B3%95%EF%BC%9ABPE%E7%AE%97%E6%B3%95/">基于子词的分词方法：BPE算法</a>一文中简单实现了BPE的算法，上个月前OpenAI数据科学家Andrej Karpathy大神在Github上实现了目前最精简的BPE算法的代码，这一项目瞬间冲到了Github日榜并连续霸榜了一周。目前该项目已经拥有7.6k颗星。今天就来探究一下他写的代码细节，学习一下大神的代码规范。</p>
+<h1 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h1><p>项目由四个文件组成：一个<code>base.py</code>实现<code>Tokenizer</code>的抽象化基类。一个<code>Tokenizer</code>通常包含三个方法：训练，编码和解码。</p>
+<p><code>basic.py</code>继承了<code>base.py</code>，里面的<code>BasicTokenizer</code>类是BPE算法的核心实现模块。</p>
+<p>第三个文件是<code>regex.py</code>，里面的<code>RegexTokenizer</code>类的作用是使用正则表达式更好的拆分文本。这一部分一般出现在预处理阶段，让文本按照不同类别（字母，数字，标点）进行拆分。</p>
+<p>最后一个文件是<code>gpt4.py</code>，它实现了<code>GPT4Tokenizer</code>类，复现了<code>tiktoken</code>库中的<code>GPT-4</code>的<code>Tokenizer</code>。</p>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><h2 id="调用方法"><a href="#调用方法" class="headerlink" title="调用方法"></a>调用方法</h2><p>先上使用方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> minbpe <span class="hljs-keyword">import</span> BasicTokenizer<br>tokenizer = BasicTokenizer()<br>text = <span class="hljs-string">&quot;aaabdaaabac&quot;</span><br>tokenizer.train(text, <span class="hljs-number">256</span> + <span class="hljs-number">3</span>) <span class="hljs-comment"># 256 are the byte tokens, then do 3 merges</span><br><span class="hljs-built_in">print</span>(tokenizer.encode(text))<br><span class="hljs-comment"># [258, 100, 258, 97, 99]</span><br><span class="hljs-built_in">print</span>(tokenizer.decode([<span class="hljs-number">258</span>, <span class="hljs-number">100</span>, <span class="hljs-number">258</span>, <span class="hljs-number">97</span>, <span class="hljs-number">99</span>]))<br><span class="hljs-comment"># aaabdaaabac</span><br>tokenizer.save(<span class="hljs-string">&quot;toy&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>它的作用是将aaabdaaabac进行三次的合并。它会输出一个新的字符串XdXac，其中X&#x3D;ZY、Y&#x3D;ab 和 Z&#x3D;aa。minbpe将单独的256个字节分配为Token，因此合并后的新字节将从257开始。</p>
+<p>上述的例子中，a&#x3D;97、b&#x3D;98、c&#x3D;99、d&#x3D;100（它们的 ASCII 值）。然后，当 （a，a） 合并到 Z 时，Z 将变为 256。同样，Y 将变为 257 和 X 258。因此，我们从 256 个字节开始，进行 3 次合并以获得上述结果，预期输出为 [258， 100， 258， 97， 99]。</p>
+<p>再用项目实现的<code>GPT4Tokenizer</code>和<code>tiktoken</code>实现的<code>GPT-4 tokenizer</code>进行对比：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">text = <span class="hljs-string">&quot;hello123!!!? (안녕하세요!) 😉&quot;</span><br><br><span class="hljs-comment"># tiktoken</span><br><span class="hljs-keyword">import</span> tiktoken<br>enc = tiktoken.get_encoding(<span class="hljs-string">&quot;cl100k_base&quot;</span>)<br><span class="hljs-built_in">print</span>(enc.encode(text))<br><span class="hljs-comment"># [15339, 4513, 12340, 30, 320, 31495, 230, 75265, 243, 92245, 16715, 57037]</span><br><br><span class="hljs-comment"># ours</span><br><span class="hljs-keyword">from</span> minbpe <span class="hljs-keyword">import</span> GPT4Tokenizer<br>tokenizer = GPT4Tokenizer()<br><span class="hljs-built_in">print</span>(tokenizer.encode(text))<br><span class="hljs-comment"># [15339, 4513, 12340, 30, 320, 31495, 230, 75265, 243, 92245, 16715, 57037]</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h2><p>这个项目里实现了两种方法，一种方法是不使用正则来处理原文本，这时候直接使用<code>BasicTokenizer</code>进行训练。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> minbpe <span class="hljs-keyword">import</span> BasicTokenizer<br>tokenizer = BasicTokenizer()<br>tokenizer.train(very_long_training_string, vocab_size=<span class="hljs-number">4096</span>)<br>tokenizer.encode(<span class="hljs-string">&quot;hello world&quot;</span>) <span class="hljs-comment"># string -&gt; tokens</span><br>tokenizer.decode([<span class="hljs-number">1000</span>, <span class="hljs-number">2000</span>, <span class="hljs-number">3000</span>]) <span class="hljs-comment"># tokens -&gt; string</span><br>tokenizer.save(<span class="hljs-string">&quot;mymodel&quot;</span>) <span class="hljs-comment"># writes mymodel.model and mymodel.vocab</span><br>tokenizer.load(<span class="hljs-string">&quot;mymodel.model&quot;</span>) <span class="hljs-comment"># loads the model back, the vocab is just for vis</span><br></code></pre></td></tr></table></figure>
+
+<p>如果要使用正则方法来按类别拆分文本，就使用以下方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> minbpe <span class="hljs-keyword">import</span> RegexTokenizer<br>tokenizer = RegexTokenizer()<br>tokenizer.train(very_long_training_string, vocab_size=<span class="hljs-number">32768</span>)<br>tokenizer.encode(<span class="hljs-string">&quot;hello world&quot;</span>) <span class="hljs-comment"># string -&gt; tokens</span><br>tokenizer.decode([<span class="hljs-number">1000</span>, <span class="hljs-number">2000</span>, <span class="hljs-number">3000</span>]) <span class="hljs-comment"># tokens -&gt; string</span><br>tokenizer.save(<span class="hljs-string">&quot;tok32k&quot;</span>) <span class="hljs-comment"># writes tok32k.model and tok32k.vocab</span><br>tokenizer.load(<span class="hljs-string">&quot;tok32k.model&quot;</span>) <span class="hljs-comment"># loads the model back from disk</span><br></code></pre></td></tr></table></figure>
+
+<p>如果要添加<code>special tokens</code>，代码里也实现了一个方法来注册：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> minbpe <span class="hljs-keyword">import</span> RegexTokenizer<br>tokenizer = RegexTokenizer()<br>tokenizer.train(very_long_training_string, vocab_size=<span class="hljs-number">32768</span>)<br>tokenizer.register_special_tokens(&#123;<span class="hljs-string">&quot;&lt;|endoftext|&gt;&quot;</span>: <span class="hljs-number">32768</span>&#125;)<br>tokenizer.encode(<span class="hljs-string">&quot;&lt;|endoftext|&gt;hello world&quot;</span>, allowed_special=<span class="hljs-string">&quot;all&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<h1 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h1><h2 id="base-py"><a href="#base-py" class="headerlink" title="base.py"></a>base.py</h2><p>该文件实现了Toknizer的基类以及其他需要的工具函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> unicodedata<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_stats</span>(<span class="hljs-params">ids, counts=<span class="hljs-literal">None</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    输入一个整数列表，返回一个连续对的计数字典</span><br><span class="hljs-string">    例如：[1, 2, 3, 1, 2] -&gt; &#123;(1, 2): 2, (2, 3): 1, (3, 1): 1&#125;</span><br><span class="hljs-string">    可以选择更新一个已存在的计数字典</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-comment"># 如果没有传入counts，则初始化一个空字典</span><br>    counts = &#123;&#125; <span class="hljs-keyword">if</span> counts <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> counts  <br>    <br>    <span class="hljs-comment"># 遍历列表的前后连续对：不断迭代前一个和后一个字符对</span><br>    <span class="hljs-keyword">for</span> pair <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(ids, ids[<span class="hljs-number">1</span>:]): <br>        counts[pair] = counts.get(pair, <span class="hljs-number">0</span>) + <span class="hljs-number">1</span> <span class="hljs-comment"># 不断增加统计数</span><br>    <span class="hljs-keyword">return</span> counts<br></code></pre></td></tr></table></figure>
+
+<p><code>get_stats</code>实际上是一个比较核心的函数，下面是<code>merge</code>函数，将所有的pair都用指定的idx来代替。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">merge</span>(<span class="hljs-params">ids, pair, idx</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    在整数列表中，用新的整数idx替换所有连续出现的pair</span><br><span class="hljs-string">    例如：ids=[1, 2, 3, 1, 2], pair=(1, 2), idx=4 -&gt; [4, 3, 4]</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    newids = []<br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; <span class="hljs-built_in">len</span>(ids):<br>        <span class="hljs-comment"># 如果不是在最后一个位置，并且pair匹配，就替换</span><br>        <span class="hljs-keyword">if</span> ids[i] == pair[<span class="hljs-number">0</span>] <span class="hljs-keyword">and</span> i &lt; <span class="hljs-built_in">len</span>(ids) - <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> ids[i+<span class="hljs-number">1</span>] == pair[<span class="hljs-number">1</span>]:<br>            newids.append(idx) <span class="hljs-comment"># 新列表添加</span><br>            i += <span class="hljs-number">2</span> <span class="hljs-comment"># 指针增加2位</span><br>        <span class="hljs-keyword">else</span>:<br>        	<span class="hljs-comment"># 如果找不到匹配的，就把原字符加入新列表</span><br>            newids.append(ids[i]) <br>            i += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> newids<br></code></pre></td></tr></table></figure>
+
+<p>接下来是一个辅助函数。在Unicode中，包含一系列控制字符。这是一组特殊的字符，用于控制文本的显示和处理，这些字符通常不可见。控制字符的Unicode范围是U+0000至U+001F和U+007F至U+009F。由于我们将字符编码位Unicode，目标词表中，不需要这些控制字符，所以需要删除它们。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">replace_control_characters</span>(<span class="hljs-params">s: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>	<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">	将输入文本中，所有的控制字符删除，并返回处理过后的字符串。</span><br><span class="hljs-string">	&quot;&quot;&quot;</span><br>    chars = []<br>    <span class="hljs-keyword">for</span> ch <span class="hljs-keyword">in</span> s:<br>        <span class="hljs-keyword">if</span> unicodedata.category(ch)[<span class="hljs-number">0</span>] != <span class="hljs-string">&quot;C&quot;</span>:<br>            chars.append(ch) <span class="hljs-comment"># 只要不是控制字符就添加</span><br>        <span class="hljs-keyword">else</span>:<br>            chars.append(<span class="hljs-string">f&quot;\\u<span class="hljs-subst">&#123;<span class="hljs-built_in">ord</span>(ch):04x&#125;</span>&quot;</span>) <span class="hljs-comment"># 其转换为Unicode转义序列</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>.join(chars)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">render_token</span>(<span class="hljs-params">t: <span class="hljs-built_in">bytes</span></span>) -&gt; <span class="hljs-built_in">str</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    将bytes转为字符串，并清理控制字符</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    s = t.decode(<span class="hljs-string">&#x27;utf-8&#x27;</span>, errors=<span class="hljs-string">&#x27;replace&#x27;</span>)<br>    s = replace_control_characters(s)<br>    <span class="hljs-keyword">return</span> s<br></code></pre></td></tr></table></figure>
+
+<p>工具函数写完了，下面是<code>Tokenizer</code>的抽象类，抽象类包含了训练，编码，解码，构建词表，保存和加载方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Tokenizer</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;Base class for Tokenizers&quot;&quot;&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># default: vocab size of 256 (all bytes), no merges, no patterns</span><br>        self.merges = &#123;&#125; <span class="hljs-comment"># (int, int) -&gt; int</span><br>        self.pattern = <span class="hljs-string">&quot;&quot;</span> <span class="hljs-comment"># str</span><br>        self.special_tokens = &#123;&#125; <span class="hljs-comment"># str -&gt; int, e.g. &#123;&#x27;&lt;|endoftext|&gt;&#x27;: 100257&#125;</span><br>        self.vocab = self._build_vocab() <span class="hljs-comment"># int -&gt; bytes</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">self, text, vocab_size, verbose=<span class="hljs-literal">False</span></span>):<br>        <span class="hljs-keyword">raise</span> NotImplementedError<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, text</span>):<br>        <span class="hljs-keyword">raise</span> NotImplementedError<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">decode</span>(<span class="hljs-params">self, ids</span>):<br> <br>        <span class="hljs-keyword">raise</span> NotImplementedError<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_build_vocab</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># 构建词表，基础词表是256个字节</span><br>        vocab = &#123;idx: <span class="hljs-built_in">bytes</span>([idx]) <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)&#125;<br>        <br>        <span class="hljs-comment"># (p0,p1) 是pairs</span><br>        <span class="hljs-keyword">for</span> (p0, p1), idx <span class="hljs-keyword">in</span> self.merges.items():<br>            vocab[idx] = vocab[p0] + vocab[p1]<br>        <span class="hljs-keyword">for</span> special, idx <span class="hljs-keyword">in</span> self.special_tokens.items():<br>            vocab[idx] = special.encode(<span class="hljs-string">&quot;utf-8&quot;</span>)<br>        <span class="hljs-keyword">return</span> vocab<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">save</span>(<span class="hljs-params">self, file_prefix</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        保存两个文件：file_prefix.vocab 和 file_prefix.model</span><br><span class="hljs-string">        - model文件用于load()</span><br><span class="hljs-string">        - vocab文件只是一个打印版本，仅供人类检查</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-comment"># 写入文件</span><br>        model_file = file_prefix + <span class="hljs-string">&quot;.model&quot;</span><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(model_file, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>            <span class="hljs-comment"># 写入版本，模式和合并</span><br>            f.write(<span class="hljs-string">&quot;minbpe v1\n&quot;</span>)<br>            f.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;self.pattern&#125;</span>\n&quot;</span>)<br>            <span class="hljs-comment"># 写入特殊字符</span><br>            f.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(self.special_tokens)&#125;</span>\n&quot;</span>)<br>            <span class="hljs-keyword">for</span> special, idx <span class="hljs-keyword">in</span> self.special_tokens.items():<br>                f.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;special&#125;</span> <span class="hljs-subst">&#123;idx&#125;</span>\n&quot;</span>)<br>            <span class="hljs-comment"># 合并字典</span><br>            <span class="hljs-keyword">for</span> idx1, idx2 <span class="hljs-keyword">in</span> self.merges:<br>                f.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;idx1&#125;</span> <span class="hljs-subst">&#123;idx2&#125;</span>\n&quot;</span>)<br>                <br>        <span class="hljs-comment"># 写入词表，这个只是用来看的</span><br>        vocab_file = file_prefix + <span class="hljs-string">&quot;.vocab&quot;</span><br>        inverted_merges = &#123;idx: pair <span class="hljs-keyword">for</span> pair, idx <span class="hljs-keyword">in</span> self.merges.items()&#125;<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(vocab_file, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>            <span class="hljs-keyword">for</span> idx, token <span class="hljs-keyword">in</span> self.vocab.items():<br>                s = render_token(token)<br>              <br>                <span class="hljs-keyword">if</span> idx <span class="hljs-keyword">in</span> inverted_merges:<br>                    idx0, idx1 = inverted_merges[idx]<br>                    s0 = render_token(self.vocab[idx0])<br>                    s1 = render_token(self.vocab[idx1])<br>                    f.write(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;s0&#125;</span>][<span class="hljs-subst">&#123;s1&#125;</span>] -&gt; [<span class="hljs-subst">&#123;s&#125;</span>] <span class="hljs-subst">&#123;idx&#125;</span>\n&quot;</span>)<br>                <span class="hljs-keyword">else</span>:<br>                    f.write(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;s&#125;</span>] <span class="hljs-subst">&#123;idx&#125;</span>\n&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">load</span>(<span class="hljs-params">self, model_file</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;读取模型文件&quot;&quot;&quot;</span><br>        <span class="hljs-keyword">assert</span> model_file.endswith(<span class="hljs-string">&quot;.model&quot;</span>)<br>        <span class="hljs-comment"># 读取模型文件</span><br>        merges = &#123;&#125;<br>        special_tokens = &#123;&#125;<br>        idx = <span class="hljs-number">256</span><br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(model_file, <span class="hljs-string">&#x27;r&#x27;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>            version = f.readline().strip()<br>            <span class="hljs-keyword">assert</span> version == <span class="hljs-string">&quot;minbpe v1&quot;</span><br>            self.pattern = f.readline().strip()<br><br>            num_special = <span class="hljs-built_in">int</span>(f.readline().strip())<br>            <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_special):<br>                special, special_idx = f.readline().strip().split()<br>                special_tokens[special] = <span class="hljs-built_in">int</span>(special_idx)<br><br>            <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f:<br>                idx1, idx2 = <span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, line.split())<br>                merges[(idx1, idx2)] = idx<br>                idx += <span class="hljs-number">1</span><br>        self.merges = merges<br>        self.special_tokens = special_tokens<br>        self.vocab = self._build_vocab()<br></code></pre></td></tr></table></figure>
+
+<h2 id="basic-py"><a href="#basic-py" class="headerlink" title="basic.py"></a>basic.py</h2><p>该文件实现了基本的<code>Tokenizer</code>类。首先断言词表的大小大于256，并计算要进行几次merge，也就是去掉256个基本字节后，词表还剩下几个。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> .base <span class="hljs-keyword">import</span> Tokenizer, get_stats, merge<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BasicTokenizer</span>(<span class="hljs-title class_ inherited__">Tokenizer</span>):<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">self, text, vocab_size, verbose=<span class="hljs-literal">False</span></span>):<br>        <span class="hljs-keyword">assert</span> vocab_size &gt;= <span class="hljs-number">256</span><br>        <span class="hljs-comment"># 计算merge次数</span><br>        num_merges = vocab_size - <span class="hljs-number">256</span><br><br>        <span class="hljs-comment"># 输入文本预处理</span><br>        text_bytes = text.encode(<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-comment"># 将文本解码为Utf-8格式</span><br>        ids = <span class="hljs-built_in">list</span>(text_bytes) <span class="hljs-comment"># 每个元素都是0-255之间的整数的列表</span><br><br>        <span class="hljs-comment"># 迭代地合并最常见的pair，创建新的token</span><br>        merges = &#123;&#125; <span class="hljs-comment"># (int, int) -&gt; int</span><br>        vocab = &#123;idx: <span class="hljs-built_in">bytes</span>([idx]) <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)&#125; <span class="hljs-comment"># int -&gt; bytes</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_merges):<br>            <span class="hljs-comment"># 统计每个pair出现的次数，返回字典，key是pair，value是出现的次数</span><br>            stats = get_stats(ids)<br>            <span class="hljs-comment"># 找到出现次数最多的pair</span><br>            pair = <span class="hljs-built_in">max</span>(stats, key=stats.get)<br>            <span class="hljs-comment"># 为新的token分配一个新的id</span><br>            idx = <span class="hljs-number">256</span> + i<br>            <span class="hljs-comment"># 用idx替换ids中所有的pair</span><br>            ids = merge(ids, pair, idx)<br>            <span class="hljs-comment"># 保存合并</span><br>            merges[pair] = idx<br>            vocab[idx] = vocab[pair[<span class="hljs-number">0</span>]] + vocab[pair[<span class="hljs-number">1</span>]]<br>            <span class="hljs-comment"># 打印</span><br>            <span class="hljs-keyword">if</span> verbose:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;merge <span class="hljs-subst">&#123;i+<span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;num_merges&#125;</span>: <span class="hljs-subst">&#123;pair&#125;</span> -&gt; <span class="hljs-subst">&#123;idx&#125;</span> (<span class="hljs-subst">&#123;vocab[idx]&#125;</span>) had <span class="hljs-subst">&#123;stats[pair]&#125;</span> occurrences&quot;</span>)<br><br>        <span class="hljs-comment"># 保存类变量</span><br>        self.merges = merges <span class="hljs-comment"># used in encode()</span><br>        self.vocab = vocab   <span class="hljs-comment"># used in decode()</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">decode</span>(<span class="hljs-params">self, ids</span>):<br>        <span class="hljs-comment"># 解码，输入int组成的列表，返回字符串</span><br>        text_bytes = <span class="hljs-string">b&quot;&quot;</span>.join(self.vocab[idx] <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> ids)<br>        text = text_bytes.decode(<span class="hljs-string">&quot;utf-8&quot;</span>, errors=<span class="hljs-string">&quot;replace&quot;</span>)<br>        <span class="hljs-keyword">return</span> text<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, text</span>):<br>        <span class="hljs-comment"># 编码，输入字符串，返回int列表</span><br>        text_bytes = text.encode(<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-comment"># raw bytes</span><br>        ids = <span class="hljs-built_in">list</span>(text_bytes) <span class="hljs-comment"># 0-255 int值的列表</span><br>        <span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(ids) &gt;= <span class="hljs-number">2</span>:<br>            <span class="hljs-comment"># 找到pair中merge index最小的pair</span><br>            stats = get_stats(ids)<br>            pair = <span class="hljs-built_in">min</span>(stats, key=<span class="hljs-keyword">lambda</span> p: self.merges.get(p, <span class="hljs-built_in">float</span>(<span class="hljs-string">&quot;inf&quot;</span>)))<br>            <span class="hljs-comment"># 如果没有更多的merge可用，那么key将给每个pair一个inf，min将是列表中的第一个pair</span><br>            <span class="hljs-keyword">if</span> pair <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.merges:<br>                <span class="hljs-keyword">break</span> <span class="hljs-comment"># 没有可以继续merge的情况下中断</span><br>            <span class="hljs-comment"># 否则继续merge当前最佳的pair（最少merge次数的index） </span><br>            idx = self.merges[pair]<br>            ids = merge(ids, pair, idx)<br>        <span class="hljs-keyword">return</span> ids<br></code></pre></td></tr></table></figure>
+
+<h2 id="regex-py"><a href="#regex-py" class="headerlink" title="regex.py"></a>regex.py</h2><p>该文件实现了<code>RegexTokenizer</code>，是一个正则处理的类，用于预处理文本，并处理<code>special tokens</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> regex <span class="hljs-keyword">as</span> re<br><span class="hljs-keyword">from</span> .base <span class="hljs-keyword">import</span> Tokenizer, get_stats, merge<br><br><span class="hljs-comment"># GPT文本的分词处理模式</span><br><span class="hljs-comment"># https://github.com/openai/tiktoken/blob/main/tiktoken_ext/openai_public.py</span><br>GPT2_SPLIT_PATTERN = <span class="hljs-string">r&quot;&quot;&quot;&#x27;(?:[sdmt]|ll|ve|re)| ?\p&#123;L&#125;+| ?\p&#123;N&#125;+| ?[^\s\p&#123;L&#125;\p&#123;N&#125;]+|\s+(?!\S)|\s+&quot;&quot;&quot;</span><br>GPT4_SPLIT_PATTERN = <span class="hljs-string">r&quot;&quot;&quot;&#x27;(?i:[sdmt]|ll|ve|re)|[^\r\n\p&#123;L&#125;\p&#123;N&#125;]?+\p&#123;L&#125;+|\p&#123;N&#125;&#123;1,3&#125;| ?[^\s\p&#123;L&#125;\p&#123;N&#125;]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+&quot;&quot;&quot;</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">RegexTokenizer</span>(<span class="hljs-title class_ inherited__">Tokenizer</span>):<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, pattern=<span class="hljs-literal">None</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        - pattern: 可选的字符串，用于覆盖默认的（GPT-4分割模式）</span><br><span class="hljs-string">        - special_tokens: 特殊token的str -&gt; int字典</span><br><span class="hljs-string">          例如：&#123;&#x27;&lt;|endoftext|&gt;&#x27;: 100257&#125;</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">super</span>().__init__()<br>        self.pattern = GPT4_SPLIT_PATTERN <span class="hljs-keyword">if</span> pattern <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">else</span> pattern<br>        self.compiled_pattern = re.<span class="hljs-built_in">compile</span>(self.pattern)<br>        self.special_tokens = &#123;&#125; <span class="hljs-comment"># str -&gt; int</span><br>        self.inverse_special_tokens = &#123;&#125; <span class="hljs-comment"># int -&gt; str</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">self, text, vocab_size, verbose=<span class="hljs-literal">False</span></span>):<br>        <span class="hljs-keyword">assert</span> vocab_size &gt;= <span class="hljs-number">256</span><br>        num_merges = vocab_size - <span class="hljs-number">256</span><br><br>        <span class="hljs-comment"># 分割文本为文本块</span><br>        text_chunks = re.findall(self.compiled_pattern, text)<br><br>        <span class="hljs-comment"># 输入文本预处理</span><br>        ids = [<span class="hljs-built_in">list</span>(ch.encode(<span class="hljs-string">&quot;utf-8&quot;</span>)) <span class="hljs-keyword">for</span> ch <span class="hljs-keyword">in</span> text_chunks]<br><br>        <span class="hljs-comment"># 迭代将最常见的组合合并为新的标记</span><br>        merges = &#123;&#125; <span class="hljs-comment"># (int, int) -&gt; int</span><br>        vocab = &#123;idx: <span class="hljs-built_in">bytes</span>([idx]) <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)&#125; <span class="hljs-comment"># idx -&gt; bytes</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_merges):<br>           <span class="hljs-comment"># 计算每个连续组合出现的次数</span><br>            stats = &#123;&#125;<br>            <span class="hljs-keyword">for</span> chunk_ids <span class="hljs-keyword">in</span> ids:<br>                <span class="hljs-comment"># 传入stats将在原地更新它，累加计数</span><br>                get_stats(chunk_ids, stats)<br>            <span class="hljs-comment"># 找到计数最高的组合</span><br>            pair = <span class="hljs-built_in">max</span>(stats, key=stats.get)<br>            <span class="hljs-comment"># 铸造一个新的标记：分配下一个可用的id</span><br>            idx = <span class="hljs-number">256</span> + i<br>            <span class="hljs-comment"># 用idx替换ids中所有pair的出现</span><br>            ids = [merge(chunk_ids, pair, idx) <span class="hljs-keyword">for</span> chunk_ids <span class="hljs-keyword">in</span> ids]<br>            <span class="hljs-comment"># 保存merge</span><br>            merges[pair] = idx<br>            vocab[idx] = vocab[pair[<span class="hljs-number">0</span>]] + vocab[pair[<span class="hljs-number">1</span>]]<br>            <span class="hljs-comment"># 打印</span><br>            <span class="hljs-keyword">if</span> verbose:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;merge <span class="hljs-subst">&#123;i+<span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;num_merges&#125;</span>: <span class="hljs-subst">&#123;pair&#125;</span> -&gt; <span class="hljs-subst">&#123;idx&#125;</span> (<span class="hljs-subst">&#123;vocab[idx]&#125;</span>) had <span class="hljs-subst">&#123;stats[pair]&#125;</span> occurrences&quot;</span>)<br><br>        <span class="hljs-comment"># 保存</span><br>        self.merges = merges <span class="hljs-comment"># used in encode()</span><br>        self.vocab = vocab   <span class="hljs-comment"># used in decode()</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">register_special_tokens</span>(<span class="hljs-params">self, special_tokens</span>):<br>        <span class="hljs-comment"># special_tokens: 一个特殊的字典 str -&gt; int</span><br>        <span class="hljs-comment"># 例如: &#123;&quot;&lt;|endoftext|&gt;&quot;: 100257&#125;</span><br>        self.special_tokens = special_tokens<br>        self.inverse_special_tokens = &#123;v: k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> special_tokens.items()&#125;<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">decode</span>(<span class="hljs-params">self, ids</span>):<br>        part_bytes = []<br>        <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> ids:<br>            <span class="hljs-keyword">if</span> idx <span class="hljs-keyword">in</span> self.vocab:<br>                part_bytes.append(self.vocab[idx])<br>            <span class="hljs-keyword">elif</span> idx <span class="hljs-keyword">in</span> self.inverse_special_tokens:<br>                part_bytes.append(self.inverse_special_tokens[idx].encode(<span class="hljs-string">&quot;utf-8&quot;</span>))<br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">f&quot;invalid token id: <span class="hljs-subst">&#123;idx&#125;</span>&quot;</span>)<br>        text_bytes = <span class="hljs-string">b&quot;&quot;</span>.join(part_bytes)<br>        text = text_bytes.decode(<span class="hljs-string">&quot;utf-8&quot;</span>, errors=<span class="hljs-string">&quot;replace&quot;</span>)<br>        <span class="hljs-keyword">return</span> text<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_encode_chunk</span>(<span class="hljs-params">self, text_bytes</span>):<br>        <span class="hljs-comment"># 返回 token ids</span><br>        <span class="hljs-comment"># 将所有字节转换为0..255范围内的整数</span><br>        ids = <span class="hljs-built_in">list</span>(text_bytes)<br>        <span class="hljs-keyword">while</span> <span class="hljs-built_in">len</span>(ids) &gt;= <span class="hljs-number">2</span>:<br>            <span class="hljs-comment"># 找到pair中merge index最小的pair</span><br>            stats = get_stats(ids)<br>            pair = <span class="hljs-built_in">min</span>(stats, key=<span class="hljs-keyword">lambda</span> p: self.merges.get(p, <span class="hljs-built_in">float</span>(<span class="hljs-string">&quot;inf&quot;</span>)))<br>            <span class="hljs-keyword">if</span> pair <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.merges:<br>                <span class="hljs-keyword">break</span> <br><br>            idx = self.merges[pair]<br>            ids = merge(ids, pair, idx)<br>        <span class="hljs-keyword">return</span> ids<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode_ordinary</span>(<span class="hljs-params">self, text</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;编码并忽略任何special token。&quot;&quot;&quot;</span><br>        <span class="hljs-comment"># 按照正则表达式模式中定义的类别将文本分割为文本块</span><br>        text_chunks = re.findall(self.compiled_pattern, text)<br>        <span class="hljs-comment"># 所有字符块被单独编码，并在最后合并</span><br>        ids = []<br>        <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> text_chunks:<br>            chunk_bytes = chunk.encode(<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-comment"># raw bytes</span><br>            chunk_ids = self._encode_chunk(chunk_bytes)<br>            ids.extend(chunk_ids)<br>        <span class="hljs-keyword">return</span> ids<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, text, allowed_special=<span class="hljs-string">&quot;none_raise&quot;</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        与encode_ordinary不同，此函数处理特殊token。</span><br><span class="hljs-string">        allowed_special: 可以是&quot;all&quot;|&quot;none&quot;|&quot;none_raise&quot;或特殊token的自定义集合</span><br><span class="hljs-string">        如果none_raise，则在文本中遇到任何特殊token时会引发错误</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-comment"># decode the user desire w.r.t. handling of special tokens</span><br>        special = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">if</span> allowed_special == <span class="hljs-string">&quot;all&quot;</span>:<br>            special = self.special_tokens<br>        <span class="hljs-keyword">elif</span> allowed_special == <span class="hljs-string">&quot;none&quot;</span>:<br>            special = &#123;&#125;<br>        <span class="hljs-keyword">elif</span> allowed_special == <span class="hljs-string">&quot;none_raise&quot;</span>:<br>            special = &#123;&#125;<br>            <span class="hljs-keyword">assert</span> <span class="hljs-built_in">all</span>(token <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> text <span class="hljs-keyword">for</span> token <span class="hljs-keyword">in</span> self.special_tokens)<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(allowed_special, <span class="hljs-built_in">set</span>):<br>            special = &#123;k: v <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> self.special_tokens.items() <span class="hljs-keyword">if</span> k <span class="hljs-keyword">in</span> allowed_special&#125;<br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">f&quot;allowed_special=<span class="hljs-subst">&#123;allowed_special&#125;</span> not understood&quot;</span>)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> special:<br>            <span class="hljs-comment"># 如果没有special token,就使用ordinary encoding</span><br>            <span class="hljs-keyword">return</span> self.encode_ordinary(text)<br>        <span class="hljs-comment"># 否则，我们必须小心处理文本中可能的特殊token</span><br>        <span class="hljs-comment"># 我们通过在文本中出现任何特殊token的确切匹配来处理特殊token</span><br>        <span class="hljs-comment"># 我们可以使用re.split来实现这一点。请注意，将模式括在()中</span><br>        <span class="hljs-comment"># 使其成为捕获组，因此特殊token将被包括在内</span><br>        special_pattern = <span class="hljs-string">&quot;(&quot;</span> + <span class="hljs-string">&quot;|&quot;</span>.join(re.escape(k) <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> special) + <span class="hljs-string">&quot;)&quot;</span><br>        special_chunks = re.split(special_pattern, text)<br>        <span class="hljs-comment"># 现在所有特殊字符都与文本的其余部分分开</span><br>        <span class="hljs-comment"># 所有文本块都是分开编码的，然后结果是连接的</span><br>        ids = []<br>        <span class="hljs-keyword">for</span> part <span class="hljs-keyword">in</span> special_chunks:<br>            <span class="hljs-keyword">if</span> part <span class="hljs-keyword">in</span> special:<br>                <span class="hljs-comment"># 这是一个特殊的标记，将其单独编码为特殊情况</span><br>                ids.append(special[part])<br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-comment"># 这是一个普通的序列，正常编码</span><br>                ids.extend(self.encode_ordinary(part))<br>        <span class="hljs-keyword">return</span> ids<br></code></pre></td></tr></table></figure>
+
+<h2 id="gpt4-py"><a href="#gpt4-py" class="headerlink" title="gpt4.py"></a>gpt4.py</h2><p>最后一个文件是<code>gpt4.py</code>，实现了基于<code>RegexTokenizer</code>的<code>GPT4Tokenizer</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> tiktoken<br><span class="hljs-keyword">from</span> .regex <span class="hljs-keyword">import</span> RegexTokenizer<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">bpe</span>(<span class="hljs-params">mergeable_ranks, token, max_rank</span>):<br>    <span class="hljs-comment"># 辅助函数，用于在get_gpt4_merges()中重构合并树</span><br>    parts = [<span class="hljs-built_in">bytes</span>([b]) <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> token]<br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        min_idx = <span class="hljs-literal">None</span><br>        min_rank = <span class="hljs-literal">None</span><br>        <span class="hljs-keyword">for</span> i, pair <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(<span class="hljs-built_in">zip</span>(parts[:-<span class="hljs-number">1</span>], parts[<span class="hljs-number">1</span>:])):<br>            rank = mergeable_ranks.get(pair[<span class="hljs-number">0</span>] + pair[<span class="hljs-number">1</span>])<br>            <span class="hljs-keyword">if</span> rank <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> (min_rank <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> rank &lt; min_rank):<br>                min_idx = i<br>                min_rank = rank<br>        <span class="hljs-keyword">if</span> min_rank <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> (max_rank <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> min_rank &gt;= max_rank):<br>            <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">assert</span> min_idx <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span><br>        parts = parts[:min_idx] + [parts[min_idx] + parts[min_idx + <span class="hljs-number">1</span>]] + parts[min_idx + <span class="hljs-number">2</span>:]<br>    <span class="hljs-keyword">return</span> parts<br><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">recover_merges</span>(<span class="hljs-params">mergeable_ranks</span>):<br>    <span class="hljs-comment"># `merges`已经是它们合并状态的字节序列。</span><br>    <span class="hljs-comment"># 因此，我们必须恢复原始的配对。我们可以通过对所有token进行一次小型BPE训练来实现这一点，按顺序进行。</span><br>  <br>    merges = &#123;&#125;<br>    <span class="hljs-keyword">for</span> token, rank <span class="hljs-keyword">in</span> mergeable_ranks.items():<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(token) == <span class="hljs-number">1</span>:<br>            <span class="hljs-keyword">continue</span> <span class="hljs-comment"># skip raw bytes</span><br>        pair = <span class="hljs-built_in">tuple</span>(bpe(mergeable_ranks, token, max_rank=rank))<br>        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(pair) == <span class="hljs-number">2</span><br>        <span class="hljs-comment"># 恢复对的整数等级</span><br>        ix0 = mergeable_ranks[pair[<span class="hljs-number">0</span>]]<br>        ix1 = mergeable_ranks[pair[<span class="hljs-number">1</span>]]<br>        merges[(ix0, ix1)] = rank<br><br>    <span class="hljs-keyword">return</span> merges<br></code></pre></td></tr></table></figure>
+
+<p>下面是<code>GPT4Tokenizer</code>的具体实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs python">GPT4_SPLIT_PATTERN = <span class="hljs-string">r&quot;&quot;&quot;&#x27;(?i:[sdmt]|ll|ve|re)|[^\r\n\p&#123;L&#125;\p&#123;N&#125;]?+\p&#123;L&#125;+|\p&#123;N&#125;&#123;1,3&#125;| ?[^\s\p&#123;L&#125;\p&#123;N&#125;]++[\r\n]*|\s*[\r\n]|\s+(?!\S)|\s+&quot;&quot;&quot;</span><br>GPT4_SPECIAL_TOKENS = &#123;<br>    <span class="hljs-string">&#x27;&lt;|endoftext|&gt;&#x27;</span>: <span class="hljs-number">100257</span>,<br>    <span class="hljs-string">&#x27;&lt;|fim_prefix|&gt;&#x27;</span>: <span class="hljs-number">100258</span>,<br>    <span class="hljs-string">&#x27;&lt;|fim_middle|&gt;&#x27;</span>: <span class="hljs-number">100259</span>,<br>    <span class="hljs-string">&#x27;&lt;|fim_suffix|&gt;&#x27;</span>: <span class="hljs-number">100260</span>,<br>    <span class="hljs-string">&#x27;&lt;|endofprompt|&gt;&#x27;</span>: <span class="hljs-number">100276</span><br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">GPT4Tokenizer</span>(<span class="hljs-title class_ inherited__">RegexTokenizer</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;RegexTokenizer的轻量级包装器，匹配GPT-4的分词器。&quot;&quot;&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">super</span>().__init__(pattern=GPT4_SPLIT_PATTERN)<br>        <span class="hljs-comment"># 获取官方tokenizer和merges</span><br>        enc = tiktoken.get_encoding(<span class="hljs-string">&quot;cl100k_base&quot;</span>)<br>        mergeable_ranks = enc._mergeable_ranks<br>        <span class="hljs-comment"># the merges are those of gpt4, but we have to recover them</span><br>        self.merges = recover_merges(mergeable_ranks)<br>        <span class="hljs-comment"># 从merges重建vocab</span><br>        vocab = &#123;idx: <span class="hljs-built_in">bytes</span>([idx]) <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)&#125;<br>        <span class="hljs-keyword">for</span> (p0, p1), idx <span class="hljs-keyword">in</span> self.merges.items():<br>            vocab[idx] = vocab[p0] + vocab[p1]<br>        self.vocab = vocab<br>        <br>        <span class="hljs-comment"># 由于某种原因，与单个字节对应的标记以不同的顺序排列。</span><br>        self.byte_shuffle = &#123;i: mergeable_ranks[<span class="hljs-built_in">bytes</span>([i])] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)&#125;<br>        self.inverse_byte_shuffle = &#123;v: k <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> self.byte_shuffle.items()&#125;<br>		<span class="hljs-comment"># 注册special tokens</span><br>        self.register_special_tokens(GPT4_SPECIAL_TOKENS)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_encode_chunk</span>(<span class="hljs-params">self, text_bytes</span>):<br>    	<span class="hljs-comment"># 在我们开始处理字节之前，我们必须对它们进行排列</span><br>        text_bytes = <span class="hljs-built_in">bytes</span>(self.byte_shuffle[b] <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> text_bytes)<br>        ids = <span class="hljs-built_in">super</span>()._encode_chunk(text_bytes)<br>        <span class="hljs-keyword">return</span> ids<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">decode</span>(<span class="hljs-params">self, ids</span>):<br>    	<span class="hljs-comment"># 我们必须在解码之前对字节进行反排列</span><br>        text_bytes = <span class="hljs-string">b&quot;&quot;</span>.join(self.vocab[idx] <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> ids)<br>        text_bytes = <span class="hljs-built_in">bytes</span>(self.inverse_byte_shuffle[b] <span class="hljs-keyword">for</span> b <span class="hljs-keyword">in</span> text_bytes)<br>        text = text_bytes.decode(<span class="hljs-string">&quot;utf-8&quot;</span>, errors=<span class="hljs-string">&quot;replace&quot;</span>)<br>        <span class="hljs-keyword">return</span> text<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">self, text, vocab_size, verbose=<span class="hljs-literal">False</span></span>):<br>        <span class="hljs-keyword">raise</span> NotImplementedError<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">save</span>(<span class="hljs-params">self, file_prefix</span>):<br>        <span class="hljs-keyword">raise</span> NotImplementedError(<span class="hljs-string">&quot;GPT4Tokenizer cannot be saved.&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">load</span>(<span class="hljs-params">self, model_file</span>):<br>        <span class="hljs-keyword">raise</span> NotImplementedError(<span class="hljs-string">&quot;GPT4Tokenizer cannot be loaded.&quot;</span>)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">save_vocab</span>(<span class="hljs-params">self, vocab_file</span>):<br>        <span class="hljs-comment"># 仅用于可视化目的，让我们以与基类完全相同的格式输出GPT-4标记。</span><br>        <span class="hljs-comment"># 简单运行：</span><br>        <span class="hljs-comment"># python -c &quot;from minbpe import GPT4Tokenizer; GPT4Tokenizer().save_vocab(&#x27;gpt4.vocab&#x27;)&quot;</span><br>    <br>        <span class="hljs-keyword">from</span> .base <span class="hljs-keyword">import</span> render_token<br>        vocab = &#123;idx: <span class="hljs-built_in">bytes</span>([self.inverse_byte_shuffle[idx]]) <span class="hljs-keyword">for</span> idx <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">256</span>)&#125;<br>        <span class="hljs-keyword">for</span> (p0, p1), idx <span class="hljs-keyword">in</span> self.merges.items():<br>            vocab[idx] = vocab[p0] + vocab[p1]<br><br>        inverted_merges = &#123;idx: pair <span class="hljs-keyword">for</span> pair, idx <span class="hljs-keyword">in</span> self.merges.items()&#125;<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(vocab_file, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>            <span class="hljs-keyword">for</span> idx, token <span class="hljs-keyword">in</span> vocab.items():<br>                s = render_token(token)<br>                <span class="hljs-keyword">if</span> idx <span class="hljs-keyword">in</span> inverted_merges:<br>                    idx0, idx1 = inverted_merges[idx]<br>                    s0 = render_token(vocab[idx0])<br>                    s1 = render_token(vocab[idx1])<br>                    f.write(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;s0&#125;</span>][<span class="hljs-subst">&#123;s1&#125;</span>] -&gt; [<span class="hljs-subst">&#123;s&#125;</span>] <span class="hljs-subst">&#123;idx&#125;</span>\n&quot;</span>)<br>                <span class="hljs-keyword">else</span>:<br>                    f.write(<span class="hljs-string">f&quot;[<span class="hljs-subst">&#123;s&#125;</span>] <span class="hljs-subst">&#123;idx&#125;</span>\n&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+
+<p>2024&#x2F;3&#x2F;10 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/BPE/" class="print-no-link">#BPE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/03/10/%E6%9C%80%E7%B2%BE%E7%AE%80%E7%9A%84%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E7%8E%B0%EF%BC%9A%E9%80%86%E5%90%91%E7%B4%A2%E5%BC%95/" title="最精简的搜索系统实现：倒排索引">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">最精简的搜索系统实现：倒排索引</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/07/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83%EF%BC%9ADistributed-Data-Parallel/" title="分布式训练：Distributed Data Parallel">
+                        <span class="hidden-mobile">分布式训练：Distributed Data Parallel</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

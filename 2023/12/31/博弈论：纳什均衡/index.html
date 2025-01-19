@@ -1,0 +1,960 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="博弈论中的纳什均衡及推导。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="博弈论：纳什均衡">
+<meta property="og:url" content="http://example.com/2023/12/31/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E7%BA%B3%E4%BB%80%E5%9D%87%E8%A1%A1/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="博弈论中的纳什均衡及推导。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/game.png">
+<meta property="article:published_time" content="2023-12-31T09:21:14.000Z">
+<meta property="article:modified_time" content="2024-01-13T01:09:21.376Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="博弈论">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/game.png">
+  
+  
+  
+  <title>博弈论：纳什均衡 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="博弈论：纳什均衡"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-31 17:21" pubdate>
+          2023年12月31日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">博弈论：纳什均衡</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>著名的纳什均衡(Nash equilibrium)由美国数学家John Forbes Nash Jr.于1950年发表。在一个博弈过程中，无论对方的策略选择如何，当事人一方都会选择某个确定的策略，则该策略被称作支配性策略。</p>
+<p>如果两个博弈的当事人的策略组合分别构成各自的支配性策略，那么这个组合就被定义为纳什均衡。一个策略组合被称为纳什均衡，当每个博弈者的均衡策略都是为了达到自己期望收益的最大值，与此同时，其他所有博弈者也遵循这样的策略。</p>
+<p>用一个大白话来说，就是在一场博弈中，每个玩家都不愿意主动更改自己的策略。</p>
+<h1 id="纳什均衡实验：猜数字游戏"><a href="#纳什均衡实验：猜数字游戏" class="headerlink" title="纳什均衡实验：猜数字游戏"></a>纳什均衡实验：猜数字游戏</h1><p>斯坦福的公开课上举了一个例子来说明纳什均衡。猜数字游戏要求每个人从1-100中选择一个整数，最后从最接近平均值三分之二的人中随机选一个获得奖励，假设参加这项游戏的人数足够多。</p>
+<p>在这种情况下，纳什均衡会是多少呢？由于获胜者要求是接近平均值的三分之二，如果我们假设大家的选择都是均匀分布，那均值应该是$50$，最终最可能获胜的数字应该是$50\times \frac{2}{3} &#x3D;33$</p>
+<p>而如果获胜数字最有可能是$33$，那最有可能获胜的数字应该是$30\times \frac{2}{3} &#x3D;22$</p>
+<p>再往下，最有可能获胜的数字应该是$22\times \frac{2}{3} &#x3D;11$</p>
+<p>……</p>
+<p>到了最后，假设大家都是理智的，纳什均衡的解将是0。这时候最终获奖者将随机从0中选出。</p>
+<p>这是一个美国的真实实验，最终结果中，2%的实验者选择了$66$、5 %选择了$50$、10 %选择了$33$、6 %选择了$22$、12 %选择了$0$或者$1$。但最后的获胜数字为$19$。这也说明了<strong>实际博弈中，不是所有玩家都是理性的</strong>。</p>
+<h1 id="纳什均衡"><a href="#纳什均衡" class="headerlink" title="纳什均衡"></a>纳什均衡</h1><p>在之前提到的囚徒困境中，纳什均衡点将是双方都招供，因为在未知对方选择的情况下，招供是己方的支配性策略(Strongly dominates)。所谓支配型策略，就是指一个策略在任何时刻的效用都最大。</p>
+<p>相对的，如果一个策略在任何状态下的效用都不小于另一个策略，则被称为弱支配策略(Weakly dominates)。</p>
+<p>如果一个决策支配其他所有决策，那么称之为占优策略。如果该决策严格压制每一个其他决策，那么称之为<strong>严格占优策略</strong>，并且该策略唯一。由占优策略组成的策略组合一定是纳什均衡点，全部由严格占优策略组成的策略组合一定是唯一的纳什均衡点。</p>
+<h1 id="硬币正反游戏"><a href="#硬币正反游戏" class="headerlink" title="硬币正反游戏"></a>硬币正反游戏</h1><p>百度百科的纳什均衡条目下给出了一个游戏：</p>
+<p>两个人玩一个硬币正反的游戏，规则是：双方各自亮出硬币的一面，或正或反。如果我们都是正面，则玩家A给玩家B$3$元，如果都是反面，玩家A给玩家B$1$元，剩下的情况玩家B给玩家A$2$元。现在问题是，这个游戏对A公平吗？</p>
+<p>每一种游戏依具其规则的不同会存在两种纳什均衡，一种是纯策略纳什均衡，也就是说玩家都能够采取固定的策略(比如一直出正面或者一直出反面)，使得每人都赚得最多或亏得最少；或者是混合策略纳什均衡，而在这个游戏中，便应该采用混合策略纳什均衡。</p>
+<p>可以构建一个收益矩阵：</p>
+<table>
+<thead>
+<tr>
+<th>玩家B&#x2F;玩家A</th>
+<th>正面</th>
+<th>反面</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>正面</td>
+<td>(3, -3)</td>
+<td>(-2, 2)</td>
+</tr>
+<tr>
+<td>反面</td>
+<td>(2, -2)</td>
+<td>(1, -1)</td>
+</tr>
+</tbody></table>
+<p>假如A出正面的概率是X，反面概率是1-X，B出正面的概率是Y，反面是1-Y。为了利益最大化，应该使得B无论什么决策时的收益都相等（因为对手一旦改变决策的策略就会使得A的收益下降）。</p>
+<p>A的期望收益可以列出方程如下：</p>
+<p>$3y+(-2)\times (1-y)&#x3D;(-2)\times y+1\times (1-y)$</p>
+<p>$y&#x3D;\frac{3}{8}$</p>
+<p>B的期望收益则为：</p>
+<p>$-3x+(-2)\times (1-x)&#x3D;(-2)\times x+(-1)\times (1-x)$</p>
+<p>$x&#x3D;\frac{3}{8}$</p>
+<p>对于B，每次博弈的期望收益是$2(1-x)-3x&#x3D;\frac{1}{8}$元。这意味着，双方每次都采取最优策略时，平均每次B的收益都是$\frac{1}{8}$元。那么，只要B采取$\frac{3}{8}$，$\frac{5}{8}$的混合策略，就会立于不败之地。</p>
+<p>如果A全出正面，那么每次的期望收益是$\frac{3+3+3-2-2-2-2-2}{8}&#x3D;-\frac{1}{8}$元。</p>
+<p>如果A全出反面，每次的期望收益也是$\frac{-2-2-2+1+1+1+1+1}{8}&#x3D;-\frac{1}{8}$元。</p>
+<p>如果A用完全随机$(\frac{1}{2}，\frac{1}{2})$策略，收益是$\frac{1}{2}(\frac{3}{8} * 3 + \frac{5}{8} * (-20)) + \frac{1}{2}(\frac{3}{8}* (-2) + \frac{5}{8} * 1) &#x3D; -\frac{1}{8}$元。</p>
+<hr>
+<p>这个问题还有另一种思考方式：只要A的期望不为$0$，这个游戏就对他不公平。而他的期望收益可以列为：</p>
+<p>$E(A)&#x3D;3p-2p-2(1-p)&#x3D;p+2p-2&#x3D;3p-2$</p>
+<p>如果$E(A)&#x3D;0$，那么这是公平的。此时求得$p$为$\frac{2}{3}$，即如果A按照$\frac{2}{3}$的概率选择正面，那么游戏就对他公平。</p>
+<p>而这个游戏的纳什均衡是A选择正面，B选择正面，或A选择反面，B也选择反面。</p>
+<h1 id="如何挑选纳什均衡点？"><a href="#如何挑选纳什均衡点？" class="headerlink" title="如何挑选纳什均衡点？"></a>如何挑选纳什均衡点？</h1><p>从定义上来看，纳什均衡就是给定其他决策者的决策，每个决策者都没有单独改变决策的动机。（也就是当前决策是最优决策）</p>
+<p>假设一共有A、B、C三个决策者，知A、B决策下C做出最优决策<code>C*</code>，已知A、C决策下B做出最优决策<code>B*</code>，已知B、C决策下A做出最优决策<code>C*</code>，则<code>(A*,B*,C*)</code>是一个纳什均衡点。</p>
+<h2 id="如何从决策矩阵中挑选纳什均衡点？"><a href="#如何从决策矩阵中挑选纳什均衡点？" class="headerlink" title="如何从决策矩阵中挑选纳什均衡点？"></a>如何从决策矩阵中挑选纳什均衡点？</h2><p>看该单元格，是否左侧的值是该列左侧值的最大值，右侧的值是否是该行右侧值的最大值。</p>
+<table>
+<thead>
+<tr>
+<th>1&#x2F;2</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C</td>
+<td>-1,-1</td>
+<td>-4,0</td>
+</tr>
+<tr>
+<td>D</td>
+<td>0,-4</td>
+<td>-3,-3 &lt;–NE点</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>1&#x2F;2</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C</td>
+<td>1，1 &lt;–NE点</td>
+<td>0,0</td>
+</tr>
+<tr>
+<td>D</td>
+<td>0,0</td>
+<td>1，1 &lt;–NE点</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>1&#x2F;2</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C</td>
+<td>2，1 &lt;–NE点</td>
+<td>0，0</td>
+</tr>
+<tr>
+<td>D</td>
+<td>0，0</td>
+<td>2，1 &lt;–NE点</td>
+</tr>
+</tbody></table>
+<p>也存在无纯策略纳什均衡的情况，例如：</p>
+<table>
+<thead>
+<tr>
+<th>1&#x2F;2</th>
+<th>C</th>
+<th>D</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C</td>
+<td>1,-1</td>
+<td>-1,1</td>
+</tr>
+<tr>
+<td>D</td>
+<td>-1,1</td>
+<td>1,-1</td>
+</tr>
+</tbody></table>
+<p>注意：</p>
+<ul>
+<li>纳什均衡不一定是全局最优。比如囚徒困境。</li>
+<li>纳什均衡也不是自发实现的，需要有一定的沟通协商规定，总之就是直接间接获取他人的决策信息。</li>
+</ul>
+<h1 id="帕累托最优"><a href="#帕累托最优" class="headerlink" title="帕累托最优"></a>帕累托最优</h1><p>前面提到的纳什均衡是个体寻找自身的最佳策略，而在整个博弈中，要找到一个对大家都最优的策略，这就是帕累托最优(Pareto Optimality)。</p>
+<p>帕累托最优的核心思想是，给定一组多目标或多标准的评价指标，如果没有办法在不损害任何一个目标的前提下改善其他目标，那么我们就说该解决方案是帕累托最优的。它要解决的问题就是多目标优化问题。</p>
+<p>简单来说，如果一个解决方案或策略在满足所有给定标准或目标的同时，无法进一步改进或优化，那么它就被认为是帕累托最优的。</p>
+<p>也就是说，我们从全局出发，只要有一个全局的策略组合对于所有玩家的效用都高，那么它就是帕累托最优，同时它对于其他策略组合产生了帕累托支配的关系。例如，如果有 $( \mathrm{\large O}(7,8) ) $和$ ( \mathrm{\large O}^{\prime}(4,5) )$，则 $(\mathrm{O}) Pareto-dominates (\mathrm{O}^{\prime}).$</p>
+<p>注意：</p>
+<ul>
+<li>一场游戏中可能有多个帕累托最优决策组合。</li>
+<li>一场游戏中最少含有一个帕累托最优决策组合。</li>
+</ul>
+<p>2023&#x2F;12&#x2F;31 于苏州家中</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="category-chain-item">博弈论</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="print-no-link">#博弈论</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/01/%E8%A7%A3%E8%AF%BBLlaMA-Paper-%E5%BC%80%E6%94%BE%E4%B8%94%E9%AB%98%E6%95%88%E7%9A%84%E5%9F%BA%E7%A1%80%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E9%9B%86/" title="解读LlaMA Paper: 开放且高效的基础语言模型集">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">解读LlaMA Paper: 开放且高效的基础语言模型集</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/31/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E5%88%A9%E5%B7%B1%E4%B8%BB%E4%B9%89%E8%80%85%E7%9A%84%E6%B8%B8%E6%88%8F/" title="博弈论：利己主义者的游戏">
+                        <span class="hidden-mobile">博弈论：利己主义者的游戏</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

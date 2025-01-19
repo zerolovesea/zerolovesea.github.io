@@ -1,0 +1,919 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="问答系统的发展历史，如何实现不同方式的问答系统。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论QA问答系统发展史：从Text2Vec到LLM">
+<meta property="og:url" content="http://example.com/2024/01/07/%E8%AE%BAQA%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F%E5%8F%91%E5%B1%95%E5%8F%B2%EF%BC%9A%E4%BB%8EText2Vec%E5%88%B0LLM/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="问答系统的发展历史，如何实现不同方式的问答系统。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/qa.png">
+<meta property="article:published_time" content="2024-01-07T07:42:40.000Z">
+<meta property="article:modified_time" content="2024-01-21T01:00:25.437Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="问答系统">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/qa.png">
+  
+  
+  
+  <title>论QA问答系统发展史：从Text2Vec到LLM - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="论QA问答系统发展史：从Text2Vec到LLM"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-07 15:42" pubdate>
+          2024年1月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">论QA问答系统发展史：从Text2Vec到LLM</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>周末在家刚好没事，看了一下问答系统的发展历史，在这里实现一下不同时期的QA系统。</p>
+<h1 id="文本嵌入-文本相似度"><a href="#文本嵌入-文本相似度" class="headerlink" title="文本嵌入+文本相似度"></a>文本嵌入+文本相似度</h1><p>我们排开早期的按照规则实现的问答系统，最早被我们了解到的QA系统应该是通过文本嵌入+文本相似度实现的。</p>
+<p>首先文本嵌入有多种实现方式，这里大致介绍一下：</p>
+<p>文本嵌入是将文本转换为数值向量的过程，使得可以在这些向量之间进行相似性计算。以下是一些经典的文本嵌入模型：</p>
+<ol>
+<li>TF-IDF（Term Frequency-Inverse Document Frequency）：<ul>
+<li>TF-IDF 是一种统计方法，用于评估一个词对于一个文档集或一个单独的文档的重要性。它基于词频（TF）和逆文档频率（IDF）的乘积来为每个词赋予权重。</li>
+</ul>
+</li>
+<li>Word2Vec：<ul>
+<li>Word2Vec 是一种基于神经网络的模型，用于学习词向量。它可以生成具有语义意义的密集向量，捕捉到词之间的上下文关系。</li>
+</ul>
+</li>
+<li>GloVe（Global Vectors for Word Representation）：<ul>
+<li>GloVe 是一个基于统计的模型，用于学习词向量。它结合了词共现矩阵的全局统计信息来生成词嵌入。</li>
+</ul>
+</li>
+<li>FastText：<ul>
+<li>FastText 是由 Facebook Research 开发的一个模型，它不仅可以生成词向量，还可以处理子词信息。这使得 FastText 在处理稀有词或者未见词时表现得更好。</li>
+</ul>
+</li>
+<li>BERT（Bidirectional Encoder Representations from Transformers）：<ul>
+<li>BERT 是一个基于 Transformer 架构的预训练模型，用于生成上下文感知的词嵌入。BERT 考虑了句子的双向信息，使得生成的嵌入可以捕获更丰富的语义信息。</li>
+</ul>
+</li>
+<li>ELMo（Embeddings from Language Models）：<ul>
+<li>ELMo 是另一个基于深度双向 LSTM 的模型，用于生成上下文感知的词嵌入。与传统的静态词嵌入不同，ELMo 为每个词生成多个嵌入向量，这些向量捕获了不同的上下文信息。</li>
+</ul>
+</li>
+</ol>
+<p>总之，这些模型的核心思想是通过各自算法将每个字符嵌入成高维向量，这样就可以计算不同文本之间的相似程度。</p>
+<p>我们可以使用<code>sklearn</code>中的<code>TfidfVectorizer</code>实现一个简单的问答系统：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> sklearn.feature_extraction.text <span class="hljs-keyword">import</span> TfidfVectorizer<br><span class="hljs-keyword">from</span> sklearn.metrics.pairwise <span class="hljs-keyword">import</span> cosine_similarity<br><br><span class="hljs-comment"># 示例的问题和答案数据</span><br>questions = [<br>    <span class="hljs-string">&quot;什么是Python?&quot;</span>,<br>    <span class="hljs-string">&quot;Python有哪些优点?&quot;</span>,<br>    <span class="hljs-string">&quot;如何定义函数?&quot;</span>,<br>    <span class="hljs-string">&quot;Python的应用场景是什么?&quot;</span><br>]<br><br>answers = [<br>    <span class="hljs-string">&quot;Python是一种高级编程语言。&quot;</span>,<br>    <span class="hljs-string">&quot;Python有简单易读的语法、丰富的库和广泛的应用场景。&quot;</span>,<br>    <span class="hljs-string">&quot;在Python中，函数可以使用def关键字进行定义。&quot;</span>,<br>    <span class="hljs-string">&quot;Python在Web开发、数据分析、人工智能等多个领域有广泛的应用。&quot;</span><br>]<br></code></pre></td></tr></table></figure>
+
+<p>我们有一些问题，以及一些对应的回答，将它们放在一个列表里。随后，我们使用<code>TfidfVectorizer</code>将这些问答向量化：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 使用TF-IDF向量化文本数据</span><br>vectorizer = TfidfVectorizer()<br>tfidf_matrix = vectorizer.fit_transform(questions + answers)<br><br>tfidf_matrix<br><br>&gt;&gt; &lt;8x12 sparse matrix of <span class="hljs-built_in">type</span> <span class="hljs-string">&#x27;&lt;class &#x27;</span>numpy.float64<span class="hljs-string">&#x27;&gt;&#x27;</span><br>	<span class="hljs-keyword">with</span> <span class="hljs-number">12</span> stored elements <span class="hljs-keyword">in</span> Compressed Sparse Row <span class="hljs-built_in">format</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<p>将问答对嵌入后，可以看到变成了一个8*12的稀疏矩阵。这代表这8句话被嵌入到12维向量。</p>
+<p>现在我们准备一个问题，并转化为向量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">user_question = <span class="hljs-string">&quot;Python有哪些应用场景?&quot;</span><br>user_question_vec = vectorizer.transform([user_question])<br><br>user_question_vec<br><br>&gt;&gt; &lt;1x12 sparse matrix of <span class="hljs-built_in">type</span> <span class="hljs-string">&#x27;&lt;class &#x27;</span>numpy.float64<span class="hljs-string">&#x27;&gt;&#x27;</span><br>	<span class="hljs-keyword">with</span> <span class="hljs-number">0</span> stored elements <span class="hljs-keyword">in</span> Compressed Sparse Row <span class="hljs-built_in">format</span>&gt;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到问题被转化为了向量，这时候就可以进行相似度搜索了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">similarities = cosine_similarity(user_question_vec, tfidf_matrix)[<span class="hljs-number">0</span>]<br>most_similar_idx = np.argmax(similarities)<br><br>answers[most_similar_idx]<br><br>&gt;&gt; <span class="hljs-string">&#x27;Python是一种高级编程语言。&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>我们可以简单写成函数来实现这个问答：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_most_similar_question</span>(<span class="hljs-params">user_question,tfidf_matrix</span>):<br>    <span class="hljs-comment"># 首先将输入问题向量化</span><br>    user_question_vec = vectorizer.transform([user_question])<br>    <span class="hljs-comment"># 计算相似度</span><br>    similarities = cosine_similarity(user_question_vec,tfidf_matrix)[<span class="hljs-number">0</span>]<br>    <span class="hljs-built_in">print</span>(similarities)<br>    most_similar_idx = np.argmax(similarities)<br>    <span class="hljs-keyword">return</span> answers[most_similar_idx]<br><br><span class="hljs-comment"># 用户输入问题</span><br>user_input = <span class="hljs-string">&quot;什么是Python?&quot;</span><br><br><span class="hljs-comment"># 获取最相似的问题和答案</span><br>most_similar_question = get_most_similar_question(user_input, questions, tfidf_matrix)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;对应的答案是：<span class="hljs-subst">&#123;corresponding_answer&#125;</span>&quot;</span>)<br><br>&gt;&gt; [<span class="hljs-number">1.</span> <span class="hljs-number">0.</span> <span class="hljs-number">0.</span> <span class="hljs-number">0.</span> <span class="hljs-number">0.</span> <span class="hljs-number">0.</span> <span class="hljs-number">0.</span> <span class="hljs-number">0.</span>]<br>&gt;&gt; 对应的答案是：Python是一种高级编程语言。<br></code></pre></td></tr></table></figure>
+
+<p>由于question&#x2F;answer和TF-IDF矩阵都是一开始就准备好的，这个函数里只需要输入问题和准备好的稀疏矩阵就可以了。可以看到，他从矩阵中找到相似度最高的问题，对应回答中相同的index即是期望看到的回答。</p>
+<h2 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h2><p>这是最早的QA系统实现手段之一。实现简单易懂，原理也并不复杂。然而它有很多不足，首先，它需要提前准备大量的问答对，以适应不同领域的各个问题，其次对于不同的提问形式，它很难给出精准准确的回答。</p>
+<p>本质上，作为基于统计的方法，它本质上并没有理解问题的语义，只是找了一个最像的问答对作为回答。</p>
+<h1 id="语言模型嵌入"><a href="#语言模型嵌入" class="headerlink" title="语言模型嵌入"></a>语言模型嵌入</h1><p>TF-IDF使用了基于统计的文本嵌入方式，后续随着NLP的发展，又出现了语言模型。这时候已经能通过语言模型将文本嵌入为更高维的输入了，一定程度上也能够理解语义。</p>
+<p>使用Text2Vec进行了实现，它核心使用了transformers库的text2vec-base-chinese嵌入模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> text2vec <span class="hljs-keyword">import</span> SentenceModel, cos_sim, semantic_search<br><br><span class="hljs-comment"># 使用了transformers库的text2vec-base-chinese嵌入模型</span><br>embedder = SentenceModel()<br><br><span class="hljs-comment"># 语料样本库</span><br>corpus = [<br>    <span class="hljs-string">&#x27;花呗更改绑定银行卡&#x27;</span>,<br>    <span class="hljs-string">&#x27;我什么时候开通了花呗&#x27;</span>,<br>    <span class="hljs-string">&#x27;A man is eating food.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A man is eating a piece of bread.&#x27;</span>,<br>    <span class="hljs-string">&#x27;The girl is carrying a baby.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A man is riding a horse.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A woman is playing violin.&#x27;</span>,<br>    <span class="hljs-string">&#x27;Two men pushed carts through the woods.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A man is riding a white horse on an enclosed ground.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A monkey is playing drums.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A cheetah is running behind its prey.&#x27;</span><br>]<br><br><span class="hljs-comment"># 将语料进行嵌入</span><br>corpus_embeddings = embedder.encode(corpus)<br>corpus_embeddings<br></code></pre></td></tr></table></figure>
+
+<p>得到的嵌入数据如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">array([[ <span class="hljs-number">6.53620958e-01</span>, -<span class="hljs-number">7.66664222e-02</span>,  <span class="hljs-number">9.59622979e-01</span>, ...,<br>        -<span class="hljs-number">6.01225317e-01</span>, -<span class="hljs-number">1.67934457e-03</span>,  <span class="hljs-number">2.14576736e-01</span>],<br>       [ <span class="hljs-number">6.70483976e-04</span>, -<span class="hljs-number">4.66219693e-01</span>,  <span class="hljs-number">8.83835256e-01</span>, ...,<br>        -<span class="hljs-number">6.52768135e-01</span>, -<span class="hljs-number">2.59505898e-01</span>, -<span class="hljs-number">4.05015022e-01</span>],<br>       [-<span class="hljs-number">6.99393526e-02</span>, -<span class="hljs-number">4.93847728e-01</span>,  <span class="hljs-number">3.72701913e-01</span>, ...,<br>         <span class="hljs-number">2.30209693e-01</span>, -<span class="hljs-number">6.62487626e-01</span>, -<span class="hljs-number">1.37236178e-01</span>],<br>       ...,<br>       [ <span class="hljs-number">4.95887578e-01</span>, -<span class="hljs-number">1.03028201e-01</span>,  <span class="hljs-number">1.88396394e-01</span>, ...,<br>         <span class="hljs-number">1.14771016e-01</span>, -<span class="hljs-number">1.29482400e+00</span>,  <span class="hljs-number">9.49718833e-01</span>],<br>       [ <span class="hljs-number">5.01094282e-01</span>, -<span class="hljs-number">4.13963169e-01</span>, -<span class="hljs-number">1.61480501e-01</span>, ...,<br>         <span class="hljs-number">3.57740372e-03</span>, -<span class="hljs-number">1.32486129e+00</span>,  <span class="hljs-number">3.83615524e-01</span>],<br>       [-<span class="hljs-number">1.52376592e-02</span>,  <span class="hljs-number">2.37213261e-02</span>,  <span class="hljs-number">4.10200447e-01</span>, ...,<br>        -<span class="hljs-number">2.21184328e-01</span>, -<span class="hljs-number">9.90046620e-01</span>, -<span class="hljs-number">3.17562759e-01</span>]], dtype=float32)<br></code></pre></td></tr></table></figure>
+
+<p>在嵌入之后，得到了一个高维矩阵。我们再准备一些问题：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">queries = [<br>    <span class="hljs-string">&#x27;如何更换花呗绑定银行卡&#x27;</span>,<br>    <span class="hljs-string">&#x27;A man is eating pasta.&#x27;</span>,<br>    <span class="hljs-string">&#x27;Someone in a gorilla costume is playing a set of drums.&#x27;</span>,<br>    <span class="hljs-string">&#x27;A cheetah chases prey on across a field.&#x27;</span>]<br></code></pre></td></tr></table></figure>
+
+<p>随后我们对其进行遍历以得到回答：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> query <span class="hljs-keyword">in</span> queries:<br>    query_embedding = embedder.encode(query)<br>    hits = semantic_search(query_embedding, corpus_embeddings, top_k=<span class="hljs-number">3</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n\n======================\n\n&quot;</span>)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Query:&quot;</span>, query)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n语料中最相似的三个回答：&quot;</span>)<br>    hits = hits[<span class="hljs-number">0</span>]  <br>    <span class="hljs-keyword">for</span> hit <span class="hljs-keyword">in</span> hits:<br>        <span class="hljs-built_in">print</span>(corpus[hit[<span class="hljs-string">&#x27;corpus_id&#x27;</span>]], <span class="hljs-string">&quot;(Score: &#123;:.4f&#125;)&quot;</span>.<span class="hljs-built_in">format</span>(hit[<span class="hljs-string">&#x27;score&#x27;</span>]))<br></code></pre></td></tr></table></figure>
+
+<p>回答如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python">======================<br>Query: 如何更换花呗绑定银行卡<br><br>语料中最相似的三个回答：<br>花呗更改绑定银行卡 (Score: <span class="hljs-number">0.8551</span>)<br>我什么时候开通了花呗 (Score: <span class="hljs-number">0.7212</span>)<br>A man <span class="hljs-keyword">is</span> eating food. (Score: <span class="hljs-number">0.3118</span>)<br>======================<br>Query: A man <span class="hljs-keyword">is</span> eating pasta.<br><br>语料中最相似的三个回答：<br>A man <span class="hljs-keyword">is</span> eating food. (Score: <span class="hljs-number">0.7840</span>)<br>A man <span class="hljs-keyword">is</span> riding a white horse on an enclosed ground. (Score: <span class="hljs-number">0.6906</span>)<br>A man <span class="hljs-keyword">is</span> eating a piece of bread. (Score: <span class="hljs-number">0.6831</span>)<br>======================<br>Query: Someone <span class="hljs-keyword">in</span> a gorilla costume <span class="hljs-keyword">is</span> playing a <span class="hljs-built_in">set</span> of drums.<br><br>语料中最相似的三个回答：<br>A monkey <span class="hljs-keyword">is</span> playing drums. (Score: <span class="hljs-number">0.6758</span>)<br>A man <span class="hljs-keyword">is</span> riding a white horse on an enclosed ground. (Score: <span class="hljs-number">0.6351</span>)<br>The girl <span class="hljs-keyword">is</span> carrying a baby. (Score: <span class="hljs-number">0.5438</span>)<br>======================<br>Query: A cheetah chases prey on across a field.<br><br>语料中最相似的三个回答：<br>A cheetah <span class="hljs-keyword">is</span> running behind its prey. (Score: <span class="hljs-number">0.6736</span>)<br>A man <span class="hljs-keyword">is</span> riding a white horse on an enclosed ground. (Score: <span class="hljs-number">0.5731</span>)<br>A monkey <span class="hljs-keyword">is</span> playing drums. (Score: <span class="hljs-number">0.4977</span>)<br></code></pre></td></tr></table></figure>
+
+<p>同样的，Bert语言模型在一定程度上是这个模型的进一步扩展，这里先按下不表。</p>
+<h2 id="特点-1"><a href="#特点-1" class="headerlink" title="特点"></a>特点</h2><p>在一定程度上，这种语言模型只是对传统基于统计的嵌入方式进行了改良，本质检索上并没有脱离相似度的桎梏。当然，后续Bert等语言模型能够进行文本分类，文本续写等任务，但是在问答任务上仍然不是一个很好的解决方案。</p>
+<h1 id="大语言模型"><a href="#大语言模型" class="headerlink" title="大语言模型"></a>大语言模型</h1><p>在大语言模型问世后，基于文本相似度的问答系统一时间被打入冷宫。通过在大量问题语料上进行训练，语言模型能够在输入一个问题时，输出最符合训练语料和语义的回答。这对于之前是一个巨大的跨越。</p>
+<p>通过AzureOpenAI进行了简单的调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain.chat_models <span class="hljs-keyword">import</span> AzureChatOpenAI<br><br>llm = AzureChatOpenAI(<br>                        azure_endpoint=XXXXX,<br>                        openai_api_version=XXXXX,<br>                        deployment_name=XXXXX,<br>                        temperature=XXXXX,<br>                        openai_api_key=XXXXX,<br>                        openai_api_type=XXXXX,<br>                        streaming=XXXXX)<br><br>llm.predict(<span class="hljs-string">&#x27;Python是什么？&#x27;</span>)<br><br>&gt;&gt; <span class="hljs-string">&#x27;Python是一种高级编程语言，由Guido van Rossum于1989年开发。它具有简洁、易读、易学的特点，被广泛应用于软件开发、数据分析、人工智能等领域。Python具有丰富的标准库和第三方库，可以用于开发各种类型的应用程序。它支持面向对象编程、函数式编程和过程式编程等多种编程范式。Python的语法简洁明了，代码可读性强，因此被称为“优雅的编程语言”。&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="特点-2"><a href="#特点-2" class="headerlink" title="特点"></a>特点</h2><p>大语言模型经过了上亿问答语料的学习，它能够通过学到过的内容，找到最符合人类逻辑的下一个输出。由于问题是对Python的询问，它从上文中找到了最有可能出现的回答，并以人类能够理解的方式进行输出。</p>
+<p>然而，由于生成语言模型以生成符合语义的句子为目的，因此它无法判断输出的内容是否准确，这也是它目前备受诟病的缺陷之一。</p>
+<h1 id="基于RAG的大语言模型QA系统"><a href="#基于RAG的大语言模型QA系统" class="headerlink" title="基于RAG的大语言模型QA系统"></a>基于RAG的大语言模型QA系统</h1><p>前面提到基于统计的检索方法并不能以符合语义的方式输出回答，而是调用原文。那么现在我们有了会说人话的大语言模型，能不能将它们结合在一起呢？</p>
+<p>基于这个思想，出现了RAG（检索增强生成）。通过结合输入问题和检索到的相关内容，大语言模型将得到的内容进行包装，使得其能够输出合理的，符合语义的回答。</p>
+<p>通过Langchain和ChromaDB进行了简单的实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain.embeddings <span class="hljs-keyword">import</span> SentenceTransformerEmbeddings<br><span class="hljs-keyword">from</span> langchain.text_splitter <span class="hljs-keyword">import</span> CharacterTextSplitter<br><span class="hljs-keyword">from</span> langchain.vectorstores <span class="hljs-keyword">import</span> Chroma<br><span class="hljs-keyword">from</span> langchain.document_loaders <span class="hljs-keyword">import</span> TextLoader<br><br><span class="hljs-comment"># 从本地导入语料</span><br>loader = TextLoader(<span class="hljs-string">&#x27;state_of_the_union.txt&#x27;</span>)<br>documents = loader.load()<br><br><span class="hljs-comment"># 将文本进行切块</span><br>text_splitter = CharacterTextSplitter(chunk_size=<span class="hljs-number">1000</span>, chunk_overlap=<span class="hljs-number">0</span>)<br>docs = text_splitter.split_documents(documents)<br><br><span class="hljs-comment"># 将语料嵌入后存入向量数据库</span><br>embeddings = SentenceTransformerEmbeddings()<br>db = Chroma.from_documents(docs, embeddings)<br> <br></code></pre></td></tr></table></figure>
+
+<p>首先，我们可以看一下简单的相似度搜索会得到什么样的回答：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">query = <span class="hljs-string">&quot;What did the president say about Ketanji Brown Jackson&quot;</span><br>docs = db.similarity_search(query)<br><span class="hljs-built_in">print</span>(docs[<span class="hljs-number">0</span>].page_content)<br><br>&gt;&gt; Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And <span class="hljs-keyword">while</span> you’re at it, <span class="hljs-keyword">pass</span> the Disclose Act so Americans can know who <span class="hljs-keyword">is</span> funding our elections. <br></code></pre></td></tr></table></figure>
+
+<p>可以看到，基于相似度搜索只返回了原文中相似的部分。</p>
+<p>同样也可以看一下得分：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">docs = db.similarity_search_with_score(query)<br>docs[<span class="hljs-number">0</span>]<br><br>&gt;&gt; (Document(page_content=<span class="hljs-string">&#x27;Tonight. I call on the Senate to: Pass the Freedom to Vote Act. Pass the John Lewis Voting Rights Act. And while you’re at it, pass the Disclose Act so Americans can know who is funding our elections. \n\nTonight, I’d like to honor someone who has dedicated his life to serve this country: Justice Stephen Breyer—an Army veteran, Constitutional scholar, and retiring Justice of the United States Supreme Court. Justice Breyer, thank you for your service. \n\nOne of the most serious constitutional responsibilities a President has is nominating someone to serve on the United States Supreme Court. \n\nAnd I did that 4 days ago, when I nominated Circuit Court of Appeals Judge Ketanji Brown Jackson. One of our nation’s top legal minds, who will continue Justice Breyer’s legacy of excellence.&#x27;</span>, metadata=&#123;<span class="hljs-string">&#x27;source&#x27;</span>: <span class="hljs-string">&#x27;state_of_the_union.txt&#x27;</span>&#125;),<br> <span class="hljs-number">1.2032095193862915</span>)<br></code></pre></td></tr></table></figure>
+
+<p>现在，我们引入大语言模型，让它理解问题和原文内容，并包装出合理的回答。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain.prompts <span class="hljs-keyword">import</span> ChatPromptTemplate<br><br>template = <span class="hljs-string">&quot;&quot;&quot;You are an assistant for question-answering tasks.</span><br><span class="hljs-string">Use the following pieces of retrieved context to answer the question.</span><br><span class="hljs-string">If you don&#x27;t know the answer, just say that you don&#x27;t know.</span><br><span class="hljs-string">Use three sentences maximum and keep the answer concise.</span><br><span class="hljs-string">Question: &#123;question&#125;</span><br><span class="hljs-string">Context: &#123;context&#125;</span><br><span class="hljs-string">Answer:</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>prompt = ChatPromptTemplate.from_template(template)<br></code></pre></td></tr></table></figure>
+
+<p>在设定好输入提示词模板后，我们可以构建一个思维链。在这个链之中，内容是一个检索器，问题是一个可执行的输入，这两个东西被填入提示词模板后，交给大语言模型，并规定输出的格式是字符串：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain.schema.runnable <span class="hljs-keyword">import</span> RunnablePassthrough<br><span class="hljs-keyword">from</span> langchain.schema.output_parser <span class="hljs-keyword">import</span> StrOutputParser<br><br>rag_chain = (<br>    &#123;<span class="hljs-string">&quot;context&quot;</span>: retriever,  <span class="hljs-string">&quot;question&quot;</span>: RunnablePassthrough()&#125;<br>    | prompt<br>    | llm<br>    | StrOutputParser()<br>)<br><br>query = <span class="hljs-string">&quot;What did the president say about Justice Breyer&quot;</span><br>rag_chain.invoke(query)<br><br>&gt;&gt; The president thanked Justice Stephen Breyer <span class="hljs-keyword">for</span> his service <span class="hljs-keyword">and</span> acknowledged his dedication to serving the country.\n<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，输出的回答更符合人类的理解。</p>
+<h2 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h2><p>最后，我们可以将输入的文本向量持久化在数据库中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">vectordb = Chroma.from_documents(documents=documents, embedding=embeddings, persist_directory=<span class="hljs-string">&#x27;db&#x27;</span>)<br>vectordb.persist()<br>vectordb = <span class="hljs-literal">None</span><br></code></pre></td></tr></table></figure>
+
+<p>在调用时如下操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">vectordb = Chroma(persist_directory=<span class="hljs-string">&#x27;db&#x27;</span>, embedding_function=embeddings)<br>retriever = db.as_retriever(search_type=<span class="hljs-string">&quot;mmr&quot;</span>)<br>retriever.get_relevant_documents(query)[<span class="hljs-number">0</span>]<br></code></pre></td></tr></table></figure>
+
+<p>2024&#x2F;1&#x2F;7 于苏州家中</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+        <a href="/tags/%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F/" class="print-no-link">#问答系统</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/08/%E6%8F%90%E9%AB%98Python%E5%8F%AF%E8%AF%BB%E6%80%A7%EF%BC%9A%E7%B1%BB%E5%9E%8B%E6%8F%90%E7%A4%BA%E5%92%8CEnum/" title="提高Python可读性：Type Hints的应用">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">提高Python可读性：Type Hints的应用</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/06/%E5%A6%82%E4%BD%95%E5%AE%8C%E6%88%90%E7%9A%86%E5%A4%A7%E6%AC%A2%E5%96%9C%E7%9A%84%E9%A1%B9%E7%9B%AE%EF%BC%9A%E8%BF%91%E6%9C%9F%E5%B7%A5%E4%BD%9C%E6%89%80%E6%84%9F/" title="如何完成皆大欢喜的项目：近期工作所感">
+                        <span class="hidden-mobile">如何完成皆大欢喜的项目：近期工作所感</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

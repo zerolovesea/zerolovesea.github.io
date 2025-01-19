@@ -1,0 +1,875 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Mistral AI团队带来的开源新模型，以更小的参数量超过了LLama2 70B。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解Mixtral 8*7B: 高质量的专家组合模型">
+<meta property="og:url" content="http://example.com/2023/12/30/%E8%AF%A6%E8%A7%A3Mixtral-8-7B-%E9%AB%98%E8%B4%A8%E9%87%8F%E7%9A%84%E4%B8%93%E5%AE%B6%E7%BB%84%E5%90%88%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Mistral AI团队带来的开源新模型，以更小的参数量超过了LLama2 70B。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/mixtral.jpg">
+<meta property="article:published_time" content="2023-12-30T02:46:19.000Z">
+<meta property="article:modified_time" content="2024-04-12T16:09:40.160Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="LLM">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/mixtral.jpg">
+  
+  
+  
+  <title>详解Mixtral 8*7B: 高质量的专家组合模型 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="详解Mixtral 8*7B: 高质量的专家组合模型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-30 10:46" pubdate>
+          2023年12月30日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">详解Mixtral 8*7B: 高质量的专家组合模型</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>2023年12月8日，来自欧洲的团队Mistral AI团队发布了他们的新开源模型：Mixtral 8x7B。他们发布的方式也是别具一格，直接甩出一条87G文件的磁力链接。<br><img src="/images/8f8012cfb2c44e55aa4e0e1cc0894864.png" srcset="/img/loading.gif" lazyload></p>
+<p>值得一提的是，这家位于巴黎的公司上一次发布的Mistral 7B模型，也是直接发的磁力链接，并且把LLama2 13B作为基准碾压了一遍。</p>
+<h1 id="模型架构"><a href="#模型架构" class="headerlink" title="模型架构"></a>模型架构</h1><p>Mixtral采用了SMoE(稀疏混合专家模型)架构，把原来的前馈层改成了一个路由网络，用来给8个并行的子层进行分配Token。这里的子层就被称为专家。由于运行时不是所有参数都会进行推理，因此这个架构被称为稀疏架构，这也是名字中S(Sparse)的由来。</p>
+<p><img src="/images/image2_17.png" srcset="/img/loading.gif" lazyload></p>
+<p>Mixtral共拥有8个专家，每个专家参数为7B。由于存在共享参数，模型的总参数为47B而非56B。</p>
+<div class="note note-success">
+            <p>其实由上你也可以看出来，这个架构解决的主要还是推理速度，而非显存占用，因为47B参数在运行时依旧需要先加载进入显存。</p>
+          </div>
+
+<p><img src="/images/123326.png" srcset="/img/loading.gif" lazyload alt="模型具体架构"></p>
+<h1 id="原文翻译"><a href="#原文翻译" class="headerlink" title="原文翻译"></a>原文翻译</h1><p>由于Mixtral 8x7B目前还没有发布论文，我们可以解读一下团队发布的博客。</p>
+<hr>
+<p>Mistral AI 继续履行着它创立以来的使命，为开发者社区提供最佳的开源模型。人工智能的发展需要采取新的技术转向，而不是重复使用众所周知的架构和训练范式。最重要的是，它应该让社区能从原始模型中受益，以促进新的发明和使用。</p>
+<p>今天，我们自豪地发布了 Mixtral 8x7B，这是一个高质量稀疏专家混合模型 （SMoE），且权重已经开源 。该模型的许可证是Apache 2.0 。Mixtral 在大多数基准测试中的表现优于 Llama 2 70B，且<strong>推理速度提高了 6 倍</strong>。它是目前的最强开源模型，也是成本&#x2F;性能权衡方面整体上的最佳模型。重点是，它在大多数标准基准测试上都与 GPT3.5 相当或优于 GPT3.5。</p>
+<p>Mixtral 具有以下特性：</p>
+<ul>
+<li>它能够处理 32k Token的上下文。</li>
+<li>它能够处理英语、法语、意大利语、德语和西班牙语。</li>
+<li>它在代码生成方面性能强大。</li>
+<li>通过对它进行微调，转换为指令遵循(instruaction-following)模型，在 MT-Bench 上能达到 8.3 分。</li>
+</ul>
+<h2 id="走在推广稀疏架构的开源模型的前沿"><a href="#走在推广稀疏架构的开源模型的前沿" class="headerlink" title="走在推广稀疏架构的开源模型的前沿"></a>走在推广稀疏架构的开源模型的前沿</h2><p>Mixtral 是一个稀疏的专家混合网络(sMoE, sparse mixture-of-experts)。这是一种仅解码器(decoder-only)模型，其中前馈模块(Feed Forward，即全连接层)从一组 8 组不同的参数中进行选择。在每一层，对于每个Token，有一个路由(Router)网络都会选择其中8组参数中的两个组（也就是“专家”）来处理Token并将其的输出进行累加组合。</p>
+<p>这种技术在增加了参数数量的情况下，控制了成本和延迟，因为模型只需要使用每个Token参数集中总数的一小部分。具体来说，Mixtral 有 46.7B 的总参数，但每个Token只使用 12.9B 参数。因此它的推理速度应当与 12.9B 模型相同。</p>
+<p>Mixtral 使用从开放网络中提取的数据进行预训练——这一过程中将同时训练“专家”和“路由”。</p>
+<h2 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h2><p>我们将 Mixtral 与 Llama 2 系列和 GPT3.5 基本型号进行了比较。在大多数基准测试中，Mixtral 都达到或优于 Llama 2 70B 和 GPT3.5。<br><img src="/images/110331.png" srcset="/img/loading.gif" lazyload></p>
+<p>在下图中，我们衡量了模型质量与推理预算的权衡。与 Llama 7 型号相比，Mistral 8B 和 Mixtral 8x7B 属于更高效的模型。</p>
+<p><img src="/images/110418.png" srcset="/img/loading.gif" lazyload></p>
+<p>下表给出了上图的详细结果。</p>
+<p><img src="/images/110546.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="模型幻觉和偏见"><a href="#模型幻觉和偏见" class="headerlink" title="模型幻觉和偏见"></a>模型幻觉和偏见</h2><p>为了识别可能通过微调&#x2F;偏好建模来纠正的缺陷，我们在BBQ&#x2F;BOLD上评估了基本模型的性能。</p>
+<p><img src="/images/110639.png" srcset="/img/loading.gif" lazyload></p>
+<p>与 Llama 2 相比，Mixtral 在 BBQ 基准测试上的偏差较小。总体而言，Mixtral 在 BOLD 上表现出比 Llama 2 更积极的情绪，且每个维度的差异都较一致，不存在偏科的情况。</p>
+<h2 id="语言"><a href="#语言" class="headerlink" title="语言"></a>语言</h2><p>Mixtral 8x7B 精通法语、德语、西班牙语、意大利语和英语。</p>
+<p><img src="/images/110748.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="指导模型"><a href="#指导模型" class="headerlink" title="指导模型"></a>指导模型</h2><p>我们发布了 Mixtral 8x7B Instruct 和 Mixtral 8x7B。它们通过监督微调和直接偏好优化 （DPO） 进行了优化，以便仔细遵循人类给出的指令。在 MT-Bench 上，它的得分达到了 8.30，使其成为当前最好的开源模型，性能可与 GPT3.5 相媲美。</p>
+<h2 id="使用开源部署堆栈部署-Mixtral"><a href="#使用开源部署堆栈部署-Mixtral" class="headerlink" title="使用开源部署堆栈部署 Mixtral"></a>使用开源部署堆栈部署 Mixtral</h2><p>为了使社区能够使用完全开源的堆栈运行 Mixtral，我们提交了对 vLLM 项目的更改，该项目集成了 Megablocks CUDA 内核以实现高效推理。</p>
+<h1 id="关于Mistral-AI"><a href="#关于Mistral-AI" class="headerlink" title="关于Mistral AI"></a>关于Mistral AI</h1><p><img src="https://siliconcanals.com/wp-content/uploads/2023/12/Mistral-1140x570.jpg" srcset="/img/loading.gif" lazyload><br>写博客的时候搜了一下这家公司。Mistral AI来自巴黎，团队成员大多来自于Google，Meta，HuggingFace。他们中的大部分都是从事AI行业多年的大佬。Mistral AI的上一个7B模型就已经获得了社区非常好的反响，基准测试中超过了LLama2 34B。</p>
+<div class="group-image-container"><div class="group-image-row"><div class="group-image-wrap"><img src="/images/120729.png" srcset="/img/loading.gif" lazyload></div><div class="group-image-wrap"><img src="/images/120812.png" srcset="/img/loading.gif" lazyload></div><div class="group-image-wrap"><img src="/images/120902.png" srcset="/img/loading.gif" lazyload></div></div></div>
+
+<p>在人工智能成为风口的当下，这家公司在六个月内就筹集了1.12亿美元的融资，且A轮融资已经筹集了3.85亿欧元，这也让Mistral AI的估值达到约20亿美元，自6月份首次亮相以来，其估值已增长超过七倍，成为欧洲最成功的大模型公司。</p>
+<p>公司的核心创始人是Arthur Mensch(CEO), Timothée Lacroix(CTO)和Guillaume Lample（Chief Scientist)，CEO来自于Google DeepMind，后两者都来自于MetaAI，且均在LLama模型中做出了重大贡献。</p>
+<h1 id="使用QLoRA对Mixtral模型微调"><a href="#使用QLoRA对Mixtral模型微调" class="headerlink" title="使用QLoRA对Mixtral模型微调"></a>使用QLoRA对Mixtral模型微调</h1><p>参考了一些示例代码，写了下微调的示例代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 导入库</span><br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset<br><span class="hljs-keyword">from</span> peft <span class="hljs-keyword">import</span> LoraConfig, PeftModel, prepare_model_for_kbit_training<br><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> (<br>    AutoModelForCausalLM,<br>    AutoTokenizer,<br>    BitsAndBytesConfig,<br>    AutoTokenizer,<br>    TrainingArguments<br>)<br><span class="hljs-keyword">from</span> trl <span class="hljs-keyword">import</span> SFTTrainer<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">model_name = <span class="hljs-string">&quot;mistralai/Mixtral-8x7B-v0.1&quot;</span><br><br><span class="hljs-comment"># 设置Tokenizer</span><br>tokenizer = AutoTokenizer.from_pretrained(model_name, add_eos_token=<span class="hljs-literal">True</span>, use_fast=<span class="hljs-literal">True</span>)<br>tokenizer.pad_token = tokenizer.unk_token<br>tokenizer.pad_token_id =  tokenizer.unk_token_id<br>tokenizer.padding_side = <span class="hljs-string">&#x27;left&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 设置数据集</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">format_ultrachat</span>(<span class="hljs-params">ds</span>):<br>  text = []<br>  <span class="hljs-keyword">for</span> row <span class="hljs-keyword">in</span> ds:<br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(row[<span class="hljs-string">&#x27;messages&#x27;</span>]) &gt; <span class="hljs-number">2</span>:<br>      text.append(<span class="hljs-string">&quot;### Human: &quot;</span>+row[<span class="hljs-string">&#x27;messages&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;content&#x27;</span>]+<span class="hljs-string">&quot;### Assistant: &quot;</span>+row[<span class="hljs-string">&#x27;messages&#x27;</span>][<span class="hljs-number">1</span>][<span class="hljs-string">&#x27;content&#x27;</span>]+<span class="hljs-string">&quot;### Human: &quot;</span>+row[<span class="hljs-string">&#x27;messages&#x27;</span>][<span class="hljs-number">2</span>][<span class="hljs-string">&#x27;content&#x27;</span>]+<span class="hljs-string">&quot;### Assistant: &quot;</span>+row[<span class="hljs-string">&#x27;messages&#x27;</span>][<span class="hljs-number">3</span>][<span class="hljs-string">&#x27;content&#x27;</span>])<br>    <span class="hljs-keyword">else</span>: <span class="hljs-comment">#not all tialogues have more than one turn</span><br>      text.append(<span class="hljs-string">&quot;### Human: &quot;</span>+row[<span class="hljs-string">&#x27;messages&#x27;</span>][<span class="hljs-number">0</span>][<span class="hljs-string">&#x27;content&#x27;</span>]+<span class="hljs-string">&quot;### Assistant: &quot;</span>+row[<span class="hljs-string">&#x27;messages&#x27;</span>][<span class="hljs-number">1</span>][<span class="hljs-string">&#x27;content&#x27;</span>])<br>  ds = ds.add_column(name=<span class="hljs-string">&quot;text&quot;</span>, column=text)<br>  <span class="hljs-keyword">return</span> ds<br>dataset_train_sft = load_dataset(<span class="hljs-string">&quot;HuggingFaceH4/ultrachat_200k&quot;</span>, split=<span class="hljs-string">&quot;train_sft&quot;</span>)<br>dataset_test_sft = load_dataset(<span class="hljs-string">&quot;HuggingFaceH4/ultrachat_200k&quot;</span>, split=<span class="hljs-string">&quot;test_sft[:5%]&quot;</span>)<br><br>dataset_test_sft = format_ultrachat(dataset_test_sft)<br>dataset_train_sft = format_ultrachat(dataset_train_sft)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 导入模型和量化参数</span><br>compute_dtype = <span class="hljs-built_in">getattr</span>(torch, <span class="hljs-string">&quot;float16&quot;</span>)<br>bnb_config = BitsAndBytesConfig(<br>        load_in_4bit=<span class="hljs-literal">True</span>,<br>        bnb_4bit_quant_type=<span class="hljs-string">&quot;nf4&quot;</span>,<br>        bnb_4bit_compute_dtype=compute_dtype,<br>        bnb_4bit_use_double_quant=<span class="hljs-literal">True</span>,<br>)<br>model = AutoModelForCausalLM.from_pretrained(<br>          model_name, quantization_config=bnb_config, device_map=&#123;<span class="hljs-string">&quot;&quot;</span>: <span class="hljs-number">0</span>&#125;<br>)<br>model = prepare_model_for_kbit_training(model)<br><br><span class="hljs-comment">#Configure the pad token in the model</span><br>model.config.pad_token_id = tokenizer.pad_token_id<br>model.config.use_cache = <span class="hljs-literal">False</span> <span class="hljs-comment"># Gradient checkpointing is used by default but not compatible with caching</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python">peft_config = LoraConfig(<br>        lora_alpha=<span class="hljs-number">64</span>,<br>        lora_dropout=<span class="hljs-number">0.1</span>,<br>        r=<span class="hljs-number">16</span>,<br>        bias=<span class="hljs-string">&quot;none&quot;</span>,<br>        task_type=<span class="hljs-string">&quot;CAUSAL_LM&quot;</span>,<br>        target_modules= [<span class="hljs-string">&#x27;k_proj&#x27;</span>, <span class="hljs-string">&#x27;q_proj&#x27;</span>, <span class="hljs-string">&#x27;v_proj&#x27;</span>, <span class="hljs-string">&#x27;o_proj&#x27;</span>]<br>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 设置训练参数</span><br>training_arguments = TrainingArguments(<br>        output_dir=<span class="hljs-string">&quot;./results_mixtral_sft/&quot;</span>,<br>        evaluation_strategy=<span class="hljs-string">&quot;steps&quot;</span>,<br>        do_eval=<span class="hljs-literal">True</span>,<br>        optim=<span class="hljs-string">&quot;paged_adamw_8bit&quot;</span>,<br>        per_device_train_batch_size=<span class="hljs-number">8</span>,<br>        gradient_accumulation_steps=<span class="hljs-number">2</span>,<br>        per_device_eval_batch_size=<span class="hljs-number">8</span>,<br>        log_level=<span class="hljs-string">&quot;debug&quot;</span>,<br>        save_steps=<span class="hljs-number">50</span>,<br>        logging_steps=<span class="hljs-number">50</span>,<br>        learning_rate=<span class="hljs-number">2e-5</span>,<br>        eval_steps=<span class="hljs-number">50</span>,<br>        max_steps=<span class="hljs-number">300</span>,<br>        warmup_steps=<span class="hljs-number">30</span>,<br>        lr_scheduler_type=<span class="hljs-string">&quot;linear&quot;</span>,<br>)<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 开始训练</span><br>trainer = SFTTrainer(<br>        model=model,<br>        train_dataset=dataset_train_sft,<br>        eval_dataset=dataset_test_sft,<br>        peft_config=peft_config,<br>        dataset_text_field=<span class="hljs-string">&quot;text&quot;</span>,<br>        max_seq_length=<span class="hljs-number">512</span>,<br>        tokenizer=tokenizer,<br>        args=training_arguments,<br>)<br><br>trainer.train()<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 模型测试</span><br>text = <span class="hljs-string">&quot;Hello my name is&quot;</span><br>inputs = tokenizer(text, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>)<br><br>outputs = model.generate(**inputs, max_new_tokens=<span class="hljs-number">20</span>)<br><span class="hljs-built_in">print</span>(tokenizer.decode(outputs[<span class="hljs-number">0</span>], skip_special_tokens=<span class="hljs-literal">True</span>))<br><br><span class="hljs-comment"># 模型保存</span><br>new_model = <span class="hljs-string">&#x27;yang_zhou/mixtral&#x27;</span><br>trainer.model.save_pretrained(new_model)<br><br><span class="hljs-keyword">del</span> model, trainer<br>torch.cuda.empty_cache()<br><br><span class="hljs-comment"># 重新加载模型</span><br>model_reload = AutoModelForCausalLM.from_pretrained(<br>          model_name, quantization_config=bnb_config, device_map=&#123;<span class="hljs-string">&quot;&quot;</span>: <span class="hljs-number">0</span>&#125;<br>)<br>model = PeftModel.from_pretrained(model_reload, new_model)<br><br><span class="hljs-comment"># 合并模型</span><br>output_path = <span class="hljs-string">&#x27;yang_zhou/mixtral/ft_model&#x27;</span><br>model = model.merge_and_unload()<br>model.save_pretrained(output_path)<br></code></pre></td></tr></table></figure>
+
+<p>2023&#x2F;12&#x2F;30 于昆山</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/LLM/" class="category-chain-item">LLM</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/LLM/" class="print-no-link">#LLM</a>
+      
+        <a href="/tags/NLP/" class="print-no-link">#NLP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/30/Python%E5%BC%80%E5%8F%91%EF%BC%9AArgparse-%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F/" title="Python开发：Argparse/配置环境变量">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python开发：Argparse/配置环境变量</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/12/29/Python%E5%BC%80%E5%8F%91%EF%BC%9A%E6%8D%A2%E6%BA%90-%E6%9B%B4%E6%96%B0Python%E5%8C%85-%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83/" title="Python开发：换源/更新Python包/虚拟环境">
+                        <span class="hidden-mobile">Python开发：换源/更新Python包/虚拟环境</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

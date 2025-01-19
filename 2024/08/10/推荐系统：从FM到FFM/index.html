@@ -1,0 +1,925 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="FM和FFM的原理及实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统：从FM到FFM">
+<meta property="og:url" content="http://example.com/2024/08/10/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8EFM%E5%88%B0FFM/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="FM和FFM的原理及实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="article:published_time" content="2024-08-10T14:09:54.000Z">
+<meta property="article:modified_time" content="2024-08-15T23:48:33.494Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="FM">
+<meta property="article:tag" content="FFM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
+  
+  
+  
+  <title>推荐系统：从FM到FFM - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="推荐系统：从FM到FFM"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-10 22:09" pubdate>
+          2024年8月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">推荐系统：从FM到FFM</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="从MF到FM"><a href="#从MF到FM" class="headerlink" title="从MF到FM"></a>从MF到FM</h1><p>前面讲过了MF模型，它基于用户ID和物品ID的共现矩阵进行矩阵分解，用隐向量来表示物品和用户，并通过内积的形式计算得到预估评分。它比协同过滤的优势在于泛化能力，使用嵌入能够表达一些训练集不存在的特例，但是损失了一定的记忆能力。</p>
+<p>MF是协同过滤的一大改进，然而它无法将一些物品及用户的信息作为特征。为了解决这个问题，逻辑回归以其可解释性和易于工业计算的优点，在工业推荐算法中非常流行。</p>
+<p>逻辑回归的优点在于特征可解释性非常强，能够通过权重直观的反应特征重要性，然而实际应用中需要进行人工特征组合，这一过程非常耗时耗力。这里的特征组合通常是特征交叉，也就是特征两两之间进行计算。</p>
+<p>由于推荐系统天生拥有的稀疏性问题，本就稀疏的特征在进行交叉之后，维度大幅提高的同时，稀疏性也大大提高，由于很难出现两个特征同时出现的情况，要求极大的数据量才能让模型收敛。</p>
+<p>这个问题似乎有些似曾相识，在FM模型中，我们也提到它解决了共现矩阵的稀疏问题。现在，为了解决特征的稀疏问题，我们同样能够将他们变为低维稠密向量，这时它们之间两两交互就不会有太多0出现了。</p>
+<h1 id="FM"><a href="#FM" class="headerlink" title="FM"></a>FM</h1><h2 id="FM的公式"><a href="#FM的公式" class="headerlink" title="FM的公式"></a>FM的公式</h2><p>FM的公式是对逻辑回归的改进，在原本一次项的基础上增加了二次项，即特征之间的两两内积。类别特征被OneHot之后，转换为了$k$维向量。</p>
+<p>FM 模型的基本形式是：</p>
+<p>$\hat{y}(x) &#x3D; w_0 + \sum_{i&#x3D;1}^{n} w_i x_i + \sum_{i&#x3D;1}^{n} \sum_{j&#x3D;i+1}^{n} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j$</p>
+<p>其中：</p>
+<ul>
+<li>$\hat{y}(x)$ 表示对目标变量的预测值。</li>
+<li>$w_0$是全局偏置（全局截距）。</li>
+<li>$w_i$是特征 $x_i$的权重。</li>
+<li>$x_i$ 和 $x_j$是输入特征。</li>
+<li>$\mathbf{v}_i$和 $\mathbf{v}_j$是对应于特征$x_i$和 $x_j$ 的嵌入隐向量。</li>
+<li>$\langle \mathbf{v}_i, \mathbf{v}_j \rangle $表示$\mathbf{v}$ 和$\mathbf{v}_j$的内积，计算特征$x_i$和 $x_j$之间的交互作用。</li>
+</ul>
+<p>原公式的计算复杂度是$n^2 k$，内积部分进一步展开后可以进一步降低到$nk$，FM 模型的预测公式可以写成：</p>
+<p>$\hat{y}(x) &#x3D; w_0 + \sum_{i&#x3D;1}^{n} w_i x_i + \sum_{i&#x3D;1}^{n} \sum_{j&#x3D;i+1}^{n} \left( \sum_{f&#x3D;1}^{k} v_{i,f} \cdot v_{j,f} \right) x_i x_j$</p>
+<p>FM 可以高效地捕捉特征之间的二阶交互作用，并通过隐向量 $\mathbf{v}_i$和$\mathbf{v}_j$对这些交互进行建模。</p>
+<p>由于计算复杂度和空间复杂度的权衡，FM通常使用二阶特征交叉。</p>
+<h2 id="FM和MF的关系"><a href="#FM和MF的关系" class="headerlink" title="FM和MF的关系"></a>FM和MF的关系</h2><p>从本质上来看，MF是FM的一个特例。MF可以被认作是只有用户ID和物品ID的FM模型。</p>
+<p>从公式来看，MF的公式：</p>
+<p>$r&#x3D; \mathbf{p}_u \cdot \mathbf{q}_i^T$</p>
+<p>​        $ &#x3D; \sum_{f&#x3D;1}^{k} p_{u,f} \cdot q_{i,f}$</p>
+<p>和FM的公式：</p>
+<p>$\hat{y}(x) &#x3D; w_0 + \sum_{i&#x3D;1}^{n} w_i x_i + \sum_{i&#x3D;1}^{n} \sum_{j&#x3D;i+1}^{n} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j$</p>
+<p>在 MF 模型中，只有两个特征：用户和物品。在 FM 模型中，如果忽略一阶项，只选择用户特征$u$和物品特征$i$进行二阶交互项，仅考虑用户和物品的交互项，即 $\langle \mathbf{v}_u, \mathbf{v}_i \rangle$，其中$x_u$和$x_i$是用户和物品的特征值，由于我们只关注用户和物品的交互，因此将它们设置为1。</p>
+<p>此时，FM 公式中的二阶交互项可以简化为：$\hat{y}(x) &#x3D; \langle \mathbf{v}_u, \mathbf{v}_i \rangle x_u x_j$。</p>
+<p>在MF中，我们同样只关注用户和物品的交互项，因此将 $x_u$和$x_i$都设置为1。此时公式变为：$\hat{y}(x) &#x3D; \langle \mathbf{v}_u, \mathbf{v}_i \rangle$。</p>
+<p>这实际上与 MF 中的 $\mathbf{p}_u \cdot \mathbf{q}_i^T$的内积是等价的。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>使用numpy实现FM模型，首先需要初始化几个关键参数：特征数和隐向量维度以生成隐向量矩阵，全局偏置和一次项权重。偏置和权重可以随机初始化。</p>
+<p>在预测时，只需要将全局截距与一次项和二次项求和即可。一次项部分是输入特征向量和一次项权重的点积。二次项在经过展开后，变换为以下形式：</p>
+<p>$\frac{1}{2} \sum_{f&#x3D;1}^{k} \left( \left( \sum_{i&#x3D;1}^{n} v_{i,f} x_i \right)^2 - \sum_{i&#x3D;1}^{n} v_{i,f}^2 x_i^2 \right)$</p>
+<p>在训练过程中根据均方误差，手动计算梯度并进行更新。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FM</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, n_features, k=<span class="hljs-number">5</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        初始化FM模型</span><br><span class="hljs-string">        :param n_features: 特征数量</span><br><span class="hljs-string">        :param k: 隐向量的维度</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        self.n_features = n_features<br>        self.k = k<br>        self.w0 = <span class="hljs-number">0</span>  <span class="hljs-comment"># 全局偏置</span><br>        self.w = np.zeros(n_features)  <span class="hljs-comment"># 一次项权重</span><br>        self.V = np.random.normal(scale=<span class="hljs-number">0.1</span>, size=(n_features, k))  <span class="hljs-comment"># 隐向量矩阵</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">self, X</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        预测函数</span><br><span class="hljs-string">        :param X: 输入样本矩阵，形状为 (m_samples, n_features)</span><br><span class="hljs-string">        :return: 预测值</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        linear_terms = np.dot(X, self.w)  <span class="hljs-comment"># 线性部分</span><br>        interactions = np.<span class="hljs-built_in">sum</span>(np.dot(X, self.V)**<span class="hljs-number">2</span> - np.dot(X**<span class="hljs-number">2</span>, self.V**<span class="hljs-number">2</span>), axis=<span class="hljs-number">1</span>) / <span class="hljs-number">2</span><br>        <span class="hljs-keyword">return</span> self.w0 + linear_terms + interactions<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">fit</span>(<span class="hljs-params">self, X, y, epochs=<span class="hljs-number">10</span>, lr=<span class="hljs-number">0.01</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        训练FM模型</span><br><span class="hljs-string">        :param X: 输入样本矩阵，形状为 (m_samples, n_features)</span><br><span class="hljs-string">        :param y: 标签</span><br><span class="hljs-string">        :param epochs: 训练轮数</span><br><span class="hljs-string">        :param lr: 学习率</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        m_samples = X.shape[<span class="hljs-number">0</span>]<br>        <span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(epochs):<br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(m_samples):<br>                xi = X[i]<br>                yi = y[i]<br>                y_pred = self.predict(xi.reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>))<br>                error = yi - y_pred<br><br>                <span class="hljs-comment"># 更新参数</span><br>                self.w0 += lr * error<br>                self.w += lr * error * xi<br>                <span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.k):<br>                    self.V[:, f] += lr * error * (<br>                        xi * np.dot(xi, self.V[:, f]) - self.V[:, f] * xi**<span class="hljs-number">2</span><br>                    )<br><br>            <span class="hljs-comment"># 输出当前轮次的误差</span><br>            y_preds = self.predict(X)<br>            mse = np.mean((y - y_preds)**<span class="hljs-number">2</span>)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Epoch <span class="hljs-subst">&#123;epoch+<span class="hljs-number">1</span>&#125;</span>, MSE: <span class="hljs-subst">&#123;mse&#125;</span>&quot;</span>)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    <span class="hljs-comment"># 预测集，行为用户，列为OneHot特征</span><br>    X = np.array([<br>        [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>],<br>        [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>],<br>        [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>],<br>        [<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]<br>    ])<br><br>    y = np.array([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>])  <span class="hljs-comment"># 目标值</span><br><br>    <span class="hljs-comment"># 初始化并训练FM模型</span><br>    fm = FM(n_features=X.shape[<span class="hljs-number">1</span>], k=<span class="hljs-number">2</span>)<br>    fm.fit(X, y, epochs=<span class="hljs-number">20</span>, lr=<span class="hljs-number">0.01</span>)<br><br>    <span class="hljs-comment"># 预测</span><br>    predictions = fm.predict(X)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Predictions:&quot;</span>, predictions)<br></code></pre></td></tr></table></figure>
+
+<p>也可以用pytorch实现更方便一点：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><span class="hljs-keyword">import</span> torch.optim <span class="hljs-keyword">as</span> optim<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">FactorizationMachine</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, n_features, k</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        初始化FM模型</span><br><span class="hljs-string">        :param n_features: 特征数量</span><br><span class="hljs-string">        :param k: 隐向量的维度</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">super</span>(FactorizationMachine, self).__init__()<br>        self.n_features = n_features<br>        self.k = k<br><br>        <span class="hljs-comment"># 初始化参数</span><br>        self.w0 = nn.Parameter(torch.zeros(<span class="hljs-number">1</span>))  <span class="hljs-comment"># 全局偏置</span><br>        self.w = nn.Parameter(torch.zeros(n_features))  <span class="hljs-comment"># 线性项权重</span><br>        self.V = nn.Parameter(torch.randn(n_features, k) * <span class="hljs-number">0.01</span>)  <span class="hljs-comment"># 隐向量矩阵</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, X</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        前向传播</span><br><span class="hljs-string">        :param X: 输入样本矩阵，形状为 (m_samples, n_features)</span><br><span class="hljs-string">        :return: 预测值</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        linear_terms = torch.matmul(X, self.w)  <span class="hljs-comment"># 线性部分</span><br>        interactions = <span class="hljs-number">0.5</span> * torch.<span class="hljs-built_in">sum</span>(<br>            torch.<span class="hljs-built_in">pow</span>(torch.matmul(X, self.V), <span class="hljs-number">2</span>) -<br>            torch.matmul(torch.<span class="hljs-built_in">pow</span>(X, <span class="hljs-number">2</span>), torch.<span class="hljs-built_in">pow</span>(self.V, <span class="hljs-number">2</span>)),<br>            dim=<span class="hljs-number">1</span><br>        )<br>        <span class="hljs-keyword">return</span> self.w0 + linear_terms + interactions<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">train_model</span>(<span class="hljs-params">model, X, y, epochs=<span class="hljs-number">10</span>, lr=<span class="hljs-number">0.01</span></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    训练FM模型</span><br><span class="hljs-string">    :param model: FM模型</span><br><span class="hljs-string">    :param X: 输入样本矩阵，形状为 (m_samples, n_features)</span><br><span class="hljs-string">    :param y: 标签</span><br><span class="hljs-string">    :param epochs: 训练轮数</span><br><span class="hljs-string">    :param lr: 学习率</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    criterion = nn.MSELoss()<br>    optimizer = optim.SGD(model.parameters(), lr=lr)<br><br>    <span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(epochs):<br>        model.train()<br>        optimizer.zero_grad()<br><br>        y_pred = model(X)<br>        loss = criterion(y_pred, y)<br>        loss.backward()<br>        optimizer.step()<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Epoch <span class="hljs-subst">&#123;epoch+<span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;epochs&#125;</span>, Loss: <span class="hljs-subst">&#123;loss.item()&#125;</span>&quot;</span>)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    X = torch.tensor([<br>        [<span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>],<br>        [<span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">0.0</span>],<br>        [<span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>],<br>        [<span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-number">1.0</span>]<br>    ])<br><br>    y = torch.tensor([<span class="hljs-number">1.0</span>, <span class="hljs-number">2.0</span>, <span class="hljs-number">3.0</span>, <span class="hljs-number">4.0</span>]) <br><br>    <span class="hljs-comment"># 初始化并训练FM模型</span><br>    fm = FactorizationMachine(n_features=X.shape[<span class="hljs-number">1</span>], k=<span class="hljs-number">2</span>)<br>    train_model(fm, X, y, epochs=<span class="hljs-number">20</span>, lr=<span class="hljs-number">0.01</span>)<br><br>    <span class="hljs-comment"># 预测</span><br>    fm.<span class="hljs-built_in">eval</span>()<br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        predictions = fm(X)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Predictions:&quot;</span>, predictions.numpy())<br><br></code></pre></td></tr></table></figure>
+
+<h1 id="FFM"><a href="#FFM" class="headerlink" title="FFM"></a>FFM</h1><p>在原版FM的基础上，后续又研究出了FFM（Field-aware Factorization Machines），意味感知域的因子分解机。它引入了域的概念。所谓域的概念就是为每个特征分配了一个特征域，用于指示特征所从属的类别。</p>
+<p>例如假如我们有以下特征：</p>
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Movie</th>
+<th>Genre</th>
+<th>Price</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>YangZhou</td>
+<td>Alien</td>
+<td>Horror, Sci-fi</td>
+<td>$9.9</td>
+</tr>
+</tbody></table>
+<p>其中User，Movie，Genre就是特征域。当我们将特征进行OneHot编码后，每个特征就会被分配一个特征域：</p>
+<table>
+<thead>
+<tr>
+<th>Field Name</th>
+<th>Field Index</th>
+<th>Feature Name</th>
+<th>Feature Index</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>User</td>
+<td>1</td>
+<td>User&#x3D;YangZhou</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Movie</td>
+<td>2</td>
+<td>Moive&#x3D;Alien</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Genre</td>
+<td>3</td>
+<td>Genre&#x3D;Horror</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Price</td>
+<td>4</td>
+<td>Genre&#x3D;Sci-fi</td>
+<td>4</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>Price</td>
+<td>5</td>
+</tr>
+</tbody></table>
+<p>FFM的思想可以用一个例子来解释：假设我们有两个二阶交叉特征，<code>男性#45岁</code>，<code>男性#初中学历</code>。可以看到这两个交叉特征中都出现了<code>男性</code>这个特征，在FM中，这个特征被一个嵌入隐向量所表示，那么在计算内积的时候，<code>男性#45岁</code>，<code>男性#初中学历</code>中使用的都是同一个代表<code>男性</code>的向量。</p>
+<p>现在在FFM中，认为<code>男性#45岁</code>，<code>男性#初中学历</code>这两个交叉特征中，<code>男性</code>的含义可能是不一样的，因为在考虑年龄和考虑学历的时候，<code>男性</code>特征可能会有不同的意义。因此，FFM中提出需要为每个特征交互时，考虑特征所处的特征域。</p>
+<p>拿我们上面的例子为例，当Movie&#x3D;Alien和Genre&#x3D;Horror进行交互时，将采用Movie&#x3D;Alien对应Genere域的隐向量，而当Movie&#x3D;Alien和User&#x3D;YangZhou进行交互时，将采用Movie&#x3D;Alien对应User域的隐向量。换言之，经过OneHot编码的特征将会为每个特征域单独分配一个向量，这样在两两交互的时候就能够使用更加精确且具有针对性的向量。</p>
+<p>2024&#x2F;8&#x2F;12 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+        <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="print-no-link">#机器学习</a>
+      
+        <a href="/tags/FM/" class="print-no-link">#FM</a>
+      
+        <a href="/tags/FFM/" class="print-no-link">#FFM</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/17/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ADeep-Crossing%E8%AE%BE%E8%AE%A1%E7%90%86%E5%BF%B5%E5%8F%8A%E5%AE%9E%E7%8E%B0/" title="推荐系统：Deep Crossing设计理念及实现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">推荐系统：Deep Crossing设计理念及实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/04/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92-%E5%B7%A5%E4%B8%9A%E7%89%B9%E5%BE%81%E8%9E%8D%E5%90%88%E7%9A%84%E4%B8%AD%E6%B5%81%E7%A0%A5%E6%9F%B1/" title="推荐系统：逻辑回归-工业特征融合的中流砥柱">
+                        <span class="hidden-mobile">推荐系统：逻辑回归-工业特征融合的中流砥柱</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

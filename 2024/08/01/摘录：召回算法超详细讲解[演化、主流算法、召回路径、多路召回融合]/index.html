@@ -1,0 +1,1102 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文摘录自一篇介绍召回算法的博文。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="摘录：召回算法超详细讲解[演化、主流算法、召回路径、多路召回融合]">
+<meta property="og:url" content="http://example.com/2024/08/01/%E6%91%98%E5%BD%95%EF%BC%9A%E5%8F%AC%E5%9B%9E%E7%AE%97%E6%B3%95%E8%B6%85%E8%AF%A6%E7%BB%86%E8%AE%B2%E8%A7%A3[%E6%BC%94%E5%8C%96%E3%80%81%E4%B8%BB%E6%B5%81%E7%AE%97%E6%B3%95%E3%80%81%E5%8F%AC%E5%9B%9E%E8%B7%AF%E5%BE%84%E3%80%81%E5%A4%9A%E8%B7%AF%E5%8F%AC%E5%9B%9E%E8%9E%8D%E5%90%88]/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="本文摘录自一篇介绍召回算法的博文。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="article:published_time" content="2024-08-01T14:26:33.000Z">
+<meta property="article:modified_time" content="2024-08-16T13:38:20.525Z">
+<meta property="article:author" content="Yang Zhou">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
+  
+  
+  
+  <title>摘录：召回算法超详细讲解[演化、主流算法、召回路径、多路召回融合] - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="摘录：召回算法超详细讲解[演化、主流算法、召回路径、多路召回融合]"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-01 22:26" pubdate>
+          2024年8月1日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">摘录：召回算法超详细讲解[演化、主流算法、召回路径、多路召回融合]</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>原文链接：</p>
+<p>[人工智能 - 推荐系统<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000043454134#item-2">二]：召回算法超详细讲解[召回模型演化过程、召回模型主流常见算法、召回路径简介、多路召回融合] - 汀NLP - SegmentFault 思否</a></p>
+<p>看到一篇非常不错的对召回算法的介绍，故摘抄至此，并做了一些排版的优化。</p>
+<hr>
+<h2 id="1-前言：召回排序流程策略算法简介">1.前言：召回排序流程策略算法简介</h2>
+<p><img src="/images/recall1.png" srcset="/img/loading.gif" lazyload alt=""><br>
+推荐可分为以下四个流程，分别是召回、粗排、精排以及重排：</p>
+<ol>
+<li>召回是源头，在某种意义上决定着整个推荐的天花板；</li>
+<li>粗排是初筛，一般不会上复杂模型；</li>
+<li>精排是整个推荐环节的重中之重，在特征和模型上都会做的比较复杂；</li>
+<li>重排，一般是做打散或满足业务运营的特定强插需求，同样不会使用复杂模型；</li>
+</ol>
+<ul>
+<li>
+<p><strong>召回层</strong>：召回解决的是从海量候选item中召回千级别的item问题</p>
+<ul>
+<li>基于规则的统计类，热度，LBS；</li>
+<li>协同过滤类，UserCF、ItemCF；</li>
+<li>u2Tag2i，如基于user Tag的召回；</li>
+<li>i2i类，如Embedding（Word2Vec、FastText），GraphEmbedding（Node2Vec、DeepWalk、EGES）；</li>
+<li>u2i类，如DSSM、YouTube DNN、Sentence Bert；</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/recall2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<ul>
+<li>
+<p><strong>模型类</strong>：模型类的模式是将用户和item分别映射到一个向量空间，然后用向量召回，这类有itemcf，usercf，embedding（word2vec），Graph embedding（node2vec等），DNN（如DSSM双塔召回，YouTubeDNN等），RNN（预测下一个点击的item得到用户emb和item emb）；向量检索可以用Annoy（基于LSH），FAISS（基于矢量量化）。此外还见过用逻辑回归搞个预估模型，把权重大的交叉特征拿出来构建索引做召回</p>
+</li>
+<li>
+<p><strong>排序策略</strong>：learning to rank 流程三大模式（pointwise、pairwise、listwise），主要是特征工程和CTR模型预估；</p>
+<ul>
+<li><strong>粗排层</strong>：本质上跟精排类似，只是特征和模型复杂度上会精简，此外也有将精排模型通过蒸馏得到简化版模型来做粗排
+<ul>
+<li>常见的特征挖掘（user、item、context，以及相互交叉）；</li>
+</ul>
+</li>
+<li><strong>精排层</strong>：精排解决的是从千级别item到几十这个级别的问题
+<ul>
+<li><strong>CTR预估</strong>：LR，GBDT，FM及其变种（FM是一个工程团队不太强又对算法精度有一定要求时比较好的选择），WideDeep，DeepFm，NCF各种交叉，DIN，BERT，RNN</li>
+<li><strong>多目标</strong>：MOE，MMOE，MTL（多任务学习）</li>
+<li><strong>打分公式融合</strong>: 随机搜索，CEM（性价比比较高的方法），在线贝叶斯优化（高斯过程），带模型CEM，强化学习等</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/recall3.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<ul>
+<li>
+<p><strong>重排层</strong>：重排层解决的是展示列表总体最优，模型有 MMR，DPP，RNN系列（参考阿里的global rerank系列）</p>
+</li>
+<li>
+<p><strong>展示层</strong>：</p>
+<ul>
+<li><strong>推荐理由</strong>：统计规则、行为规则、抽取式（一般从评论和内容中抽取）、生成式；排序可以用汤普森采样（简单有效），融合到精排模型排等等</li>
+<li><strong>首图优选</strong>：CNN抽特征，汤普森采样</li>
+</ul>
+</li>
+<li>
+<p><strong>探索与利用</strong>：随机策略（简单有效），汤普森采样，bandit，强化学习（Q-Learning、DQN）等</p>
+</li>
+<li>
+<p><strong>产品层</strong>：交互式推荐、分Tab、多种类型物料融合</p>
+</li>
+</ul>
+<h2 id="2-召回算法简介">2.召回算法简介</h2>
+<p>召回区分主路和旁路，主路的作用是个性化+向上管理，而旁路的作用是查缺补漏。</p>
+<p>推荐系统的前几个操作可能就决定了整个系统的走向，在初期一定要三思而后行。</p>
+<p>做自媒体，打广告，漏斗的入口有多大很重要。<br>
+<img src="/images/recall4.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>召回这里稍微有些复杂，因为召回是多路的。</p>
+<p>首先我们要解释主路和旁路的差别，主路的意义和粗排类似，可以看作是一个入口更大，但模型更加简单的粗排。</p>
+<p>主路的意义是为粗排分担压力。但是旁路却不是这样的，旁路出现的时机往往是当主路存在某种机制上的问题，而单靠现在的这个模型很难解决的时候。</p>
+<p>举个例子，主路召回学的不错，但是它可能由于某种原因，特别讨厌影视剧片段这一类内容，导致了这类视频无法上升到粗排上。那这样的话整个系统推不出影视剧片段就是一个问题。从多路召回的角度来讲，我们可能需要单加一路专门召回影视剧的，并且规定：主路召回只能出3000个，这一路新加的固定出500个，两边合并起来进入到粗排中去。这个例子，是出现旁路的一个动机。</p>
+<h3 id="2-1-召回路径介绍">2.1 召回路径介绍</h3>
+<p><strong>推荐系统中的i2i、u2i、u2i2i、u2u2i、u2Tag2i，都是指推荐系统的召回路径。</strong></p>
+<ul>
+<li>第一种召回，是非个性化的。比如对于新用户，我们要确保用最高质量的视频把他们留住，那么我们可以划一个“精品池”出来，根据他们的某种热度排序，作为一路召回。做法就是新用户的每次请求我们都把这些精品池的内容当做结果送给粗排。这样的召回做起来最容易，用sql就可以搞定。</li>
+<li>第二种召回，是i2i，i指的是item，严格意义上应该叫u2i2i。指的是用用户的历史item，来找相似的item。比如说我们把用户过去点过赞的视频拿出来，去找画面上，BGM上，或者用户行为结构上相似的视频。等于说我们就认为用户还会喜欢看同样类型的视频。这种召回，既可以从内容上建立相似关系（利用深度学习），也可以用现在比较火的graph来构建关系。这种召回负担也比较小，图像上谁和谁相似完全可以离线计算，甚至都不会随着时间变化。</li>
+<li>第三种召回是u2i，即纯粹从user和item的关系出发。我们所说的双塔就是一个典型的u2i。在用户请求过来的时候，计算出user的embedding，然后去一个实现存好的item embedding的空间，寻找最相似的一批拿出来。由于要实时计算user特征，它的负担要大于前面两者，但这种召回个性化程度最高，实践中效果也是非常好的。</li>
+</ul>
+<p><img src="/images/recall5.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>通过上图理解什么是召回路径：</p>
+<ul>
+<li>u、i、Tag是指图中的节点</li>
+<li>2是指图中的线(关系)</li>
+</ul>
+<p><strong>i2i：指从一个物品到达另外一个物品，item 到 item</strong></p>
+<ul>
+<li>应用：头条，在下方列出相似的、相关的文章；</li>
+<li>算法：
+<ul>
+<li>内容相似，eg：文章的相似，取标题的关键字，内容相似</li>
+<li>协同过滤</li>
+<li>关联规则挖掘等</li>
+</ul>
+</li>
+<li>两个物品被同时看的可能性很大，当一个物品被查看，就给他推荐另一个物品</li>
+</ul>
+<p><strong>u2i：指从一个用户到达一个物品，user 到item</strong></p>
+<ul>
+<li>一般指用户的直接行为，比如播放、点击、购买等；</li>
+<li>用户查看了一个物品，就会再次给它推荐这个物品</li>
+<li>结合i2i一起使用，就是用户查看以合物品，就会给他推荐另一个相似的物品，就是u2i2i路径；</li>
+</ul>
+<p><strong>u2i2i：从一个用户，通过一个物品，到达另一个物品</strong></p>
+<ul>
+<li>用户查看了一个耳机（u2i），找出和这个耳机相似或者相关的产品（i2i）并推荐给用户</li>
+<li>对路径的使用，已经从一条线变成两条线</li>
+<li>方法：就是把两种算法结合起来，先得到u2i的数据，再利用i2i的数据进行扩展，就可以从第一个节点，越过一个节点，到达第三个节点，实现推荐</li>
+<li>中间的桥梁是item</li>
+</ul>
+<p><strong>u2u2i：从一个用户，到达另一个用户，到达一个物品</strong></p>
+<ul>
+<li>先计算u2u：两种方法
+<ul>
+<li>一是：取用户的性别、年龄、职业等人工属性的信息，计算相似性，得到u2u；</li>
+<li>一是：从行为数据中进行挖掘，比如看的内容和视频大部分很相似，就可以看作一类人；</li>
+<li>也可以使用聚类的方法进行u2u计算</li>
+<li>u2u一般用在社交里，比如微博、Facebook，推荐感兴趣的人</li>
+</ul>
+</li>
+<li>UserB和UserC相似，如果UserB查看了某个商品，就把这个商品推荐给UserC；</li>
+<li>中间的桥梁是User</li>
+</ul>
+<p><strong>u2Tag2i：中间节点是Tag标签，而不是 u 或者 i</strong></p>
+<ul>
+<li>京东，豆瓣，物品的标签非常丰富、非常详细；比如统计一个用户历史查看过的书籍，就可以计算标签偏好的向量：标签+喜欢的强度。</li>
+<li>用户就达到了Tag的节点，而商品本身带有标签，这就可以互通，进行推荐</li>
+<li>先算出用户的Tag偏好，然后匹配item列表</li>
+<li>这种方法的泛化性能比较好（推荐的内容不那么狭窄，比如喜欢科幻，那么会推荐科幻的所有内容）</li>
+<li>今日头条就大量使用标签推荐</li>
+</ul>
+<p><strong>基于图的算法：u2*2i</strong></p>
+<ul>
+<li>起始于U，结束于I，中间跨越很多的U、很多的I，可以在图中不停的游走</li>
+<li>例如：PersonalRank，不限制一条还是两条线，在图中到处的游走，游走带着概率，可以达到很多的item；但是相比前面一条、两条边的路径，性能不是很好</li>
+</ul>
+<h3 id="2-2-多路召回融合排序">2.2 多路召回融合排序</h3>
+<h4 id="2-2-1-多路召回">2.2.1 多路召回</h4>
+<p>推荐服务一般有多个环节（召回、粗排序、精排序），一般会使用多个召回策略，互相弥补不足，效果更好。比如说：</p>
+<ul>
+<li>实时召回- u2i2i，
+<ul>
+<li>几秒之内根据行为更新推荐列表。</li>
+<li>用u2i得到你实时的行为对象列表，再根据I2I得到可能喜欢的其他的物品</li>
+<li>这个是实时召回，剩下3个是提前算好的</li>
+</ul>
+</li>
+<li>基于内容 - u2Tag2i
+<ul>
+<li>先算好用户的偏好Tag，然后对Tag计算相似度，获取可能感兴趣的item</li>
+</ul>
+</li>
+<li>矩阵分解 - u2i
+<ul>
+<li>先算好User和Item的Tag矩阵，然后叉乘，给每个user推荐item</li>
+<li>提前存储好进行推荐</li>
+</ul>
+</li>
+<li>聚类推荐 - u2u2i
+<ul>
+<li>根据用户信息对用户进行聚类，然后找到最相似的user，推荐最相似user喜欢的物品；或者找到聚类中大家喜欢的物品，进行推荐</li>
+</ul>
+</li>
+</ul>
+<p>写程序时，每个策略之间毫不相关，所以：</p>
+<blockquote>
+<p>1、一般可以编写并发多线程同时执行<br>
+2、每一种策略输出结果，都有一个顺序，但最后要的结果只有一个列表，这就需要融合排序</p>
+</blockquote>
+<h4 id="2-2-2-融合排序">2.2.2 融合排序</h4>
+<p>多种召回策略的内容，取TOP N合并成一个新的列表。这个新的列表，可以直接返回给前端，进行展示；也可以发给精排，进行排序。</p>
+<p>精排模型非常耗时，所以召回的内容，会经过粗排之后，把少量的数据给精排进行排序</p>
+<h5 id="几种多路召回结果融合的方法"><strong>几种多路召回结果融合的方法</strong></h5>
+<p>举个例子：几种召回策略返回的列表（Item-id，权重）分别为：</p>
+<table>
+<thead>
+<tr>
+<th>召回策略</th>
+<th>返回列表</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>召回策略X</td>
+<td>A：0.9</td>
+<td>B：0.8</td>
+<td>C：0.7</td>
+</tr>
+<tr>
+<td>召回策略Y</td>
+<td>B：0.6</td>
+<td>C：0.5</td>
+<td>D：0.4</td>
+</tr>
+<tr>
+<td>召回策略Z</td>
+<td>C：0.3</td>
+<td>D：0.2</td>
+<td>E：0.1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>融合策略：</strong><br>
+<strong>1、按顺序展示</strong></p>
+<ul>
+<li>比如说实时 &gt; 购买数据召回 &gt; 播放数据召回，则直接展示A、B、C、D、E</li>
+</ul>
+<p><strong>2、平均法</strong></p>
+<ul>
+<li>分母为召回策略个数，分子为权重加和。</li>
+<li>C为(0.7+0.5+0.3)/3，B为(0.8+0.6)/3</li>
+</ul>
+<p><strong>3、加权平均</strong></p>
+<ul>
+<li>比如三种策略自己指定权重为0.4、0.3、0.3，则B的权重为(0.40.8 + 0.60.3 + 0*0.2)/ (0.4+0.3+0.2)，这个方法有个问题就是，每个策略的权重是自己设置的，并不准确，所以，有动态加权法。</li>
+</ul>
+<p><strong>4、动态加权法</strong></p>
+<ul>
+<li>计算XYZ三种召回策略的CTR，作为每天更新的动态加权。</li>
+<li>只考虑了点击率，并不全面。</li>
+<li>每种召回源CTR计算方法：
+<ul>
+<li>展现日志-带召回源：X，Y，Z，X，Y，Z</li>
+<li>点击日志-带召回源：点击X</li>
+<li>则每种召回的CTR = 点击数/展现数</li>
+</ul>
+</li>
+</ul>
+<p><strong>5、机器学习权重法</strong></p>
+<ul>
+<li>逻辑回归LR分类模型预先离线算好各种召回的权重，然后做加权召回。</li>
+<li>考虑更多的特征以及环境因素，会更准确。</li>
+</ul>
+<p>以上融合排序的方法，成本逐渐增大，效果依次变好，按照成本进行选择。</p>
+<h2 id="3-推荐场景中召回模型的演化过程">3.推荐场景中召回模型的演化过程</h2>
+<h3 id="3-1-传统方法：基于协同过滤">3.1 传统方法：基于协同过滤</h3>
+<p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=avx9BQAEPblrF0AsG83k3g%3D%3D.Tc9Cv%2F77Pzpf6ubVt5fy1xtUtiPTdpdo54d3cG%2Bkg0oylz5IoQTDiP2h83YWi2sjqMYywq9usU%2FNqZEIojrRSw%3D%3D">https://blog.csdn.net/sinat_39620217/article/details/129119611</a></p>
+<h3 id="3-2-单-Embedding-向量召回">3.2 单 Embedding 向量召回</h3>
+<ul>
+<li>
+<p>Youtube DNN 召回</p>
+</li>
+<li>
+<p>双塔模型召回</p>
+</li>
+</ul>
+<h3 id="3-2-多-Embedding-向量召回-用户多兴趣表达">3.2 多 Embedding 向量召回-用户多兴趣表达</h3>
+<ul>
+<li>Multi-Interest Network with Dynamic Routing 模型</li>
+</ul>
+<h3 id="3-3-Graph-Embedding">3.3 Graph Embedding</h3>
+<ul>
+<li>
+<p>阿里 Graph Embedding with Side information</p>
+</li>
+<li>
+<p>GraphSAGE：Inductive representation learning on large graphs</p>
+</li>
+</ul>
+<h3 id="3-4-结合用户长期和短期兴趣建模">3.4 结合用户长期和短期兴趣建模</h3>
+<ul>
+<li>Next Item Recommendation with Self-Attention</li>
+</ul>
+<p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=RYZu21e1f0TQRcgvkqda3w%3D%3D.09dRHSJ%2BrzhG2PB0S4ljav4Q1EuqsL6MGhrmDezWJ8384I5joPo7VPx8N%2FPIk7eFAGAz2CqmEwcfzBVeaxbpXQ%3D%3D">https://blog.csdn.net/sinat_39620217/article/details/129119611</a></p>
+<h3 id="3-5-TDM-深度树匹配召回">3.5 TDM 深度树匹配召回</h3>
+<p>TDM 是为大规模推荐系统设计的、能够承载任意先进模型 ( 也就是可以通过任何深度学习推荐模型来训练树 ) 来高效检索用户兴趣的推荐算法解决方案。</p>
+<p>TDM 基于树结构，提出了一套对用户兴趣度量进行层次化建模与检索的方法论，使得系统能直接利高级深度学习模型在全库范围内检索用户兴趣。</p>
+<p>其基本原理是使用树结构对全库 item 进行索引，然后训练深度模型以支持树上的逐层检索，从而将大规模推荐中全库检索的复杂度由 O(n) ( n 为所有 item 的量级 ) 下降至 O(log n)。</p>
+<h2 id="4-当前业界的主流召回算法综述">4.当前业界的主流召回算法综述</h2>
+<h3 id="4-1-Youtube-DNN">4.1 Youtube DNN</h3>
+<p><img src="/images/recall6.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p>当前的<strong>主流方法的通用思路就是对于use和item的embedding的学习, 这也被称为表示学习</strong>; YoutbeDNN是经典的将深度学习模型引入推荐系统中，可以看到网络模型并不复杂，但是文中有很多工程上的技巧，比如说 word2vec对 video 和 search token做embedding后做为video初始embedding，对模型训练中训练时间和采集日志时间之间“position bias”的处理，以及对大规模多分类问题的负采样softmax。</p>
+<h3 id="4-2-DeepMF">4.2 DeepMF</h3>
+<h3 id="4-3-DSSM">4.3 DSSM</h3>
+<p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=9VE2qCPRyCXvGOC7f8igDg%3D%3D.U5njn1Vyf0bN1Z%2BMcUv0FVVTe5My4lxmiagsPFZLeuKmv4%2FZfTTawm%2BeQc84KmZBbg6VWbwOTx3irux5ZHbgww%3D%3D">https://blog.csdn.net/sinat_39620217/article/details/129119611</a></p>
+<h3 id="4-4-Item2vec">4.4.Item2vec</h3>
+<h3 id="4-5-Airbnb-Embedding">4.5.Airbnb Embedding</h3>
+<h3 id="4-6-DeepWalk">4.6.DeepWalk</h3>
+<p><img src="/images/recall7.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h3 id="4-7-Node2Vec">4.7 Node2Vec</h3>
+<h3 id="4-8-EGES">4.8.EGES</h3>
+<h3 id="4-9-LINE">4.9.LINE</h3>
+<p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=H1Sy1LhP29sGHnoDSiNqsA%3D%3D.SL%2B6UPlymbfxPh1o4jozreHyvPc3DmLLdFrVsaaG7WlqCxB4ryH%2FqQckyVlHHtFtG2ge3hMPoENxluaEiWKsoA%3D%3D">https://blog.csdn.net/sinat_39620217/article/details/129119611</a></p>
+<h3 id="4-10-SDNE">4.10.SDNE</h3>
+<h3 id="4-11-GraphSAGE">4.11.GraphSAGE</h3>
+<h3 id="4-12-MIND">4.12 MIND</h3>
+<h3 id="4-13-SDM">4.13.SDM</h3>
+<h3 id="4-14-DeepFM">4.14.DeepFM</h3>
+<h3 id="4-15-NCF">4.15.NCF</h3>
+<h3 id="4-16-TDM">4.16.TDM</h3>
+<p>更多内容参考：<a target="_blank" rel="noopener" href="https://link.segmentfault.com/?enc=77wCPdm9T5Xrhp%2B6vmyZVA%3D%3D.MCcJfFaIBxCSLcpBO32mchMl28kSgKg1s04jOX6J16KLbiRU1P7RUmyxuaQ1f2yJdOC%2B8CgIH2RxA6FnQbQz4A%3D%3D">https://blog.csdn.net/sinat_39620217/article/details/129119611</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/08/03/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8EMF%E7%9C%8BSVD/" title="推荐系统：从MF看SVD">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">推荐系统：从MF看SVD</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/30/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ASwing-%E5%9F%BA%E4%BA%8EItemCF%E7%9A%84%E6%94%B9%E8%BF%9B/" title="推荐系统：Swing-基于ItemCF的改进">
+                        <span class="hidden-mobile">推荐系统：Swing-基于ItemCF的改进</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,870 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="自己对闭包和回调函数的简单理解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="闭包与回调函数：浅薄理解">
+<meta property="og:url" content="http://example.com/2024/04/02/%E9%97%AD%E5%8C%85%E4%B8%8E%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%EF%BC%9A%E6%B5%85%E8%96%84%E7%90%86%E8%A7%A3/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="自己对闭包和回调函数的简单理解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/callback.png">
+<meta property="article:published_time" content="2024-04-02T15:52:01.000Z">
+<meta property="article:modified_time" content="2024-04-03T13:59:46.787Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="闭包">
+<meta property="article:tag" content="回调函数">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/callback.png">
+  
+  
+  
+  <title>闭包与回调函数：浅薄理解 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="闭包与回调函数：浅薄理解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-02 23:52" pubdate>
+          2024年4月2日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">闭包与回调函数：浅薄理解</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>工作之后，逐渐接触到了回调函数的应用。一开始我始终无法理解回调函数的执行顺序和意义，并且认为从可读性和执行效果上，并没有优于顺序执行的代码。不过后面对设计模式有一些了解后，对回调函数的概念大概有了一些模糊的理解，因此在这里整理一下以供学习。</p>
+<h1 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h1><p>回调函数的主要特点是，将一个函数作为参数传入另外一个函数。并且在主函数执行完之后再继续调用该函数。</p>
+<p>它和普通顺序写的函数相比有什么不同呢？在我的理解中，主要是能够有更好的扩展性。</p>
+<p>例如以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processor</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    处理数据的函数。直接在函数内部处理成功和失败的逻辑。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Processing data: <span class="hljs-subst">&#123;data&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 假设根据数据的某些属性决定是否处理成功</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">5</span>:  <span class="hljs-comment"># 假设处理条件</span><br>        processed_data = data.upper()  <span class="hljs-comment"># 模拟数据处理</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Data processed successfully: <span class="hljs-subst">&#123;processed_data&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        error_message = <span class="hljs-string">&quot;Data is too short.&quot;</span>  <span class="hljs-comment"># 错误信息</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error processing data: <span class="hljs-subst">&#123;error_message&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 调用data_processor，直接处理数据</span><br>data_processor(<span class="hljs-string">&quot;Hello World&quot;</span>)<br>data_processor(<span class="hljs-string">&quot;Hi&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>上述代码在一个顺序执行的函数中判断是否处理数据。现在换成用回调函数来执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_processor</span>(<span class="hljs-params">data, success_callback, error_callback</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    处理数据的函数。根据数据处理的结果，调用相应的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Processing data: <span class="hljs-subst">&#123;data&#125;</span>&quot;</span>)<br>    <span class="hljs-comment"># 假设我们根据数据的某些属性决定是否处理成功</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(data) &gt; <span class="hljs-number">5</span>:  <span class="hljs-comment"># 假设条件</span><br>        processed_data = data.upper()  <span class="hljs-comment"># 模拟数据处理</span><br>        success_callback(processed_data)  <span class="hljs-comment"># 调用成功的回调函数</span><br>    <span class="hljs-keyword">else</span>:<br>        error_message = <span class="hljs-string">&quot;Data is too short.&quot;</span>  <span class="hljs-comment"># 错误信息</span><br>        error_callback(error_message)  <span class="hljs-comment"># 调用错误的回调函数</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_success</span>(<span class="hljs-params">result</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    数据处理成功时的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Data processed successfully: <span class="hljs-subst">&#123;result&#125;</span>&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">on_error</span>(<span class="hljs-params">error</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    数据处理失败时的回调函数。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Error processing data: <span class="hljs-subst">&#123;error&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 调用data_processor，根据处理结果调用不同的回调函数</span><br>data_processor(<span class="hljs-string">&quot;Hello World&quot;</span>, on_success, on_error)<br>data_processor(<span class="hljs-string">&quot;Hi&quot;</span>, on_success, on_error)<br></code></pre></td></tr></table></figure>
+
+<p>这样有什么好处？</p>
+<ol>
+<li>可以灵活的修改各自情况下的回调函数，不然就需要一直在主函数中修改。</li>
+<li>所有逻辑包含在主函数中，并不利于维护。改成回调函数后，更利于调整逻辑。</li>
+</ol>
+<h2 id="异步操作"><a href="#异步操作" class="headerlink" title="异步操作"></a>异步操作</h2><p>回调函数的另一个用法是在异步编程中使用，来避免操作阻塞程序。这种用法是在一个操作完成时（例如，网络请求、读取文件等），执行后续的操作。</p>
+<p>以下是示例代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> asyncio<br><span class="hljs-keyword">import</span> aiohttp<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">fetch_data</span>(<span class="hljs-params">url</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    异步获取URL的数据</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Starting to fetch data from <span class="hljs-subst">&#123;url&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> aiohttp.ClientSession() <span class="hljs-keyword">as</span> session:<br>        <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> session.get(url) <span class="hljs-keyword">as</span> response:<br>            data = <span class="hljs-keyword">await</span> response.text()<br>            <span class="hljs-keyword">return</span> data<br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">on_data_fetched</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    模拟回调函数：数据获取后被调用</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Data fetched: &quot;</span>)<br>    <span class="hljs-built_in">print</span>(data[:<span class="hljs-number">100</span>])  <span class="hljs-comment"># 假设只打印数据的前100个字符</span><br><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    主函数，执行异步的数据获取操作，并在完成后处理数据</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    url = <span class="hljs-string">&quot;https://www.example.com&quot;</span><br>    data = <span class="hljs-keyword">await</span> fetch_data(url)<br>    <span class="hljs-keyword">await</span> on_data_fetched(data)<br><br><span class="hljs-comment"># 运行主函数</span><br>asyncio.run(main())<br></code></pre></td></tr></table></figure>
+
+<p>上述代码中，<code>on_data_fetched</code>函数在<code>fetch_data</code>函数完成后被调用。它的好处是可以在等待执行的时候运行其他的程序部分。</p>
+<h1 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h1><p>相比于回调函数，闭包这个概念更多的涉及到作用域。它允许函数访问并操作函数外部的变量。我的理解是，它的作用是创建一个定义作用域，这个作用域能够获取外部的变量。</p>
+<p>以下是一个示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">foo</span>():<br>	a = <span class="hljs-string">&#x27;free var&#x27;</span><br>	<span class="hljs-keyword">def</span> <span class="hljs-title function_">bar</span>():<br>	    <span class="hljs-built_in">print</span>(a)<br>	<span class="hljs-keyword">return</span> bar<br><br>foo()()<br><span class="hljs-comment"># free var</span><br></code></pre></td></tr></table></figure>
+
+<p>可以看到，<code>bar</code>函数能够读取到外部的<code>a</code>变量，这就是闭包。</p>
+<p>它和之前看到的装饰器有什么区别？我在查阅了一些资料后得到以下的结论：</p>
+<blockquote>
+<p>装饰器是闭包思想的一种实现。而闭包的定义是在函数内定义另一个函数。内函数能够调用外函数的临时变量。</p>
+</blockquote>
+<p>例如给一个示例闭包函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">outfun</span>(<span class="hljs-params">outNum</span>):  <br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;---start outfun---&#x27;</span>)  <br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">infun</span>(<span class="hljs-params">inNum</span>):             <br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;---start infun---&#x27;</span>)  <br>        <span class="hljs-built_in">print</span>(outNum + inNum)  <br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;---end infun---&#x27;</span>)  <br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;---end outfun---&#x27;</span>)  <br>    <span class="hljs-keyword">return</span> infun  <br><br>ret = outfun(<span class="hljs-number">10</span>)  <br>ret(<span class="hljs-number">20</span>) <br><span class="hljs-comment"># ---start outfun---  </span><br><span class="hljs-comment"># ---end outfun---  </span><br><span class="hljs-comment"># ---start infun---  </span><br><span class="hljs-comment"># 30  </span><br><span class="hljs-comment"># ---end infun--- </span><br></code></pre></td></tr></table></figure>
+
+<p>上面的<code>ret</code>本身是一个函数，它指向<code>infun()</code>，并且将其中的<code>outNum</code>定义为10。之后在调用<code>ret</code>时输入的参数则充当了<code>infun</code>的参数。</p>
+<p>我们再来示范一下装饰器的用法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_func1</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Begin func1...&#x27;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_func2</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Begin func2...&#x27;</span>)<br>    <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">check</span>(<span class="hljs-params">function</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">check_inner</span>():<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Checking Inner Function...&#x27;</span>)<br>        function()<br>  	<span class="hljs-keyword">return</span> check_inner<br><br>check_test1 = check(test_func1)<br>check_test1()<br><br><span class="hljs-comment"># 也可以用语法糖实现</span><br><span class="hljs-meta">@check</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_func1</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Begin func1...&#x27;</span>)<br><br><span class="hljs-meta">@check</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test_func2</span>():<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Begin func2...&#x27;</span>)<br><br>test_func1()<br>test_func2()<br></code></pre></td></tr></table></figure>
+
+<p>在<code>check</code>函数中，我们设定了一个内函数，它接收外部的函数作为参数，指向内部的函数。在内部函数中对外部函数进行了一系列处理。这就是装饰器的简单用法。</p>
+<p>更常用的用法是不定长参数的使用，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">deco</span>(<span class="hljs-params">func</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">new_func</span>(<span class="hljs-params">*args, **kwargs</span>):<br>        <span class="hljs-keyword">return</span> func(*args, **kwargs)<br>    <span class="hljs-keyword">return</span> new_func<br></code></pre></td></tr></table></figure>
+
+<p>以及接收参数的装饰器工厂：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">deco_factory</span>(<span class="hljs-params">*args, **kwargs</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">deco</span>(<span class="hljs-params">func</span>):<br>        <span class="hljs-built_in">print</span>(args)<br>        <span class="hljs-keyword">return</span> func<br>    <span class="hljs-keyword">return</span> deco<br><br><span class="hljs-meta">@deco_factory(<span class="hljs-params"><span class="hljs-string">&#x27;factory&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">foo</span>():<br>    <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>
+
+<p>这样就能灵活修改装饰器的方法。</p>
+<p>最后，记录一个接收参数的装饰器用法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">outer</span>(<span class="hljs-params">choose</span>): <span class="hljs-comment"># 在最外层函数中加入参数</span><br>  <span class="hljs-keyword">if</span> choose==<span class="hljs-number">1</span>: <span class="hljs-comment"># 通过choose参数，选择装饰器</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">deco</span>(<span class="hljs-params">func</span>):<br>      <span class="hljs-keyword">def</span> <span class="hljs-title function_">inner</span>(<span class="hljs-params">*arg, **kwarg</span>):<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;decoration1&#x27;</span>)<br>        begin_time = time.time()<br>        time.sleep(<span class="hljs-number">2</span>) <span class="hljs-comment"># 睡眠2s</span><br>        a = func(*arg, **kwarg) <br>        end_time = time.time()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;运行时间1：&#x27;</span>, end_time - begin_time)<br>        <span class="hljs-keyword">return</span> a<br>      <span class="hljs-keyword">return</span> inner<br>    <span class="hljs-keyword">return</span> deco<br>  <br>  <span class="hljs-keyword">else</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">deco</span>(<span class="hljs-params">func</span>):<br>      <span class="hljs-keyword">def</span> <span class="hljs-title function_">inner</span>(<span class="hljs-params">*arg, **kwarg</span>): <br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;decoration2&#x27;</span>)<br>        begin_time = time.time()<br>        time.sleep(<span class="hljs-number">5</span>) <span class="hljs-comment"># 睡眠5s</span><br>        a = func(*arg, **kwarg) <br>        end_time = time.time()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;运行时间2：&#x27;</span>, end_time - begin_time)<br>        <span class="hljs-keyword">return</span> a<br>      <span class="hljs-keyword">return</span> inner<br>    <span class="hljs-keyword">return</span> deco<br><br><span class="hljs-meta">@outer(<span class="hljs-params"><span class="hljs-number">1</span></span>) </span><span class="hljs-comment"># 由于outer中有参数，此处必须传入参数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test1</span>(<span class="hljs-params">a</span>):<br>  <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;test function1:&#x27;</span>, a)<br>  <span class="hljs-keyword">return</span> a<br><br><span class="hljs-meta">@outer(<span class="hljs-params"><span class="hljs-number">5</span></span>) </span><span class="hljs-comment"># 传入另一个参数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">test2</span>(<span class="hljs-params">a</span>):<br>  <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;test function2:&#x27;</span>, a)<br>  <span class="hljs-keyword">return</span> a<br><br><br><span class="hljs-comment"># 分别调用2个函数（2个函数装饰器相同，装饰器参数不同）</span><br>test1(<span class="hljs-number">2</span>) <span class="hljs-comment"># 调用test1</span><br>  <br>decoration1<br>test function1: <span class="hljs-number">2</span><br>运行时间<span class="hljs-number">1</span>： <span class="hljs-number">2.000072717666626</span> <span class="hljs-comment"># 2秒</span><br> <span class="hljs-comment"># test1的返回值</span><br><br>test2(<span class="hljs-number">4</span>) <span class="hljs-comment"># 调用test2</span><br>  <br>decoration2<br>test function2: <span class="hljs-number">4</span><br>运行时间<span class="hljs-number">2</span>： <span class="hljs-number">5.000797986984253</span> <span class="hljs-comment"># 5秒</span><br> <span class="hljs-comment"># test2的返回值</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p>2024&#x2F;4&#x2F;3 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="category-chain-item">工程实践</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/%E9%97%AD%E5%8C%85/" class="print-no-link">#闭包</a>
+      
+        <a href="/tags/%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0/" class="print-no-link">#回调函数</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/04/03/Yolo-v5%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9Atrain-py/" title="Yolo v5的工程代码实现：train.py">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Yolo v5的工程代码实现：train.py</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/31/LLM%E6%8E%A8%E7%90%86%E4%B8%8E%E8%AE%AD%E7%BB%83%E6%98%BE%E5%AD%98%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95/" title="LLM推理与训练显存的计算方法">
+                        <span class="hidden-mobile">LLM推理与训练显存的计算方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

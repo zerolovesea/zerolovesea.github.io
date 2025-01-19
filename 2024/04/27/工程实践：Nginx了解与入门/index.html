@@ -1,0 +1,910 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Nginx的入门教程：反向代理，负载均衡。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="工程实践：Nginx了解与入门">
+<meta property="og:url" content="http://example.com/2024/04/27/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9ANginx%E4%BA%86%E8%A7%A3%E4%B8%8E%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Nginx的入门教程：反向代理，负载均衡。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/nginx.png">
+<meta property="article:published_time" content="2024-04-27T00:13:58.000Z">
+<meta property="article:modified_time" content="2024-04-27T02:50:33.242Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="后端">
+<meta property="article:tag" content="Nginx">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/nginx.png">
+  
+  
+  
+  <title>工程实践：Nginx了解与入门 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="工程实践：Nginx了解与入门"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-04-27 08:13" pubdate>
+          2024年4月27日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">工程实践：Nginx了解与入门</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Nginx是一个Http服务器，常常被用在高并发，反向代理和负载均衡的场景下。这块内容一直没时间研究，刚好周末刷一下，恶补一下知识。</p>
+<p>我用Docker启动了Nginx容器，以下内容均在容器内实现。</p>
+<p>在启动了容器后，首先使用<code>nginx -v</code>查看版本。并用<code>service nginx status</code>来检查运行状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># nginx -v</span><br>nginx version: nginx/1.26.0<br><span class="hljs-comment"># service nginx status</span><br>nginx is running.<br></code></pre></td></tr></table></figure>
+
+<p>如果已经正确运行，这时候访问<code>localhost</code>，就能看到<code>Welcome to nginx</code>的页面。这意味着人们已经可以通过网址来访问我们的Web服务器了。</p>
+<h1 id="Nginx配置文件"><a href="#Nginx配置文件" class="headerlink" title="Nginx配置文件"></a>Nginx配置文件</h1><p>Nginx的配置文件在Linux系统下位于<code>/etc/nginx</code>，名为<code>nginx.conf</code>。我们进去看一下，这是默认的配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs bash"><br><span class="hljs-comment">#user  nobody;</span><br>worker_processes  1;<br><br><span class="hljs-comment">#error_log  logs/error.log;</span><br><span class="hljs-comment">#error_log  logs/error.log  notice;</span><br><span class="hljs-comment">#error_log  logs/error.log  info;</span><br><br><span class="hljs-comment">#pid        logs/nginx.pid;</span><br><br><br>events &#123;<br>    worker_connections  1024;<br>&#125;<br><br><br>http &#123;<br>    include       mime.types;<br>    default_type  application/octet-stream;<br><br>    <span class="hljs-comment">#log_format  main  &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br>    <span class="hljs-comment">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br>    <span class="hljs-comment">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><br>    <span class="hljs-comment">#access_log  logs/access.log  main;</span><br><br>    sendfile        on;<br>    <span class="hljs-comment">#tcp_nopush     on;</span><br><br>    <span class="hljs-comment">#keepalive_timeout  0;</span><br>    keepalive_timeout  65;<br><br>    <span class="hljs-comment">#gzip  on;</span><br><br>    server &#123;<br>        listen       80;<br>        server_name  localhost;<br><br>        <span class="hljs-comment">#charset koi8-r;</span><br><br>        <span class="hljs-comment">#access_log  logs/host.access.log  main;</span><br><br>        location / &#123;<br>            root   html;<br>            index  index.html index.htm;<br>        &#125;<br><br>        <span class="hljs-comment">#error_page  404              /404.html;</span><br><br>        <span class="hljs-comment"># redirect server error pages to the static page /50x.html</span><br>        <span class="hljs-comment">#</span><br>        error_page   500 502 503 504  /50x.html;<br>        location = /50x.html &#123;<br>            root   html;<br>        &#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>看着云里雾里，为了学习配置文件，我们备份一下，再写个新的配置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mv</span> nginx.conf nginx.conf.bak<br><span class="hljs-built_in">touch</span> nginx.conf<br></code></pre></td></tr></table></figure>
+
+<p>通常修改配置文件后，需要使用<code>nginx -t</code>来进行检查，查看是否能正确执行。不过现在是空的配置文件，会报错。</p>
+<p>报错信息提示：<code>no &quot;events&quot; section in configuration</code>。<code>events</code>字段代表<code>nginx</code>如何处理连接。</p>
+<p>我们可以修改一下内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这时候<code>nginx -t</code>不报错了。</p>
+<p>检查完文件后，就需要重新加载，指令是<code>nginx -s reload</code>。启动完之后，发现之前的<code>localhost</code>无法访问了，意料之中。</p>
+<blockquote>
+<p>好吧，并不是意料之中。我在Windows上依然访问到了<code>localhost</code>。很神奇，哪怕我把<code>nginx</code>容器关闭，依然能访问。这说明Windows上有其他进程调用了<code>nginx</code>，最后发现是<code>Docker Desktop</code>。应该是WSL里有配置<code>nginx</code>。</p>
+</blockquote>
+<p>解决了这个小插曲，后面我就不用Docker启动了。我在官网下了<code>nginx</code>的压缩包，解压后在路径下执行命令行：<code>start nginx</code>，即可启动服务。</p>
+<h1 id="Web服务器"><a href="#Web服务器" class="headerlink" title="Web服务器"></a>Web服务器</h1><p>同样备份清空，现在无法访问了。这就是<code>http</code>字段需要配置的内容：我们需要在这个字段内配置<code>server</code>，也就是http服务。例如如果服务器需要监听80端口，就这么写：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>完成这一步，reload一下发现又可以访问<code>localhost</code>了，因为这次我们准确提供了IP和端口，用户可以直接访问了。Perfecto！</p>
+<blockquote>
+<p>这里其实还有一点问题。配置文件里是需要配置资源的，正常来说未配置资源时，会报错403 Forbidden。这就是<code>nginx</code>未找到资源。而它在未设置字段时默认读取<code>html</code>路径下的<code>index.html</code>。因此，当我修改了它的名字时，页面成功报错。</p>
+</blockquote>
+<p>在<code>server</code>字段，我们不一定需要设置资源地址，还可以返回状态码和对应字段。例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>		<br>		<span class="hljs-built_in">return</span> 200 <span class="hljs-string">&#x27;egg old wet.\n&#x27;</span>;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这时候访问<code>localhost</code>，就会返回这句话。也可以通过<code>curl localhost</code>从命令行访问到这句话。</p>
+<p>配置文件中还可以设置资源根目录，我们进行如下修改，此时<code>nginx</code>就会从指定路径访问默认的<code>index.html</code>，而如果路径下没有这个文件，则会报错：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>		<br>		root C:/nginx-1.26.0/html;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果要指定文件，则需要给<code>index</code>字段进行赋值。这里我新建了一个自己页面，路径为<code>C:\nginx-1.26.0\html</code>，页面名为<code>test.html</code>。那么，配置文件这边需要改为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>		<br>		root C:/nginx-1.26.0/html;<br>		index test.html;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这时访问<code>localhost</code>，就可以正确显示了。</p>
+<p><img src="/images/091715.png" srcset="/img/loading.gif" lazyload></p>
+<p>有的时候，需要在页面文件内引入各种其他文件。在配置文件的相同路径下，有一个<code>mime.types</code>的文件，这是对于各种文件类型的解析。我们需要对它进行引入，才能让web服务器正确解析文件。因此，我们需要在配置文件中加上<code>include</code>字段：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	include mime.types; <span class="hljs-comment"># 由于是同路径，按照相对路径导入</span><br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>		<br>		root C:/nginx-1.26.0/html;<br>		index test.html;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的配置是全局配置，所以被放在了单个的<code>server</code>块外部。</p>
+<p>除了这个配置，<code>nginx</code>自身的配置在<code>conf.d</code>中的<code>default.conf</code>中定义，如果需要修改就要在那里进行改动，例如一开始默认的<code>index.html</code>就在那里设置。</p>
+<p>同样的，我们也可以把上面写的这些配置也通过一个文件进行导入。我们在<code>conf.d</code>路径下新建<code>default.conf</code>，并把内容复制其中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	root C:/nginx-1.26.0/html;<br>	index test.html;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后我们回到<code>nginx.conf</code>文件，导入这个配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	include mime.types; <span class="hljs-comment"># 由于是同路径，按照相对路径导入</span><br>	include C:/nginx-1.26.0/conf.d/*.conf <span class="hljs-comment"># 导入路径下所有conf文件</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>reload一下，就实现了将配置文件分开执行的效果，有点像编程语言的导入库。这让<code>config</code>文件更加简洁。</p>
+<p>现在，我想在<code>default.conf</code>中设定在访问<code>localhost</code>的时候，能够直接访问根目录。那么我需要在<code>default.conf</code>如下设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	location / &#123;<br>		root C:/nginx-1.26.0/html;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用这种方式可以更方便的定义路径。</p>
+<p>现在，我想在访问<code>localhost/app</code>的时候能够访问到这个路径下的index文件，因此我们需要在<code>location</code>字段加上<code>app</code>路径，即：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	location /app &#123;<br>		root C:/nginx-1.26.0/html/app; <span class="hljs-comment"># 对应的还需要新建一个app的文件夹来存放资源</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里需要注意，<code>location</code>后面的字段需要在<code>root</code>里找到一样的字段，否则<code>nginx</code>会找不到。现在，通过访问<code>localhost/app/</code>或<code>localhost/app/index.html</code>都可以访问到index页面。</p>
+<blockquote>
+<p>当我们输入<code>location /app</code>时，它就会在root路径寻找<code>app</code>为前缀的文件或URI（例如文件夹：localhost&#x2F;apple&#x2F;）。如果找不到就会报错。</p>
+</blockquote>
+<p>为了安全隐患，防止用户可以访问到路径下其他文件，我们可以指定<code>location</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	location = /app/index.html &#123;<br>		root C:/nginx-1.26.0/html/app; <span class="hljs-comment"># 对应的还需要新建一个app的文件夹来存放资源</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这时，URI和文件路径必须完全匹配才能访问，即只有访问<code>localhost/app/index.html</code>才能访问资源。</p>
+<p>此外，还可以使用正则来进行模糊匹配，例如我们的路径下有视频文件0-9.avi共九个文件，我们只想开放6-9这三个文件，就需要在<code>location</code>中设置正则表达式，只有访问指定名字的文件，才能访问到路径下的视频文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	location ~ /app/video[6-9].avi &#123;<br>		root C:/nginx-1.26.0/html/app; <span class="hljs-comment"># 对应的还需要新建一个app的文件夹来存放资源</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>有时候，我们想要隐藏真实地址，来避免用户直接访问资源，这时可以用<code>rewrite</code>的字段来进行重定向。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	root C:/nginx-1.26.0/html/app; <br>	<br>	rewrite /temp /app/index.html; <span class="hljs-comment"># temp是临时设定的路径</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时访问<code>localhost/temp</code>即可访问到资源，而且用户也不会察觉到文件在服务器的真实路径。</p>
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理区别于正向代理，是为服务器上的资源和服务代理出去，访客通过访问服务器代理的多台子服务器，就能访问到网站，这样做能够进行负载均衡，减少主服务器的负担。</p>
+<p>什么是正向代理，简单来说就是VPN，我们通过访问一个代理服务器，这个服务器代表我们去访问我们无法直连的服务器。正反代理代表的角色正好相反。</p>
+<p>下面就用<code>nginx</code>来实现一下反向代理。假如我们创建了两个服务app&#x2F;app1，分别监听3000和3001端口。此时我们需要修改配置文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	root C:/nginx-1.26.0/html/app; <br>	error_page 404 /404.html;<br>	index index.html;<br>	<br>	location /app1 &#123;<br>		proxy_pass http://localhost:3000; <span class="hljs-comment"># 对3000端口的服务进行反向代理</span><br>	&#125;<br>	<br>	location /app2 &#123;<br>		proxy_pass http://localhost:3001;<br>	&#125;	<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样，访问指定的路径，就可以访问到对应端口运行的项目的资源。例如，访问<code>localhost/app1</code>就能访问到3000端口。实战中，可以通过修改<code>server_name</code>来设置不同后端。例如改为<code>zerolovesea.com</code></p>
+<h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><p>使用<code>nginx</code>来设置负载均衡，需要在<code>http</code>块内设置<code>upstream</code>块，即上游服务器。我们修改配置文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash">upstream backend-servers &#123;<br>	server localhost:3000; <span class="hljs-comment"># 负载均衡的两个服务器</span><br>	server localhost:3001; <span class="hljs-comment"># 负载均衡的两个服务器</span><br>&#125;<br><br>server &#123;<br>	listen 80;<br>	server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>	<br>	root C:/nginx-1.26.0/html/app; <br>	error_page 404 /404.html;<br>	index index.html;<br>	<br>	location / &#123;<br>		proxy_pass http://backend-servers; <span class="hljs-comment"># 将流量引导指定服务器</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样访问<code>localhost</code>时，通过不断刷新，可以看到我们在3000和3001的服务中来回变化，这时因为服务器默认使用轮询的方式来进行负载均衡。我们可以使用<code>weight</code>字段来分配不同服务的权重占比，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">upstream backend-servers &#123;<br>	server localhost:3000 weight=2;<span class="hljs-comment"># 负载均衡的两个服务器</span><br>	server localhost:3001 weight=6; <span class="hljs-comment"># 负载均衡的两个服务器</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>2024&#x2F;4&#x2F;27 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="category-chain-item">工程实践</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/%E5%90%8E%E7%AB%AF/" class="print-no-link">#后端</a>
+      
+        <a href="/tags/Nginx/" class="print-no-link">#Nginx</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/05/02/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83%EF%BC%9A%E4%BD%BF%E7%94%A8Accelerate%E8%BF%9B%E8%A1%8C%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" title="分布式训练：使用Accelerate进行分布式训练">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">分布式训练：使用Accelerate进行分布式训练</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/04/20/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E5%AF%B9%E5%B7%B2%E6%9C%89%E7%9A%84Docker%E9%95%9C%E5%83%8F%E8%BF%9B%E8%A1%8C%E5%A2%9E%E9%87%8F%E6%9B%B4%E6%96%B0/" title="工程实践：对已有的Docker镜像进行增量更新">
+                        <span class="hidden-mobile">工程实践：对已有的Docker镜像进行增量更新</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

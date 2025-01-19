@@ -1,0 +1,1047 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="推荐算法简述，常用的评估指标，协同过滤的介绍和实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统：从协同过滤的起源">
+<meta property="og:url" content="http://example.com/2024/07/27/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9A%E4%BB%8E%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%9A%84%E8%B5%B7%E6%BA%90/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="推荐算法简述，常用的评估指标，协同过滤的介绍和实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="article:published_time" content="2024-07-27T10:30:29.000Z">
+<meta property="article:modified_time" content="2024-08-15T23:49:17.088Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="推荐系统">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
+  
+  
+  
+  <title>推荐系统：从协同过滤的起源 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="推荐系统：从协同过滤的起源"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-27 18:30" pubdate>
+          2024年7月27日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          30 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">推荐系统：从协同过滤的起源</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>相关链接：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/CRW__DREAM/article/details/124797295">推荐系统常用的评价指标_推荐系统评价指标-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/vivotech/p/16516494.html">推荐系统-协同过滤在Spark中的实现 - vivo互联网技术 - 博客园 (cnblogs.com)</a></p>
+<p>从上篇博文到现在又隔了一个月，由于工作内容的转变，转向了推荐&#x2F;风控算法，尤其是CTR模型相关，因此准备系统的学习并实现一下一些常用的推荐和分控算法。</p>
+<p>记得曾经看过一句话，推荐算法是没有Query的搜索系统，这句话非常粗略的介绍了推荐算法。正如搜索系统需要想法设法对用户的输入进行信息抽取，推荐算法的Query则是用户自身的历史行为信息和物品的信息。</p>
+<p><img src="/images/rms1.png" srcset="/img/loading.gif" lazyload alt="推荐系统分类"></p>
+<p>推荐系统最早出现在90年代，1992年出现了第一个最早的协同过滤系统，由Xerox公司帕罗奥多研究中心研发。当时需要解决的问题是员工需要对大量的邮件进行筛选分类，因此衍生出了这个系统。随着不断的发展，这个协同过滤系统逐渐发展完善，并于1998年被亚马逊公司使用于自己的网站，为用户进行商品的个性化推荐。</p>
+<p>大体上，协同过滤被分为三个子类：User based，Item based和Model based。从核心思想上来介绍协同过滤，可以用一言概括：通过分析用户或者事物之间的相似性来找到目标对象。</p>
+<h1 id="推荐系统的评估指标"><a href="#推荐系统的评估指标" class="headerlink" title="推荐系统的评估指标"></a>推荐系统的评估指标</h1><p>推荐系统和CTR模型简单可以看作是一个多目标&#x2F;单目标分类任务。推荐系统更多考虑到候选物品的排序，CTR则作为一个二分类任务，判断用户是否会点击目标物品。</p>
+<p>作为分类任务时，就可以用一些常规的评估指标对模型进行评估。</p>
+<ul>
+<li>AUC-ROC</li>
+<li>Log Loss</li>
+<li>Precsion&#x2F;Recall&#x2F;F1 Score</li>
+<li>Accuracy</li>
+</ul>
+<p>作为排序任务时，则常用以下指标：</p>
+<ul>
+<li>NDCG：对推荐结果的相关性进行排名，考虑位置的重要性。</li>
+<li>MRR（Mean Reciprocal Rank）：推荐结果中第一个相关物品的倒数平均值。</li>
+<li>MAP（Mean Average Precision）：平均精度，对推荐结果的相关性进行综合评估。</li>
+<li>Hit Rate：推荐系统的推荐物品命中率。</li>
+</ul>
+<h2 id="NDCG：评估推荐系统排序质量的指标"><a href="#NDCG：评估推荐系统排序质量的指标" class="headerlink" title="NDCG：评估推荐系统排序质量的指标"></a>NDCG：评估推荐系统排序质量的指标</h2><p>我们从NDCG的前身开始介绍。</p>
+<p>首先需要了解的相关性得分：</p>
+<p>$\text{Gain}&#x3D; \text{rel}_i$</p>
+<p>这个得分通常是人工标注或者通过用户行为得到。例如当用户点击某个推荐商品时，给商品赋予1分，未点击则为0分。如果购买则赋予2分，以此类推。也可以根据用户自己的打分来进行判断。最终会得到以下一个列表：</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Rel(i)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Item A</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Item B</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Item C</td>
+<td>2</td>
+</tr>
+</tbody></table>
+<h3 id="CG"><a href="#CG" class="headerlink" title="CG"></a>CG</h3><p>CG（Cumulative Gain）用于衡量推荐列表中的相关性之和。计算公式如下：</p>
+<p>$CG@k &#x3D; \sum_{i&#x3D;1}^{k} \text{rel}_i$</p>
+<p>其中：</p>
+<ul>
+<li><p>$k \text{ 是推荐列表的长度。}$</p>
+</li>
+<li><p>$\text{rel}_i \text{ 是第 } i \text{ 个推荐物品的相关性得分（通常由实际数据或人工标注给出）。}$</p>
+</li>
+</ul>
+<p>CG只是单纯的累加相关性，不考虑他们之间的排序。我们以上面的列表举例：</p>
+<p>如果我们有两个推荐列表：</p>
+<ul>
+<li>List 1 &#x3D; [A, B, C]</li>
+<li>List 2 &#x3D; [C, A, B]</li>
+</ul>
+<p>他们的CG得分都是A, B, C的相关性得分相加。最终得分为$1+3+2&#x3D;6$。由于不考虑排序的影响，他们的得分是一样的。</p>
+<h3 id="DCG"><a href="#DCG" class="headerlink" title="DCG"></a>DCG</h3><p>如果我们想要考虑排序的因素，使得高排名的物品权重更高，对排名靠后的物品扣分，这时候可以使用DCG作为指标。它的计算方式是在每个CG的结果上除以一个折损值，这样能让排名靠前的结果更加能影响到最终的结果。假设排序越靠后，价值越低，那么到第$i$个位置时，价值为$\frac{1}{log_{2}(i+1)}$，那么第$i$个结果的效益值是$rek_{i}*{\frac{1}{log_{2}(i+1)}}$。</p>
+<p>$DCG_p &#x3D; \sum_{i&#x3D;1}^{p} \frac{2^{\text{rel}_i} - 1}{\log_2(i + 1)}$</p>
+<p>在同样上面的例子中：</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Rel(i)</th>
+<th>Position (i)</th>
+<th>Contribution to DCG</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Item A</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Item B</td>
+<td>3</td>
+<td>2</td>
+<td>$\frac{3}{\log_2(3)} \approx 1.893$</td>
+</tr>
+<tr>
+<td>Item C</td>
+<td>2</td>
+<td>3</td>
+<td>$\frac{2}{\log_2(4)}&#x3D;1$</td>
+</tr>
+</tbody></table>
+<h3 id="NDCG"><a href="#NDCG" class="headerlink" title="NDCG"></a>NDCG</h3><p>最后就到了NDCG，他是DCG进行了归一化。不过因为两边的检索结果的列表长度可能不一样，所有没法针对两个不同的检索结果进行归一化，这里是除以IDCG。</p>
+<p>IDCG是理想情况下的DCG最大的值，即推荐的最佳排序顺序，根据相关性从高到低排列。</p>
+<p>最终的公式是：$NDCG_{p}&#x3D;\frac{DCG}{IDCG_{p}}$</p>
+<p>这样计算后，NDCG作为一个相对值，不同长度的检索就可以进行比较了。</p>
+<h1 id="基于用户的协同过滤"><a href="#基于用户的协同过滤" class="headerlink" title="基于用户的协同过滤"></a>基于用户的协同过滤</h1><p><img src="/images/usercf1.png" srcset="/img/loading.gif" lazyload></p>
+<p>基于用户的协同过滤简称UserCF，核心是推荐与用户相似的用户喜欢的物品。简单来说，$n$个用户对$m$个物体的打分会成为一个$n*m$的User-Item矩阵。每个用户都是一个$m$维向量，这样就可以通过计算相似度来计算不同用户之间的相似度。最终能够得到一个下三角矩阵，其中包含了每个用户两两之间的相似度。使用较多的是余弦相似度。</p>
+<p>在实际环境中，用户&#x2F;物品评分矩阵是一个稀疏矩阵。</p>
+<p>UserCF的核心是计算用户相似度，完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> sklearn.metrics.pairwise <span class="hljs-keyword">import</span> cosine_similarity<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">UserBasedCF</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, ratings, k=<span class="hljs-number">2</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">		初始化UserCF模型</span><br><span class="hljs-string">		</span><br><span class="hljs-string">		入参：</span><br><span class="hljs-string">		ratings：二维评分矩阵</span><br><span class="hljs-string">		k：最近邻用户数</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        self.ratings = ratings<br>        self.k = k<br>        self.user_similarity = self.calculate_user_similarity()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">calculate_user_similarity</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        计算用户相似度</span><br><span class="hljs-string">        </span><br><span class="hljs-string">        返回：</span><br><span class="hljs-string">        用户相似度的二维数组</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">return</span> cosine_similarity(self.ratings)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">predict_rating</span>(<span class="hljs-params">self, user_index, item_index</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        为特定用户计算特定物体的打分</span><br><span class="hljs-string"></span><br><span class="hljs-string">		入参：</span><br><span class="hljs-string">		user_index：用户的索引</span><br><span class="hljs-string">		item_index：物品的索引</span><br><span class="hljs-string">        </span><br><span class="hljs-string">		返回：</span><br><span class="hljs-string">		预测得分</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-comment"># 首先根据用户相似度得到最相似的k个用户，并去除自身</span><br>        similar_users = np.argsort(self.user_similarity[user_index])[-self.k:]<br>        similar_users = similar_users[similar_users != user_index]<br>        <br>        numerator = <span class="hljs-number">0</span><br>        denominator = <span class="hljs-number">0</span><br>        <br>        <span class="hljs-comment"># 找到相似用户</span><br>        <span class="hljs-keyword">for</span> neighbor <span class="hljs-keyword">in</span> similar_users:<br>            <span class="hljs-keyword">if</span> self.ratings[neighbor, item_index] &gt; <span class="hljs-number">0</span>:<br>                <span class="hljs-comment"># 分子是相似用户对物品的评分*相似度</span><br>                numerator += self.user_similarity[user_index, neighbor] * self.ratings[neighbor, item_index]<br>                <span class="hljs-comment"># 分母是用户相似度之和</span><br>                denominator += <span class="hljs-built_in">abs</span>(self.user_similarity[user_index, neighbor])<br>        <br>        <span class="hljs-keyword">if</span> denominator == <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-comment"># 返回分子/分母</span><br>            <span class="hljs-keyword">return</span> numerator / denominator<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">recommend</span>(<span class="hljs-params">self, user_index, num_recommendations=<span class="hljs-number">5</span></span>):<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        为用户推荐具体物品</span><br><span class="hljs-string">        </span><br><span class="hljs-string">        入参：</span><br><span class="hljs-string">        user_index：用户索引</span><br><span class="hljs-string">        num_recommendations：推荐物品个数</span><br><span class="hljs-string">		</span><br><span class="hljs-string">	    返回：</span><br><span class="hljs-string">        推荐物品的索引列表</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        user_ratings = self.ratings[user_index]<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;用户<span class="hljs-subst">&#123;user_index&#125;</span>的评分：<span class="hljs-subst">&#123;user_ratings&#125;</span>&#x27;</span>)<br>        item_indices = np.where(user_ratings == <span class="hljs-number">0</span>)[<span class="hljs-number">0</span>]<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;用户<span class="hljs-subst">&#123;user_index&#125;</span>未评分的物品：<span class="hljs-subst">&#123;item_indices&#125;</span>&#x27;</span>)<br>        <br>        predictions = np.array([self.predict_rating(user_index, item) <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> item_indices])<br>        recommended_items = item_indices[np.argsort(predictions)[-num_recommendations:]]<br>        <br>        <span class="hljs-keyword">return</span> recommended_items<br>        <br>        predictions = np.array([self.predict_rating(user_index, item) <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> item_indices])<br>        recommended_items = item_indices[np.argsort(predictions)[-num_recommendations:]]<br>        <br>        <span class="hljs-keyword">return</span> recommended_items<br></code></pre></td></tr></table></figure>
+
+<p>现在，我们有一个用户-物品评分矩阵，每行都是一个用户对所有物品的打分：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 示例数据：用户-物品评分矩阵</span><br>ratings_matrix = np.array([<br>    [<span class="hljs-number">4</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>, <span class="hljs-number">1</span>],<br>    [<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>],<br>    [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">0</span>],<br>    [<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">4</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>],<br>    [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>, <span class="hljs-number">4</span>]<br>])<br></code></pre></td></tr></table></figure>
+
+<p>我们想要得到用户0的推荐产品：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 初始化并使用User-based CF模型</span><br>user_cf = UserBasedCF(ratings_matrix, k=<span class="hljs-number">2</span>)<br><br><span class="hljs-comment"># 为用户0推荐物品</span><br>recommendations = user_cf.recommend(<span class="hljs-number">0</span>, num_recommendations=<span class="hljs-number">2</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Recommendations for user 0: <span class="hljs-subst">&#123;recommendations&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 预测用户0对物品1的评分</span><br>predicted_rating = user_cf.predict_rating(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Predicted rating for user 0 on item 1: <span class="hljs-subst">&#123;predicted_rating:<span class="hljs-number">.2</span>f&#125;</span>&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>首先实例化模型，需要计算用户相似度。这个相似度被保存在<code>user_cf.user_similarity</code>变量中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">user_cf.user_similarity <br><br>array([[<span class="hljs-number">1.</span>        , <span class="hljs-number">0.37986859</span>, <span class="hljs-number">0.48196269</span>, <span class="hljs-number">0.40875956</span>, <span class="hljs-number">0.6988459</span> ],<br>       [<span class="hljs-number">0.37986859</span>, <span class="hljs-number">1.</span>        , <span class="hljs-number">0.38447322</span>, <span class="hljs-number">0.99453584</span>, <span class="hljs-number">0.</span>        ],<br>       [<span class="hljs-number">0.48196269</span>, <span class="hljs-number">0.38447322</span>, <span class="hljs-number">1.</span>        , <span class="hljs-number">0.4137144</span> , <span class="hljs-number">0.48780488</span>],<br>       [<span class="hljs-number">0.40875956</span>, <span class="hljs-number">0.99453584</span>, <span class="hljs-number">0.4137144</span> , <span class="hljs-number">1.</span>        , <span class="hljs-number">0.</span>        ],<br>       [<span class="hljs-number">0.6988459</span> , <span class="hljs-number">0.</span>        , <span class="hljs-number">0.48780488</span>, <span class="hljs-number">0.</span>        , <span class="hljs-number">1.</span>        ]])<br></code></pre></td></tr></table></figure>
+
+<p>输出是一个共轭矩阵，可以看到用户0和用户2&#x2F;用户4的相似度最高。</p>
+<p>现在我们想找到对用户0的2个推荐物品。首先需要找到用户评分的物品和未评分的物品：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python">user_ratings = self.ratings[user_index]<br><span class="hljs-comment"># 用户0的评分：[4 0 0 5 1]</span><br>item_indices = np.where(user_ratings == <span class="hljs-number">0</span>)[<span class="hljs-number">0</span>]<br><span class="hljs-comment"># 用户0未评分的物品：[1 2]</span><br></code></pre></td></tr></table></figure>
+
+<p>现在就需要对用户0未评分的物品进行预测打分，来判断用户是否会喜欢。</p>
+<p>要进行打分，就需要找到用户最相似的k个用户。这里k设置为2。根据前面计算得到相似用户是2和4。随后根据用户2，4对物品1，2的打分预测目标用户的打分。</p>
+<p>我们需要遍历每个邻居，找到当前邻居对需要计算的物品的打分。如果分数不为0，则将分子设为用户相似度*用户对物品评分的加和，而分母设置为用户相似度的绝对值之和（用于归一化分子的加权和），最后得到的预测得分是相似用户的评分的加权得分。</p>
+<blockquote>
+<p>分母设置为相似度的绝对值之和是为了防止出现负数之后使得分母为0。</p>
+</blockquote>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>假设用户$u$的相似邻居 $Nu$有以下相似度和评分：</p>
+<table>
+<thead>
+<tr>
+<th>用户 $v$</th>
+<th>相似度 $s(u,v)$</th>
+<th>评分 $r_{vi}$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>用户 1</td>
+<td>0.9</td>
+<td>4</td>
+</tr>
+<tr>
+<td>用户 2</td>
+<td>-0.8</td>
+<td>3</td>
+</tr>
+<tr>
+<td>用户 3</td>
+<td>0.7</td>
+<td>5</td>
+</tr>
+</tbody></table>
+<p>计算预测评分：</p>
+<ol>
+<li><strong>分子</strong>：$(0.9×4)+(−0.8×3)+(0.7×5)&#x3D;3.6−2.4+3.5&#x3D;4.7$</li>
+<li><strong>分母</strong>：$∣0.9∣+∣−0.8∣+∣0.7∣&#x3D;0.9+0.8+0.7&#x3D;2.4$</li>
+<li><strong>预测得分</strong>：$\frac{2.4}{4.7}≈1.96$</li>
+</ol>
+<h2 id="UserCF的不足"><a href="#UserCF的不足" class="headerlink" title="UserCF的不足"></a>UserCF的不足</h2><p>UserCF存在一些不足：</p>
+<ol>
+<li>物体过多导致的稀疏矩阵问题，很多用户可能接触不到百分之一的物品。</li>
+<li>用户增长比物品增长快的时候需要频繁维护相似度矩阵，对存储要求非常大，尤其是高用户的场景。</li>
+</ol>
+<h1 id="基于物品的协同过滤"><a href="#基于物品的协同过滤" class="headerlink" title="基于物品的协同过滤"></a>基于物品的协同过滤</h1><p>相比UserCF，ItemCF被工业界应用的更多，例如此前亚马逊，Netflix和Youtube都使用过它。例如在电商平台某个商品下，会推荐<code>类似商品</code>，或者<code>购买此商品的用户还看过</code>这样的标签。背后用的就是ItemCF。</p>
+<p>流程与UserCF类似。基本思想是根据用户的历史偏好数据计算物品之间的相似性，然后把与用户喜欢的物品相类似的物品推荐给用户。比如物品A和C非常相似，因为喜欢A的用户同时也喜欢C，而用户甲喜欢A，所以把C推荐给用户甲。</p>
+<p>一言概况：喜欢某个物品的用户，也可能喜欢和该物品类似的物品。举一个例子：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Item 1</th>
+<th>Item 2</th>
+<th>Item 3</th>
+<th>Item 4</th>
+<th>Item 5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>User 1</td>
+<td>5</td>
+<td>3</td>
+<td>4</td>
+<td>4</td>
+<td></td>
+</tr>
+<tr>
+<td>User 2</td>
+<td>3</td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>User 3</td>
+<td>4</td>
+<td>3</td>
+<td>4</td>
+<td>3</td>
+<td>5</td>
+</tr>
+<tr>
+<td>User 4</td>
+<td>3</td>
+<td>3</td>
+<td>1</td>
+<td>5</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<p>现在我们想预测User 1对Item 5的打分，就需要：</p>
+<ol>
+<li>计算Item 5和其他Item的相似度</li>
+<li>找到和Item 5最相近的k个物品</li>
+<li>根据User 1和最相近的k个物品的打分计算Item 5的得分</li>
+</ol>
+<p>示例代码和之前类似：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> sklearn.metrics.pairwise <span class="hljs-keyword">import</span> cosine_similarity<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ItemBasedCF</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, ratings, k=<span class="hljs-number">5</span></span>):<br>        self.ratings = ratings<br>        self.k = k<br>        self.item_similarity = self.calculate_item_similarity()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">calculate_item_similarity</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> cosine_similarity(self.ratings.T)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">predict_rating</span>(<span class="hljs-params">self, user_index, item_index</span>):<br>        similar_items = np.argsort(self.item_similarity[item_index])[-(self.k+<span class="hljs-number">1</span>):]<br>        similar_items = similar_items[similar_items != item_index]<br>        <br>        numerator = <span class="hljs-number">0</span><br>        denominator = <span class="hljs-number">0</span><br>        <br>        <span class="hljs-keyword">for</span> neighbor <span class="hljs-keyword">in</span> similar_items:<br>            <span class="hljs-keyword">if</span> self.ratings[user_index, neighbor] &gt; <span class="hljs-number">0</span>:<br>                numerator += self.item_similarity[item_index, neighbor] * self.ratings[user_index, neighbor]<br>                denominator += <span class="hljs-built_in">abs</span>(self.item_similarity[item_index, neighbor])<br>        <br>        <span class="hljs-keyword">if</span> denominator == <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">return</span> numerator / denominator<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">recommend</span>(<span class="hljs-params">self, user_index, num_recommendations=<span class="hljs-number">5</span></span>):<br>        user_ratings = self.ratings[user_index]<br>        item_indices = np.where(user_ratings == <span class="hljs-number">0</span>)[<span class="hljs-number">0</span>]<br>        <br>        predictions = np.array([self.predict_rating(user_index, item) <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> item_indices])<br>        recommended_items = item_indices[np.argsort(predictions)[-num_recommendations:]]<br>        <br>        <span class="hljs-keyword">return</span> recommended_items<br></code></pre></td></tr></table></figure>
+
+<p>同样的，先计算物品相似度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python">item_cf.item_similarity<br><br>array([[<span class="hljs-number">1.</span>        , <span class="hljs-number">0.86506475</span>, <span class="hljs-number">0.65215465</span>, <span class="hljs-number">0.3030303</span> , <span class="hljs-number">0.11941629</span>],<br>       [<span class="hljs-number">0.86506475</span>, <span class="hljs-number">1.</span>        , <span class="hljs-number">0.74468592</span>, <span class="hljs-number">0.</span>        , <span class="hljs-number">0.</span>        ],<br>       [<span class="hljs-number">0.65215465</span>, <span class="hljs-number">0.74468592</span>, <span class="hljs-number">1.</span>        , <span class="hljs-number">0.32607733</span>, <span class="hljs-number">0.</span>        ],<br>       [<span class="hljs-number">0.3030303</span> , <span class="hljs-number">0.</span>        , <span class="hljs-number">0.32607733</span>, <span class="hljs-number">1.</span>        , <span class="hljs-number">0.74635179</span>],<br>       [<span class="hljs-number">0.11941629</span>, <span class="hljs-number">0.</span>        , <span class="hljs-number">0.</span>        , <span class="hljs-number">0.74635179</span>, <span class="hljs-number">1.</span>        ]])<br></code></pre></td></tr></table></figure>
+
+<p>可以看到Item 5和Item 4最相似。随后计算得分的时候，分母是最相似的物品的用户打分*相似度，分母同样是相似度的绝对值加和。</p>
+<h1 id="工业离线计算的技巧"><a href="#工业离线计算的技巧" class="headerlink" title="工业离线计算的技巧"></a>工业离线计算的技巧</h1><p>在实际工业中，如果要计算完整的物品相似度，计算量过大，因此需要用一些trick。通过将余弦相似度公式展开后发现，只有当用户A对需要对比的两个物品都打分时，相似度才不为0。因此在计算时需要对这些稀疏数据进行过滤。</p>
+<h1 id="协同过滤的问题"><a href="#协同过滤的问题" class="headerlink" title="协同过滤的问题"></a>协同过滤的问题</h1><p>协同过滤的经典问题就是稀疏性问题，由于超过百分之80的数据都可能是Nan，数据质量并不好。</p>
+<p>另一个问题是无法捕捉到物品本身的信息，仅仅使用了用户与物品的交互信息，而放弃了用户特征，物品特征，为了解决这个问题，工业界逐渐转向了使用逻辑回归之流的算法。</p>
+<p>此外，热门的物品会和大量其他的物品出现相似性，这不是因为它们本身相似，只是因为它经常被购买。为了解决这个问题，出现了MF算法，使用隐向量表示物品。</p>
+<p>第三个问题就是冷启动问题，对于没有历史信息的用户，找不到相似的用户进行推荐。</p>
+<p>为了解决这几个问题，需要对一些热门物品进行惩罚，例如对热门商品或者活跃用户进行惩罚。</p>
+<h1 id="什么时候用UserCF-ItemCF？"><a href="#什么时候用UserCF-ItemCF？" class="headerlink" title="什么时候用UserCF&#x2F;ItemCF？"></a>什么时候用UserCF&#x2F;ItemCF？</h1><p>摘抄一下：</p>
+<ul>
+<li><p>UserCF 由于是基于用户相似度进行推荐， 所以具备更强的社交特性， 这样的特点非常适于用户少， 物品多， 时效性较强的场合， 比如<strong>新闻推荐场景</strong>， 因为新闻本身兴趣点分散， 相比用户对不同新闻的兴趣偏好， 新闻的及时性，热点性往往更加重要， 所以正好适用于发现热点，跟踪热点的趋势。 另外还具有推荐新信息的能力， 更有可能发现惊喜, 因为看的是人与人的相似性, 推出来的结果可能更有惊喜，可以发现用户潜在但自己尚未察觉的兴趣爱好。</p>
+<p>对于用户较少， 要求时效性较强的场合， 就可以考虑UserCF。</p>
+</li>
+<li><p>ItemCF 这个更适用于兴趣变化较为稳定的应用， 更接近于个性化的推荐， 适合物品少，用户多，用户兴趣固定持久， 物品更新速度不是太快的场合， 比如推荐艺术品， 音乐， 电影。</p>
+</li>
+</ul>
+<p>2024&#x2F;7&#x2F;28 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/07/30/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%EF%BC%9ASwing-%E5%9F%BA%E4%BA%8EItemCF%E7%9A%84%E6%94%B9%E8%BF%9B/" title="推荐系统：Swing-基于ItemCF的改进">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">推荐系统：Swing-基于ItemCF的改进</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/06/30/SyncTV-Alist-%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%A7%82%E5%BD%B1%E5%BD%B1%E9%99%A2/" title="SyncTV+AList+阿里云盘搭建服务器同步观影影院">
+                        <span class="hidden-mobile">SyncTV+AList+阿里云盘搭建服务器同步观影影院</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

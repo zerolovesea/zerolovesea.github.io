@@ -1,0 +1,923 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Python中的消息队列系统Celery上手。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python消息队列：Celery上手">
+<meta property="og:url" content="http://example.com/2024/05/25/Python%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%EF%BC%9ACelery%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Python中的消息队列系统Celery上手。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/celery.png">
+<meta property="article:published_time" content="2024-05-25T13:53:53.000Z">
+<meta property="article:modified_time" content="2024-06-01T11:15:26.074Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="工程实践">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="Celery">
+<meta property="article:tag" content="消息队列">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/celery.png">
+  
+  
+  
+  <title>Python消息队列：Celery上手 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Python消息队列：Celery上手"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-25 21:53" pubdate>
+          2024年5月25日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Python消息队列：Celery上手</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>上一篇博文里，实现了一个异步任务的场景：调用web服务之后立刻返回结果，后台则继续执行这个任务。这是我工作中的一个真实需求，当我费劲巴拉把这个功能写完之后，我才了解到有一个现成的工具能够实现这个功能，这就是今天要学习的Celery。</p>
+<blockquote>
+<p>Celery是一个简单，灵活、可靠的分布式任务执行框架，可以支持大量任务的并发执行。Celery采用典型生产者和消费者模型。生产者提交任务到任务队列，众多消费者从任务队列中取任务执行。</p>
+</blockquote>
+<p>生产者和消费者模型是一种设计模式，在这种设计模式中，生产者和消费者分别是任务的发布者和任务的获取者，他们没有直接的关联，之间的交流通过中间人(Broker，也称为消息队列)完成。</p>
+<p>在这个过程中，生产者像悬赏榜上的贴告示人一样，将任务发布在消息队列中，任务在任务队列中依次执行后，将结果发送给消费者。在生产环境中，任务队列通常用Redis或RabbitMQ实现。</p>
+<p><img src="/images/celery.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="实际场景"><a href="#实际场景" class="headerlink" title="实际场景"></a>实际场景</h1><p>Celery的实际场景在日常生活中经常出现：</p>
+<p>例如Web应用中，当用户触发了一个需要长时间执行的操作时（高计算&#x2F;高IO等会造成阻塞的任务），可以把它作为任务交给Celery去异步执行，执行完再返回给用户。这段时间用户不需要等待。</p>
+<p>对于用户来说，他点击了执行按钮后，得到了一个任务ID，而程序在后台执行，用户只需要等一段时间，通过任务ID拿到任务的执行结果。</p>
+<p>还有一个场景是定时任务：例如需要定时向一些地址发布邮件。</p>
+<blockquote>
+<p>上手代码之前，我发现了大坑，在我的Windows机器上运行Celery程序时，始终报错<code>[ValueError: not enough values to unpack]</code>，起初我以为是代码逻辑的问题，最终发现是Celery的最新版暂时不支持Windows，可以使用WSL或者<code>celery -A my_project_name worker --pool=solo -l info</code>执行。后者的话就意味着单线程执行代码。</p>
+</blockquote>
+<h1 id="最简单的案例"><a href="#最简单的案例" class="headerlink" title="最简单的案例"></a>最简单的案例</h1><p>首先是一个最简单的案例：我们有个计算的程序，负责将输入的两个数字相加，得到结果。为了模拟高计算量的程序，我们在计算时加上sleep2秒。</p>
+<p>现在，我们想让用户在执行该程序时，程序不会因为sleep的两秒而阻塞，而是会在后台执行。这个过程我们放在队列里。要完成这一点，我们要实现以下几个内容：</p>
+<ol>
+<li>我们需要实现本地的一个消息代理Broker，例如Redis</li>
+<li>我们需要实现一个生产者程序，负责生成任务并发送到消息代理。</li>
+<li>需要实现一个消费者程序，负责从消息队列中接收任务并执行它们。</li>
+</ol>
+<p>在这个过程中，生产者不负责执行程序，只负责发布任务。</p>
+<p>以下是代码的实现：</p>
+<hr>
+<p>首先我们用Docker在本地的6379端口启动redis服务，此处不赘述。</p>
+<p>消费者程序，我们命名为<code>tasks.py</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> celery <span class="hljs-keyword">import</span> Celery<br> <br>broker = <span class="hljs-string">&#x27;redis://127.0.0.1:6379&#x27;</span><br>backend = <span class="hljs-string">&#x27;redis://127.0.0.1:6379/0&#x27;</span><br> <br>app = Celery(<span class="hljs-string">&#x27;my_task&#x27;</span>, broker=broker, backend=backend)<br> <br><span class="hljs-meta">@app.task</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">x, y</span>):<br>    time.sleep(<span class="hljs-number">2</span>)     <span class="hljs-comment"># 模拟耗时操作</span><br>    <span class="hljs-keyword">return</span> x + y<br></code></pre></td></tr></table></figure>
+
+<p>消费者程序里定义了消息代理和结果后端，两个都是用<code>redis</code>实现的。顾名思义，一个用来连接消息队列，一个用来存储结果。</p>
+<p>首先创建了一个Celery实例，名为<code>my_task</code>。<code>@app.task</code>是一个装饰器，将被装饰的函数注册为Celery任务。这样这个函数就能被异步调用了。</p>
+<p>生产者程序，命名为<code>client.py</code>，负责发布任务。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tasks <span class="hljs-keyword">import</span> add<br> <br><span class="hljs-comment"># 异步任务</span><br>add.delay(<span class="hljs-number">2</span>, <span class="hljs-number">8</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;hello world&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>生产者中，首先导入了来源于消费者的<code>add</code>函数。<code>add</code>函数经过了<code>@app.task</code>的包装，变成了一个<code>Celery</code>任务。这时候我们就可以通过<code>delay</code>方法来异步执行它，并传入两个参数2，8。</p>
+<p>当执行异步任务的时候，程序不会干等两秒返回结果，而是马上执行下面的<code>print(&#39;hello world&#39;)</code>。而<code>add</code>的结果会在后台计算并返回。</p>
+<p>如何执行他们呢？首先需要在命令行执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">celery -A tasks worker --pool=solo -l info<br></code></pre></td></tr></table></figure>
+
+<p>这是启动了一个Celery工作进程来监听队列，并执行任务。<code>-A</code>代表应用的模块名来自于<code>tasks.py</code>，<code>worker</code>表示要启动工作进程，<code>loglevel</code>则表示日志级别。</p>
+<p>启动后能看到成功连接的日志：</p>
+<p><img src="/images/celery1.png" srcset="/img/loading.gif" lazyload></p>
+<p>这时我们在另一个命令行执行<code>python client.py</code>。命令行会马上返回<code>hello world</code>。此时程序会在后台执行，可以在Celery进程的后台看到接收和执行的结果。</p>
+<p><img src="/images/celery2.png" srcset="/img/loading.gif" lazyload></p>
+<p>这样就实现了一个最简单的用例。</p>
+<h2 id="app-task装饰器"><a href="#app-task装饰器" class="headerlink" title="app.task装饰器"></a>app.task装饰器</h2><p><code>@app.task</code>是一个装饰器，用于将程序包装成Celery的实例，其中有几个需要注意的点。</p>
+<ul>
+<li>如果程序本身有多个装饰器，那么<code>app.task</code>必须在最后一个，也就是最上面的那个装饰器。</li>
+<li><code>app.task</code>包含了一个参数<code>bind</code>，意为绑定方法。如果需要访问当前任务请求的信息，或者添加到自定义的任务基类，就需要设置为True。例如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@app.task(<span class="hljs-params">bind=<span class="hljs-literal">True</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">self, x, y</span>):<br>    <span class="hljs-built_in">print</span>(self.request.<span class="hljs-built_in">id</span>)<br></code></pre></td></tr></table></figure>
+
+<p>此时程序的第一个参数必须是任务实例，不然拿不到任务id。</p>
+<ul>
+<li><code>app.task</code>装饰器支持为每个任务都设置一个名称，再未设置的情况下，默认为<code>任务模块.任务名称</code>。例如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@app.task(<span class="hljs-params">name=<span class="hljs-string">&#x27;tasks.add&#x27;</span></span>) </span><span class="hljs-comment"># 不显式设置的话也为task.add</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">x, y</span>): <br>    <span class="hljs-keyword">return</span> x + y<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>app.task</code>装饰器支持<code>retry</code>，这意味着当报错的时候，可以使用实例的<code>retry</code>方法，例如：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@app.task(<span class="hljs-params">bind=<span class="hljs-literal">True</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">send_twitter_status</span>(<span class="hljs-params">self, oauth, tweet</span>):<br>    <span class="hljs-keyword">try</span>:<br>        twitter = Twitter(oauth)<br>        twitter.update_status(tweet)<br>    <span class="hljs-keyword">except</span> (Twitter.FailWhaleError, Twitter.LoginError) <span class="hljs-keyword">as</span> exc:<br>        <span class="hljs-keyword">raise</span> self.retry(exc=exc)<br></code></pre></td></tr></table></figure>
+
+<p>或者一种更方便的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@app.task(<span class="hljs-params">autoretry_for=(<span class="hljs-params">FailWhaleError,</span>),</span></span><br><span class="hljs-params"><span class="hljs-meta">          retry_kwargs=&#123;<span class="hljs-string">&#x27;max_retries&#x27;</span>: <span class="hljs-number">5</span>&#125;</span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">refresh_timeline</span>(<span class="hljs-params">user</span>):<br>    <span class="hljs-keyword">return</span> twitter.refresh_timeline(user)<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="Delay方法"><a href="#Delay方法" class="headerlink" title="Delay方法"></a>Delay方法</h2><p>Cellery提供的<code>delay</code>方法是异步执行的一个接口，它是另外一个接口<code>apply_async</code>的封装。执行后它们会返回一个<code>AsyncResult</code>的实例，这个实例用来跟踪任务的状态，backend就是用来存储这个的。</p>
+<h2 id="结果的获取"><a href="#结果的获取" class="headerlink" title="结果的获取"></a>结果的获取</h2><p>我们可以在上面的代码里直接获取结果以及任务相关的信息。如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tasks <span class="hljs-keyword">import</span> add<br> <br><span class="hljs-comment"># 异步任务</span><br>res = add.delay(<span class="hljs-number">2</span>, <span class="hljs-number">8</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;hello world&#x27;</span>)<br><br>res.get(timeout=<span class="hljs-number">1</span>) <span class="hljs-comment"># 10，如果出现报错会将调用栈返回</span><br>res.<span class="hljs-built_in">id</span> <span class="hljs-comment"># 获取任务id</span><br>res.get(propagate=<span class="hljs-literal">False</span>) <span class="hljs-comment"># 10，但是不返回报错信息</span><br>res.state <span class="hljs-comment"># 任务状态，包含PENDING/STARTED/SUCCESS/FAILURE等</span><br></code></pre></td></tr></table></figure>
+
+<p>我们在这里直接获取结果，实际上有点像顺序执行。如果我们拿到了任务id，需要有另外一个服务去查看任务状态要怎么做呢？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tasks <span class="hljs-keyword">import</span> app <span class="hljs-comment"># 先导入Celery实例</span><br><br>res = app.AsyncResult(<span class="hljs-string">&#x27;given-task-id&#x27;</span>) <span class="hljs-comment"># 这时候就可以和上面一样获取任务结果了</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="构建链"><a href="#构建链" class="headerlink" title="构建链"></a>构建链</h1><p>和Langchain一样，Celery也支持链式调用。例如如果需要在一个任务返回后调用另外一个任务。这时就涉及到签名。所谓签名，就是将一个任务的执行选项和参数进行打包，例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">add.signature((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>), countdown=<span class="hljs-number">10</span>) <span class="hljs-comment"># 为add任务增加了2，2的参数，和倒计时10秒的执行选项</span><br><br>add.s(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>) <span class="hljs-comment"># 简写</span><br></code></pre></td></tr></table></figure>
+
+<p>对于上面这个签名，也可以直接执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">s1 = add.s(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>)<br>res = s1.delay()<br>res.get()<br></code></pre></td></tr></table></figure>
+
+<p>如果使用链的话是这样的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> celery <span class="hljs-keyword">import</span> chain<br><span class="hljs-keyword">from</span> tasks <span class="hljs-keyword">import</span> add, multiply<br><br><span class="hljs-comment"># (4 + 4) * 8</span><br>chain(add.s(<span class="hljs-number">4</span>,<span class="hljs-number">4</span>) | multiply.s(<span class="hljs-number">8</span>))().get()<br></code></pre></td></tr></table></figure>
+
+<h1 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h1><p>Celery支持路由，也就是根据名称将结果发到不同队列：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">app.conf.update(<br>    task_routes = &#123;<br>        <span class="hljs-string">&#x27;tasks.add&#x27;</span>: &#123;<span class="hljs-string">&#x27;queue&#x27;</span>: <span class="hljs-string">&#x27;add_queue&#x27;</span>&#125;,<br>    &#125;,<br>)<br></code></pre></td></tr></table></figure>
+
+<p>在执行时，在<code>apply_async</code>方法中加入<code>queue</code>参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> tasks <span class="hljs-keyword">import</span> add<br>add.apply_async((<span class="hljs-number">2</span>, <span class="hljs-number">2</span>), queue=<span class="hljs-string">&#x27;add_queue&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>并在执行时使用<code>-Q</code>来选择队列：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">celery -A tasks worker -Q add_queue<br></code></pre></td></tr></table></figure>
+
+<h2 id="读取配置文件"><a href="#读取配置文件" class="headerlink" title="读取配置文件"></a>读取配置文件</h2><p>在上面的程序中，Broker和Backend的配置写在程序中，但是也可以写成配置文件，用<code>app</code>的<code>config_from_object</code>方法来加载配置。注意配置文件需要和启动文件放在同一路径下。例如：</p>
+<p>在项目路径下创建<code>celery_config.py</code>，内容为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> timedelta<br><span class="hljs-keyword">from</span> celery.schedules <span class="hljs-keyword">import</span> crontab<br><br>broker_url = <span class="hljs-string">&#x27;redis://127.0.0.1:6379&#x27;</span>               <span class="hljs-comment"># 指定 Broker</span><br>result_backend = <span class="hljs-string">&#x27;redis://127.0.0.1:6379/0&#x27;</span>  <span class="hljs-comment"># 指定 Backend</span><br>broker_connection_retry_on_startup = <span class="hljs-literal">True</span><br><br>imports = (                                  <span class="hljs-comment"># 指定导入的任务模块</span><br>    <span class="hljs-string">&#x27;tasks&#x27;</span>,<br>)<br></code></pre></td></tr></table></figure>
+
+<p>相应的，<code>tasks.py</code>也要修改一下，修改后内容如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> celery <span class="hljs-keyword">import</span> Celery<br> <br>app = Celery(<span class="hljs-string">&#x27;demo&#x27;</span>) <span class="hljs-comment"># Celery实例的名称</span><br>app.config_from_object(<span class="hljs-string">&#x27;celery_config&#x27;</span>)<br> <br><span class="hljs-meta">@app.task</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">add</span>(<span class="hljs-params">x, y</span>):<br>    time.sleep(<span class="hljs-number">2</span>)     <span class="hljs-comment"># 模拟耗时操作</span><br>    <span class="hljs-keyword">return</span> x + y<br></code></pre></td></tr></table></figure>
+
+<p>原先定义地址和app都写在<code>task.py</code>中，现在只要在<code>task.py</code>中直接加载配置文件就可以了。</p>
+<p>2024&#x2F;5&#x2F;26 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Python/" class="category-chain-item">Python</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/" class="print-no-link">#工程实践</a>
+      
+        <a href="/tags/Python/" class="print-no-link">#Python</a>
+      
+        <a href="/tags/Celery/" class="print-no-link">#Celery</a>
+      
+        <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="print-no-link">#消息队列</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/01/Python-Web%E5%BC%80%E5%8F%91%EF%BC%9AFlask%E6%A1%86%E6%9E%B6/" title="Python Web开发：Flask框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Python Web开发：Flask框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/19/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E9%AB%98%E8%AE%A1%E7%AE%97%E9%87%8F%E7%9A%84Python%E7%A8%8B%E5%BA%8F%E7%8A%B6%E6%80%81%E7%9B%91%E6%B5%8B/" title="工程实践：高计算量的Python程序状态监测">
+                        <span class="hidden-mobile">工程实践：高计算量的Python程序状态监测</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,908 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="博弈论与经济学中的帕累托最优。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="博弈论：如何理解帕累托最优？">
+<meta property="og:url" content="http://example.com/2024/01/13/%E5%8D%9A%E5%BC%88%E8%AE%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%B8%95%E7%B4%AF%E6%89%98%E6%9C%80%E4%BC%98%EF%BC%9F/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="博弈论与经济学中的帕累托最优。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/game.png">
+<meta property="article:published_time" content="2024-01-13T04:34:52.000Z">
+<meta property="article:modified_time" content="2024-01-13T05:43:51.730Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="博弈论">
+<meta property="article:tag" content="帕累托最优">
+<meta property="article:tag" content="经济学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/game.png">
+  
+  
+  
+  <title>博弈论：如何理解帕累托最优？ - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="博弈论：如何理解帕累托最优？"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-13 12:34" pubdate>
+          2024年1月13日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">博弈论：如何理解帕累托最优？</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>帕累托最优在斯坦福公开课中只占了很短的一部分，我原先只是粗看了一遍，后面发现这个概念的现实意义也很重要，因此单开一章学习一下。</p>
+<h1 id="“非损人不利己”"><a href="#“非损人不利己”" class="headerlink" title="“非损人不利己”"></a>“非损人不利己”</h1><p>帕累托改进是指一种策略上的优化，使得没有人的收益在减少的情况下，至少有一个玩家的收益是提高的。在这种情况下，至少有一个玩家是喜欢这种策略的。</p>
+<p>当不可能再出现更多帕累托改进的情况下，就达到了帕累托最优(Pareto Optimality)。此时只要任何尝试增加某个玩家的收益，都会导致另一个玩家的收益受损。</p>
+<blockquote>
+<p>帕累托最优：不可能再改善某些人的境况，而不使任何其他人受损。</p>
+</blockquote>
+<h1 id="经济学中的帕累托"><a href="#经济学中的帕累托" class="headerlink" title="经济学中的帕累托"></a>经济学中的帕累托</h1><p>在经济学中，达到帕累托最优，需要满足三个条件（来自Wikipedia）：</p>
+<ul>
+<li>交换的最优条件</li>
+<li>生产的最优条件</li>
+<li>交换和生产的最优条件</li>
+</ul>
+<p>只要不是帕累托最优，那么就有玩家可以在不损害其他人利益的情况下，让自己的收益变高。</p>
+<p>如何理解这三个最优条件？</p>
+<ul>
+<li>交换最优：</li>
+</ul>
+<p>比如A、B两个消费者，A最爱吃苹果，认为一个苹果等于两个梨子，B最爱吃梨子，认为一个梨子等于两个苹果，如果A用一个梨子去交换B的一个苹果。那么对于A而言，A得到了一个苹果，相当于是两个梨子，边际替代率就是2。对于B而言，B得到了一个梨子，相当于是2个苹果，边际替代率也是2。</p>
+<p>对A和B而言，若每一对商品的边际替代率相同，那么就是交换的最优条件，双方的利益都没受损。</p>
+<ul>
+<li>生产最优：</li>
+</ul>
+<p>比如用同量的投入，生产A可得收益100元，生产B仅得50元，这样企业就会改变策略，多生产A，少生产B。同样的，当竞标时，同样投入，A公司产出50，B公司产出100，那么资源就会流向B公司。</p>
+<ul>
+<li>混合最优：</li>
+</ul>
+<p>交换最优中，主要反映的是消费者偏好（边际替代率）。生产最优中，则反映的是生产效率（边际转换率）。</p>
+<p>当两者相等，说明生产结构与需求结构完全吻合，生产的产品符合消费者需求，既不会短缺，也不会过剩。</p>
+<blockquote>
+<p>帕累托最优，体现的是效率和收益的均衡。</p>
+</blockquote>
+<p>严格意义上，这反应了自由市场的机制，在生产交换的不断调整下，最终会达到帕累托最优，也就是常说的“无形的手”。</p>
+<p>例如，当改革农村，引入新科技的时候，农村的生产效率提高了，但城市没有利益受损，这时就产生了帕累托改进。</p>
+<p>同样的，当国际合作中，双方交换资源时，也达到了帕累托改进。此时双方都获得了收益。	</p>
+<h1 id="经济学中的思维碰撞"><a href="#经济学中的思维碰撞" class="headerlink" title="经济学中的思维碰撞"></a>经济学中的思维碰撞</h1><p>博弈论的思维处处体现在经济学中，这带来了不少观点的冲突：</p>
+<p>亚当斯密的自由市场理论认为，依靠自由市场中每个玩家的行动，就可以达到一个最优配置。事实证明，这只是一个纳什均衡点，而不是帕累托最优。</p>
+<p>相反，马克思与凯恩斯认为市场需要中央政府的监管。认为政府充当了上帝的身份进行市场调配。</p>
+<p>随着数学模型的应用，<strong>福利经济学第一定理和第二定理</strong>对他们的争论有了准确的描述：当以下三个前提条件成立时，市场竞争产生的均衡一定是帕累托最优的。这三个条件包括：（1）一个完全竞争的市场，（2）不存在外部性，（3）不存在信息不对称。这就说明亚当斯密和凯恩斯的理论都存在问题。</p>
+<p>现实市场中，处处存在着不完全竞争与垄断，也处处包含着信息不对称。这导致亚当斯密的自由市场无法满足这三个条件。凯恩斯的理论则要求政府进行宏观调控。然而现实并不是理想的，政府并不是一个全知全能，没有私心的上帝，而是一个人性结合体，只是一个更可怕的博弈玩家。</p>
+<h1 id="博弈论中的帕累托最优"><a href="#博弈论中的帕累托最优" class="headerlink" title="博弈论中的帕累托最优"></a>博弈论中的帕累托最优</h1><p>博弈论中用公式定义了帕累托最优：例如 $( \mathrm{\large O}(7,8) ) $和$ ( \mathrm{\large O}^{\prime}(4,5) )$，则 $(\mathrm{O}) Pareto-dominates (\mathrm{O}^{\prime}).$</p>
+<p><img src="/images/130100.png" srcset="/img/loading.gif" lazyload></p>
+<p>在图示的例子中，$f1$是参与人1的收益，$f2$是参与人2的收益， 状态$C$不在帕累托前沿面(Pareto Frontier)，因为存在帕累托改进使它改进到$A$或者$B$点。</p>
+<h1 id="帕累托最优是不是纳什均衡？"><a href="#帕累托最优是不是纳什均衡？" class="headerlink" title="帕累托最优是不是纳什均衡？"></a>帕累托最优是不是纳什均衡？</h1><p>复习一下：什么是纳什均衡？</p>
+<blockquote>
+<p>纳什均衡：全部参与者非合作博弈达到的期望效用最大化结果。</p>
+<p>帕累托最优：所有人不再可以在在不损害他人利益的前提下获得更优资源的资源配置结果。</p>
+</blockquote>
+<p>首先要明确的是，帕累托最优并不是纳什均衡，因为它是从全局出发的。在囚徒困境中，纳什均衡是双方都采取合作策略，因为这是对于自身的支配性策略，而这个策略从全局来看是有不损害彼此的优化空间的。</p>
+<blockquote>
+<p>交流可以带来帕累托改进。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>3.5</th>
+<th>5.5</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>3.5</td>
+<td>(8,8)</td>
+<td>(3,2)</td>
+</tr>
+<tr>
+<td>5.5</td>
+<td>(2,3)</td>
+<td>(6,6)</td>
+</tr>
+</tbody></table>
+<p>囚徒困境中，双方沟通是可以达成帕累托改进的。这时，双方合作会带来各自的收益或是单方面的收益。</p>
+<p>根据知乎上一些博主的分析，帕累托最优和纳什均衡无必然关系。大部分情况下，纳什均衡都不是帕累托最优，这是因为玩家是自私的。</p>
+<p>此外还有一个很好的例子，同样来自知乎：</p>
+<p>假设有一个上帝可以操纵所有人的行为，他会让大家选择帕累托最优的结果；但如果让市场来配置资源，所有人追求个人利益的最大化，那么结果是一个纳什均衡。举个例子，在生产过剩的时候，所有的奶农都把牛奶倒入河中，则牛奶供给减少，价格上升，这对大家都有好处，这是“帕累托最优”。</p>
+<p>但是每个奶农总是希望别人家多倒一点牛奶，这样价格上升之后自家的牛奶就可以卖更多的钱。当每一个人都这么想的时候，就没人倒牛奶了，就走向了一个纳什均衡，然而并不是有效率的。</p>
+<hr>
+<p>为什么大家都知道当所有孩子都去补习了，大家水平都提高，则在应试考试中都获得不到好处，但却无法达成一个所有人都不补课的契约（因为当别人不补课时，你偷偷去补，就可以得到好处）。市场势力的存在使得每个人都必须考虑其他人的行为对自己的影响，最终相互作用，达到了一个对大家都不是最好的结果。</p>
+<p>这也是为什么为什么不能放任自由市场调控，因为这样会走到一个纳什均衡，但并不是整体最佳的策略。</p>
+<h1 id="理想与现实的碰撞"><a href="#理想与现实的碰撞" class="headerlink" title="理想与现实的碰撞"></a>理想与现实的碰撞</h1><p>现实中，一般不容易达到帕累托最优。在集体中，如果一部分受益，一部分受损，但只要受益的部分大于受损部分，那么集体的总收益也可以得到提升。此时受益者也可以给予受损者一定补偿以使其免遭损失。这个过程就是卡尔多-希克斯改进。</p>
+<blockquote>
+<p>先富者带动后富者。</p>
+</blockquote>
+<p>假设甲乙两人打算共同投资一个项目，当前有A和B两个项目。</p>
+<p>对于A项目，甲能盈利100万，乙能盈利200万；对于B项目，甲能盈利200万，乙能盈利150万。如果按照帕累托改进的思想来挑项目，则A和B都选不上，因为帕累托要求任何一方的利益都不会受损，但是选A项目甲的利益会受损（甲少赚100万），选B项目乙的利益会受损（乙少赚50万）。</p>
+<p>如果按照卡尔多-希克斯改进的思想来挑项目，那么应该选B项目。因为B相比A，甲能多赚100万，乙亏损50万，只要甲能拿出50万补贴乙，那么在乙不受损的情况下，甲还能多赚50万，整体的福利更高。</p>
+<h2 id="问题来了"><a href="#问题来了" class="headerlink" title="问题来了"></a>问题来了</h2><p>牺牲部分人的利益，换来大部分人的收益，这样的价值观是否真的被社会认可吗？这就涉及到哲学问题了。</p>
+<div class="note note-warning">
+            <p>当你选择将失控的火车碾向铁轨上的五个人时，你是要这么跟他们说吗？</p><p>你们的牺牲带来了帕累托改进，感谢你们！</p>
+          </div>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="category-chain-item">博弈论</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8D%9A%E5%BC%88%E8%AE%BA/" class="print-no-link">#博弈论</a>
+      
+        <a href="/tags/%E5%B8%95%E7%B4%AF%E6%89%98%E6%9C%80%E4%BC%98/" class="print-no-link">#帕累托最优</a>
+      
+        <a href="/tags/%E7%BB%8F%E6%B5%8E%E5%AD%A6/" class="print-no-link">#经济学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/14/%E6%9D%8E%E5%BC%80%E5%A4%8D%E4%BA%89%E8%AE%AE%E4%B9%8B%E4%BD%9C%EF%BC%9A%E4%BD%BF%E7%94%A8vllm%E4%B8%8A%E6%89%8BYI-34B%E5%A4%A7%E6%A8%A1%E5%9E%8B/" title="李开复争议之作：使用vllm上手YI-34B大模型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">李开复争议之作：使用vllm上手YI-34B大模型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/11/%E4%BB%A3%E7%A0%81%E5%AE%9E%E6%88%98%EF%BC%9A%E5%BE%AE%E8%B0%83Mixtral8-7B/" title="代码实战：微调Mixtral8*7B">
+                        <span class="hidden-mobile">代码实战：微调Mixtral8*7B</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname,
+            master: "",
+            friends: "",
+            tagMeta: ["博主","友人","访客"],
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
