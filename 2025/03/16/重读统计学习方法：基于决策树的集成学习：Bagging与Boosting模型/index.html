@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/20250119.jpg">
 <meta property="article:published_time" content="2025-03-16T08:28:33.000Z">
-<meta property="article:modified_time" content="2025-03-16T10:13:14.452Z">
+<meta property="article:modified_time" content="2025-03-16T10:26:31.814Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="统计机器学习">
 <meta property="article:tag" content="集成学习">
@@ -284,7 +284,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          670 字
+          817 字
         
       </span>
     
@@ -295,7 +295,7 @@
         
         
         
-          6 分钟
+          7 分钟
         
       </span>
     
@@ -365,6 +365,7 @@
 <p>其次，多次有放回抽样也可以满足小样本的场景，抽样产生了的虚拟样本量足够估计数据的分布。并且，多次重复抽样可以让异常值和噪音的干扰弱化。</p>
 <h2 id="特征随机选择"><a href="#特征随机选择" class="headerlink" title="特征随机选择"></a>特征随机选择</h2><p>随机森林在子树分裂时，并不是选的全量特征，而是从中随机选部分特征。每次分裂节点时，都随机选择子特征，使得一些弱特征不会被频繁过滤。同一棵树的不同节点可能关注不同的特征组合。例如，某节点可能关注“年龄”和“收入”，而下一节点可能关注“性别”和“职业”。</p>
 <p>之所以每次选部分子特征，是因为在实验中，每次使用全量特征，会导致模型准确率下降。对于特征子集大小的选择，当特征子集过小（只有一个特征）时，单棵树的预测能力下降，偏差提高，当特征子集过大时，每个子树就都变成了普通决策树，也失去了Bagging的意义，方差提高。</p>
+<h2 id="工业实现"><a href="#工业实现" class="headerlink" title="工业实现"></a>工业实现</h2><p>随机森林的优势在于多颗树可以并行训练，这使得它在早期工业界很流行，不过在分布式场景还是有很大的优化空间。主要的思路在数据存储和特征分裂上，以Spark为例，Spark MLlib版本的随机森林用RDD和分区存储数据，这是数据层面的优化，在训练优化上，集群上的每个Worker独立获取随机数据训练树。特征分裂时也同样如此，每个Worker独立的找特征的最佳分裂点。</p>
 <h1 id="GBDT"><a href="#GBDT" class="headerlink" title="GBDT"></a>GBDT</h1>
                 
               </div>
