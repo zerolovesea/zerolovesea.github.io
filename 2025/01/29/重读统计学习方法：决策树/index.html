@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/20250119.jpg">
 <meta property="article:published_time" content="2025-01-29T06:32:11.000Z">
-<meta property="article:modified_time" content="2025-02-03T04:33:15.281Z">
+<meta property="article:modified_time" content="2025-03-16T10:14:07.761Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="统计机器学习">
 <meta property="article:tag" content="决策树">
@@ -355,7 +355,7 @@
             
               <div class="markdown-body">
                 
-                <p>跳过了MLP，KNN，从决策树再开始温习，也为了后面的XGB，LGBM和CATB打一下基础。 </p>
+                <p>跳过了MLP，KNN，从决策树再开始温习，也为了后面的XGBoost，LGBM和CATBoost打一下基础。 </p>
 <p>顺便一提，今天见证了DeepSeek刷榜Github，从没见过这么夸张的刷榜，TOP10有6个都是DS的项目。</p>
 <p><img src="/images/250129-1.jpg" srcset="/img/loading.gif" lazyload></p>
 <hr>
@@ -410,16 +410,19 @@
 <p>抄一下GPT给出的计算流程：</p>
 <hr>
 <p>回归树的构造过程如下：</p>
-<h3 id="计算分裂前的目标变量均值"><a href="#计算分裂前的目标变量均值" class="headerlink" title="计算分裂前的目标变量均值"></a><strong>计算分裂前的目标变量均值</strong></h3><p>假设数据集$D$共有$n$个样本，目标变量的均值为：</p>
+<p><strong>计算分裂前的目标变量均值</strong></p>
+<p>假设数据集$D$共有$n$个样本，目标变量的均值为：</p>
 <p>$\bar{y} &#x3D; \frac{1}{n} \sum_{i&#x3D;1}^{n} y_i$</p>
 <p>如果此时直接停止分裂，那么整个数据集的均值 $\bar{y}$就是最终的预测值。</p>
 <hr>
-<h3 id="选择最优分裂点"><a href="#选择最优分裂点" class="headerlink" title="选择最优分裂点"></a><strong>选择最优分裂点</strong></h3><p>回归树的目标是通过<strong>最小化均方误差（MSE, Mean Squared Error）</strong> 来选择分裂特征和分裂点：</p>
+<p><strong>选择最优分裂点</strong></p>
+<p>回归树的目标是通过<strong>最小化均方误差（MSE, Mean Squared Error）</strong> 来选择分裂特征和分裂点：</p>
 <p>$MSE &#x3D; \sum_{i&#x3D;1}^{n} (y_i - \bar{y})^2$</p>
 <p>如果选择特征$A$和分裂点$s$进行划分，数据集被分成左子集$D_1$和右子集 $D_2$，均值分别为$\frac{1}{|D_1|} \sum_{y_i: y_i \in D_1} y_i$和$\frac{1}{|D_2|} \sum_{y_i: y_i \in D_2} y_i$</p>
 <p>会选择能使Loss最小的$A,s$作为最优分裂点。</p>
 <hr>
-<h3 id="递归分裂，直到叶子节点"><a href="#递归分裂，直到叶子节点" class="headerlink" title="递归分裂，直到叶子节点"></a><strong>递归分裂，直到叶子节点</strong></h3><ul>
+<p><strong>递归分裂，直到叶子节点</strong></p>
+<ul>
 <li><p><strong>如果满足停止条件</strong>（如样本数小于最小叶子样本数），则停止分裂。</p>
 </li>
 <li><p><strong>叶子节点的最终预测值</strong> 就是该叶子节点所有样本的目标变量均值</p>
