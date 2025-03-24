@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/20250119.jpg">
 <meta property="article:published_time" content="2025-03-23T13:03:20.000Z">
-<meta property="article:modified_time" content="2025-03-24T14:31:14.409Z">
+<meta property="article:modified_time" content="2025-03-24T14:35:11.431Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="统计机器学习">
 <meta property="article:tag" content="集成学习">
@@ -296,7 +296,7 @@
         
         
         
-          27 分钟
+          26 分钟
         
       </span>
     
@@ -448,12 +448,12 @@
 </ol>
 <p>可以看到XGBoost的一大更新是二阶导数，因此在每次迭代前，都会提前计算并缓存所有样本的 $g_i$ 和 $h_i$，这样在分裂节点时可以快速计算增益。</p>
 <ol start="2">
-<li>支持缺失值处理</li>
+<li><strong>支持缺失值处理</strong></li>
 </ol>
 <p>传统机器学习流程中需要先填补缺失值，这是因为决策树需要根据分裂条件进行分裂。例如当特征x&lt;3.5，前往左子树，反之前往右子树。而如果是Nan的就无法判断怎么走了，因此往往需要分配一个值来填补缺失值。</p>
 <p>XGBoost在特征分裂时，对于某个分裂条件 （例如feature_x &lt; 3.5）都会尝试：如果所有缺失该特征的样本都走左子树，以及所有缺失该特征的样本都走右子树，这两种情况下各自的损失。哪种损失小，就作为缺失值样本的默认分配方向。</p>
 <ol start="3">
-<li>基于列的 block 结构加快分裂</li>
+<li><strong>基于列的 block 结构加快分裂</strong></li>
 </ol>
 <p>在XGBoost中，还对做了一系列优化。默认的树在分裂时都需要遍历所有特征的所有样本来计算梯度和增益：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> feature <span class="hljs-keyword">in</span> features:<br>   <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> samples:<br>       scan feature_value, gradient, etc.<br></code></pre></td></tr></table></figure>
@@ -506,7 +506,7 @@
 <li><code>lambda_l1</code> &#x2F; <code>lambda_l2</code></li>
 </ul>
 <ol start="2">
-<li>基于直方图的特征分裂</li>
+<li><strong>基于直方图的特征分裂</strong></li>
 </ol>
 <p>基于直方图的特征分裂是LightGBM里的一个核心优化点。前面我们能注意到，GBDT在每次训练弱学习器时，都需要先遍历每个特征的所有取值，尝试每个可能的分裂点，再计算信息增益，最后选最佳分裂点。从计算复杂度上，涉及遍历非常耗时。</p>
 <p>现在LGBM选择将连续特征进行分箱，把将连续的特征值离散化为有限个有序的bins，只在这些bin的边界上尝试分裂。例如：将一个连续特征 <code>[2.1, 3.3, 7.9, 8.2, 10.5]</code> 离散为 4 个 bins，比如：</p>
@@ -539,10 +539,12 @@
 </tr>
 </tbody></table>
 <p>默认LGBM会将连续特征分成255个bin，这个分箱密度已经足够保证一定的精度，而带来的训练速度提升是巨大的。分箱之后，在节点分裂时，会用bin的边界作为分裂点。例如在上面的例子里，模型可能会分裂出<code>是否bin&lt;=2</code>，也就是代表数值是否小于等于7.9。</p>
+<ol start="3">
+<li><strong>对于分类离散变量的支持</strong></li>
+</ol>
 <ul>
 <li><strong>GOSS（Gradient-based One Side Sampling）</strong>： 仅采样梯度较大的数据，保留重要信息。</li>
 <li><strong>EFB（Exclusive Feature Bundling）</strong>： 将互斥稀疏特征打包为单一特征，降低维度。</li>
-<li><strong>直方图算法</strong>： 将连续值离散为 bins，加速计算。</li>
 </ul>
 <p><strong>优势</strong></p>
 <ul>
