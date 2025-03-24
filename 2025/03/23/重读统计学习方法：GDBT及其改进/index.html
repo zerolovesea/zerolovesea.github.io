@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/20250119.jpg">
 <meta property="article:published_time" content="2025-03-23T13:03:20.000Z">
-<meta property="article:modified_time" content="2025-03-23T15:09:27.383Z">
+<meta property="article:modified_time" content="2025-03-24T10:11:40.300Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="统计机器学习">
 <meta property="article:tag" content="集成学习">
@@ -285,7 +285,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          2.2k 字
         
       </span>
     
@@ -296,7 +296,7 @@
         
         
         
-          12 分钟
+          19 分钟
         
       </span>
     
@@ -401,28 +401,67 @@
 <li><p>最终预测为 $F_M(x)$</p>
 </li>
 </ol>
-<h1 id="衍生模型"><a href="#衍生模型" class="headerlink" title="衍生模型"></a>衍生模型</h1><h2 id="XGBoost"><a href="#XGBoost" class="headerlink" title="XGBoost"></a>XGBoost</h2><p><strong>数学优化</strong></p>
-<p>XGBoost 在 GBDT 基础上加入了正则项：</p>
-<p>$\mathcal{L}^{(t)} &#x3D; \sum_{i&#x3D;1}^N l(y_i, \hat{y}<em>i^{(t)}) + \sum</em>{k&#x3D;1}^{t} \Omega(f_k)$</p>
-<p>其中 $\Omega(f) &#x3D; \gamma T + \frac{1}{2} \lambda \sum_{j&#x3D;1}^{T} w_j^2$</p>
+<h1 id="衍生模型"><a href="#衍生模型" class="headerlink" title="衍生模型"></a>衍生模型</h1><h2 id="XGBoost"><a href="#XGBoost" class="headerlink" title="XGBoost"></a>XGBoost</h2><p>大名鼎鼎的XGBoost在竞赛领域里经久不衰，作为 GBDT 的工业级实现，可以算的上是目前应用最广泛的 GBDT 框架之一。它的优化点也是经典面试八股文了：</p>
+<p><strong>数学优化</strong></p>
+<ol>
+<li><p><strong>加入正则项：</strong></p>
+<p>XGBoost 在 GBDT 基础上加入了正则项。原本的损失函数是$\mathcal{L}^{(t)} &#x3D; \sum_{i&#x3D;1}^N l(y_i, \hat{y}_i^{(t)})$，在后面加上了</p>
+<p>$\sum_{k&#x3D;1}^{t} \Omega(f_k)$，其中的$\Omega(f_k)$ 是对第 $k$ 棵树 $f_k$ 的正则化项， $\Omega(f) &#x3D; \gamma T + \frac{1}{2} \lambda \sum_{j&#x3D;1}^{T} w_j^2$。</p>
+</li>
+</ol>
 <ul>
-<li>$T$：树的叶子数</li>
-<li>$w_j$：第 $j$ 个叶子上的得分</li>
+<li>$T$：树的叶子数，反映树的结构复杂度（越大越复杂）</li>
+<li>$w_j$：第 $j$ 个叶子节点的得分（预测输出）</li>
 </ul>
-<p>使用二阶泰勒展开（用一阶、二阶导数）：</p>
-<p>$\mathcal{L}^{(t)} \approx \sum_{i&#x3D;1}^N [g_i f_t(x_i) + \frac{1}{2} h_i f_t(x_i)^2] + \Omega(f_t)$</p>
+<p>​		我们看下每棵树的正则项，它由两个超参数组成：</p>
+<ul>
+<li><p>$\gamma$：叶子节点数量惩罚因子</p>
+</li>
+<li><p>$\lambda$：叶子节点得分的 L2 正则项系数</p>
+</li>
+</ul>
+<p>​		可以看到，$\lambda$越大，每个叶子的输出 $w_j$ 就会被“压缩”得越小。$\gamma$越大，分裂的叶子数越小。</p>
+<ol start="2">
+<li><p><strong>二阶泰勒展开：</strong></p>
+<p>GBDT使用一阶导的负梯度近似损失函数，XGBoost改用了二阶导，目的是为了让模型更快收敛：</p>
+</li>
+</ol>
+<p>​		$\mathcal{L}^{(t)} \approx \sum_{i&#x3D;1}^N [g_i f_t(x_i) + \frac{1}{2} h_i f_t(x_i)^2] + \Omega(f_t)$</p>
 <p>其中：</p>
 <ul>
 <li>$g_i &#x3D; \partial_{\hat{y}^{(t-1)}} \mathcal{L}(y_i, \hat{y}_i^{(t-1)})$</li>
 <li>$h_i &#x3D; \partial^2_{\hat{y}^{(t-1)}} \mathcal{L}(y_i, \hat{y}_i^{(t-1)})$</li>
 </ul>
-<p><strong>工程优化</strong></p>
+<p>​		在GDBT中，一阶导数告诉我们哪个方向能让损失最快的减少。而二阶导数是告诉我们损失在这个方向上的曲率，变化的快不快。如果二阶导很小，说明当前很陡，需要慢一点增加下一棵树，如果很大，则说明梯度损失曲线比较平稳。</p>
+<ol start="3">
+<li><p><strong>更改了树节点分裂的增益系数：</strong></p>
+<p>原本的CART树通过基尼系数来判断要不要分裂叶子节点，而XGBoost通过最大化增益来分裂。增益系数的公式是：</p>
+<p>$\text{Gain} &#x3D; \frac{1}{2} \left[ \frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda} \right] - \gamma$</p>
+<p>其中：</p>
 <ul>
-<li>缓存导数计算</li>
-<li>支持缺失值处理</li>
-<li>基于列的 block 结构加快分裂</li>
-<li>支持并行和分布式训练</li>
+<li>$G_L$、$H_L$：叶子节点上的一阶&#x2F;二阶导数累加值</li>
+<li>$\lambda$：控制叶子输出的大小（因为最终输出是 $w_j &#x3D; -\frac{G_j}{H_j + \lambda}$）</li>
+<li>$\gamma$：控制是否值得多生成一个叶子节点（结构正则）</li>
 </ul>
+</li>
+</ol>
+<p><strong>工程优化</strong></p>
+<ol>
+<li><p><strong>缓存导数计算</strong></p>
+<p>可以看到XGBoost的一大更新是二阶导数，因此在每次迭代前，都会提前计算并缓存所有样本的 $g_i$ 和 $h_i$，这样在分裂节点时可以快速计算增益。</p>
+</li>
+<li><p>支持缺失值处理</p>
+<p>传统机器学习流程中需要先填补缺失值，这是因为决策树需要根据分裂条件进行分裂。例如当特征x&lt;3.5，前往左子树，反之前往右子树。而如果是Nan的就无法判断怎么走了，因此往往需要分配一个值来填补缺失值。</p>
+<p>XGBoost在特征分裂时，对于某个分裂条件 （例如feature_x &lt; 3.5）都会尝试：如果所有缺失该特征的样本都走左子树，以及所有缺失该特征的样本都走右子树，这两种情况下各自的损失。哪种损失小，就作为缺失值样本的默认分配方向。</p>
+</li>
+<li><p>基于列的 block 结构加快分裂</p>
+<p>在XGBoost中，还对做了一系列优化。默认的树在分裂时都需要遍历所有特征的所有样本来计算梯度和增益：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> feature <span class="hljs-keyword">in</span> features:<br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> samples:<br>        scan feature_value, gradient, etc.<br></code></pre></td></tr></table></figure>
+
+<p>这样显然很慢，因此XGBoost把每列特征都预处理为一个block，每个block记录该特征下所有样本的关键信息：非零值（压缩稀疏特征），位置索引（row id），对应的梯度和 Hessian。这样就类似于加强版的稀疏矩阵。</p>
+<p>并且这种改进还为它带来了分布式并行训练的能力，每个特征都可以在不同节点上分裂和计算。</p>
+</li>
+</ol>
 <h2 id="LightGBM"><a href="#LightGBM" class="headerlink" title="LightGBM"></a>LightGBM</h2><p><strong>核心优化</strong></p>
 <ul>
 <li><strong>GOSS（Gradient-based One Side Sampling）</strong>： 仅采样梯度较大的数据，保留重要信息。</li>
