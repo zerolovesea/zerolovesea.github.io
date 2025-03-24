@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/20250119.jpg">
 <meta property="article:published_time" content="2025-03-23T13:03:20.000Z">
-<meta property="article:modified_time" content="2025-03-24T14:10:36.332Z">
+<meta property="article:modified_time" content="2025-03-24T14:31:14.409Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="统计机器学习">
 <meta property="article:tag" content="集成学习">
@@ -285,7 +285,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.2k 字
+          3.1k 字
         
       </span>
     
@@ -404,37 +404,36 @@
 <h1 id="衍生模型"><a href="#衍生模型" class="headerlink" title="衍生模型"></a>衍生模型</h1><h2 id="XGBoost"><a href="#XGBoost" class="headerlink" title="XGBoost"></a>XGBoost</h2><p>大名鼎鼎的XGBoost在竞赛领域里经久不衰，作为 GBDT 的工业级实现，可以算的上是目前应用最广泛的 GBDT 框架之一。它的优化点也是经典面试八股文了：</p>
 <p><strong>数学优化</strong></p>
 <ol>
-<li><p><strong>加入正则项：</strong></p>
+<li><strong>加入正则项：</strong></li>
+</ol>
 <p>XGBoost 在 GBDT 基础上加入了正则项。原本的损失函数是$\mathcal{L}^{(t)} &#x3D; \sum_{i&#x3D;1}^N l(y_i, \hat{y}_i^{(t)})$，在后面加上了</p>
 <p>$\sum_{k&#x3D;1}^{t} \Omega(f_k)$，其中的$\Omega(f_k)$ 是对第 $k$ 棵树 $f_k$ 的正则化项， $\Omega(f) &#x3D; \gamma T + \frac{1}{2} \lambda \sum_{j&#x3D;1}^{T} w_j^2$。</p>
-</li>
-</ol>
 <ul>
 <li>$T$：树的叶子数，反映树的结构复杂度（越大越复杂）</li>
 <li>$w_j$：第 $j$ 个叶子节点的得分（预测输出）</li>
 </ul>
-<p>​		我们看下每棵树的正则项，它由两个超参数组成：</p>
+<p>我们看下每棵树的正则项，它由两个超参数组成：</p>
 <ul>
 <li><p>$\gamma$：叶子节点数量惩罚因子</p>
 </li>
 <li><p>$\lambda$：叶子节点得分的 L2 正则项系数</p>
 </li>
 </ul>
-<p>​		可以看到，$\lambda$越大，每个叶子的输出 $w_j$ 就会被“压缩”得越小。$\gamma$越大，分裂的叶子数越小。</p>
+<p>可以看到，$\lambda$越大，每个叶子的输出 $w_j$ 就会被“压缩”得越小。$\gamma$越大，分裂的叶子数越小。</p>
 <ol start="2">
-<li><p><strong>二阶泰勒展开：</strong></p>
-<p>GBDT使用一阶导的负梯度近似损失函数，XGBoost改用了二阶导，目的是为了让模型更快收敛：</p>
-</li>
+<li><strong>二阶泰勒展开：</strong></li>
 </ol>
-<p>​		$\mathcal{L}^{(t)} \approx \sum_{i&#x3D;1}^N [g_i f_t(x_i) + \frac{1}{2} h_i f_t(x_i)^2] + \Omega(f_t)$</p>
+<p>GBDT使用一阶导的负梯度近似损失函数，XGBoost改用了二阶导，目的是为了让模型更快收敛：</p>
+<p>$\mathcal{L}^{(t)} \approx \sum_{i&#x3D;1}^N [g_i f_t(x_i) + \frac{1}{2} h_i f_t(x_i)^2] + \Omega(f_t)$</p>
 <p>其中：</p>
 <ul>
 <li>$g_i &#x3D; \partial_{\hat{y}^{(t-1)}} \mathcal{L}(y_i, \hat{y}_i^{(t-1)})$</li>
 <li>$h_i &#x3D; \partial^2_{\hat{y}^{(t-1)}} \mathcal{L}(y_i, \hat{y}_i^{(t-1)})$</li>
 </ul>
-<p>​		在GDBT中，一阶导数告诉我们哪个方向能让损失最快的减少。而二阶导数是告诉我们损失在这个方向上的曲率，变化的快不快。如果二阶导很小，说明当前很陡，需要慢一点增加下一棵树，如果很大，则说明梯度损失曲线比较平稳。</p>
+<p>在GDBT中，一阶导数告诉我们哪个方向能让损失最快的减少。而二阶导数是告诉我们损失在这个方向上的曲率，变化的快不快。如果二阶导很小，说明当前很陡，需要慢一点增加下一棵树，如果很大，则说明梯度损失曲线比较平稳。</p>
 <ol start="3">
-<li><p><strong>更改了树节点分裂的增益系数：</strong></p>
+<li><strong>更改了树节点分裂的增益系数：</strong></li>
+</ol>
 <p>原本的CART树通过基尼系数来判断要不要分裂叶子节点，而XGBoost通过最大化增益来分裂。增益系数的公式是：</p>
 <p>$\text{Gain} &#x3D; \frac{1}{2} \left[ \frac{G_L^2}{H_L + \lambda} + \frac{G_R^2}{H_R + \lambda} - \frac{(G_L + G_R)^2}{H_L + H_R + \lambda} \right] - \gamma$</p>
 <p>其中：</p>
@@ -443,44 +442,74 @@
 <li>$\lambda$：控制叶子输出的大小（因为最终输出是 $w_j &#x3D; -\frac{G_j}{H_j + \lambda}$）</li>
 <li>$\gamma$：控制是否值得多生成一个叶子节点（结构正则）</li>
 </ul>
-</li>
-</ol>
 <p><strong>工程优化</strong></p>
 <ol>
-<li><p><strong>缓存导数计算</strong></p>
+<li><strong>缓存导数计算</strong></li>
+</ol>
 <p>可以看到XGBoost的一大更新是二阶导数，因此在每次迭代前，都会提前计算并缓存所有样本的 $g_i$ 和 $h_i$，这样在分裂节点时可以快速计算增益。</p>
-</li>
-<li><p>支持缺失值处理</p>
+<ol start="2">
+<li>支持缺失值处理</li>
+</ol>
 <p>传统机器学习流程中需要先填补缺失值，这是因为决策树需要根据分裂条件进行分裂。例如当特征x&lt;3.5，前往左子树，反之前往右子树。而如果是Nan的就无法判断怎么走了，因此往往需要分配一个值来填补缺失值。</p>
 <p>XGBoost在特征分裂时，对于某个分裂条件 （例如feature_x &lt; 3.5）都会尝试：如果所有缺失该特征的样本都走左子树，以及所有缺失该特征的样本都走右子树，这两种情况下各自的损失。哪种损失小，就作为缺失值样本的默认分配方向。</p>
-</li>
-<li><p>基于列的 block 结构加快分裂</p>
+<ol start="3">
+<li>基于列的 block 结构加快分裂</li>
+</ol>
 <p>在XGBoost中，还对做了一系列优化。默认的树在分裂时都需要遍历所有特征的所有样本来计算梯度和增益：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> feature <span class="hljs-keyword">in</span> features:<br>    <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> samples:<br>        scan feature_value, gradient, etc.<br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> feature <span class="hljs-keyword">in</span> features:<br>   <span class="hljs-keyword">for</span> sample <span class="hljs-keyword">in</span> samples:<br>       scan feature_value, gradient, etc.<br></code></pre></td></tr></table></figure>
 
 <p>这样显然很慢，因此XGBoost把每列特征都预处理为一个block，每个block记录该特征下所有样本的关键信息：非零值（压缩稀疏特征），位置索引（row id），对应的梯度和 Hessian。这样就类似于加强版的稀疏矩阵。</p>
 <p>并且这种改进还为它带来了分布式并行训练的能力，每个特征都可以在不同节点上分裂和计算。</p>
-</li>
-</ol>
 <h2 id="LightGBM"><a href="#LightGBM" class="headerlink" title="LightGBM"></a>LightGBM</h2><p>在XGBoost之后，微软开源了LightGBM（Light Gradient Boosting Machine）。它相较于传统的GBDT（如 XGBoost）做了大量优化，在大规模数据和高维稀疏特征下表现出色。</p>
 <ol>
-<li><p><strong>叶子优先的生长策略</strong></p>
-<h2 id="首先，在决策树当中，每个叶子节点都表示着一组样本，每个非叶子节点表示的是一个决策条件。当我们在训练决策树时，我们希望对还未分割的叶子节点进行分裂，也就是决定这个候选节点里的样本要怎么分成左右两个子节点。在分裂节点的时候，就会为每个特征计算增益，最终选出增益最大的特征和切分点，用它来切分节点。这是节点分裂的定义。-现在，我们先看下XGBoost是怎么做节点的分裂的：XGBoost会对当前层的所有节点分别计算最优分裂点，如果信息增益大于阈值，就会分裂节点。我们可以想象，XGBoost会产生一颗很宽的树，因为每层都会为所有节点进行分裂，因此训练过程会比较慢。-而LightGBM则是深度优先，在每层分裂时，只挑所有叶子节点中增益最大的叶子节点进行分裂。每次只分一个节点，可想而知，最终生成的树是很深的。-GBDT的训练目标是每个弱学习器都要最大程度的降低损失，因此当采用深度优先的时候，它通过每次只找最佳节点进行分裂，因此这相比广度优先的方式能更快的收敛损失。当然，更快收敛也导致LightGBM容易过拟合。-简单的例子：假设现在有-3-个叶子节点（A-B-C），它们的最优分裂增益如下：-叶子节点-增益（信息增益）-——–-—————-A-0-3-B-0-2-C-0-05-Level-wise：-会把-A、B、C-都分了-→-总共带来增益-0-3-0-2-0-05-0-55，但效率不高；-Leaf-wise：-只分-A（0-3），带来最强的一步梯度下降，下一轮再挑新的最优。-每轮消耗资源一样（比如算一次树），Leaf-wise-每一步都“吃最肥的一块肉”，自然下降更快。-Leaf-wise-的本质是：每轮都最大化对当前梯度的拟合效果（贪心策略），因此在相同轮数下比-Level-wise-学得更快、误差下降得更多。"><a href="#首先，在决策树当中，每个叶子节点都表示着一组样本，每个非叶子节点表示的是一个决策条件。当我们在训练决策树时，我们希望对还未分割的叶子节点进行分裂，也就是决定这个候选节点里的样本要怎么分成左右两个子节点。在分裂节点的时候，就会为每个特征计算增益，最终选出增益最大的特征和切分点，用它来切分节点。这是节点分裂的定义。-现在，我们先看下XGBoost是怎么做节点的分裂的：XGBoost会对当前层的所有节点分别计算最优分裂点，如果信息增益大于阈值，就会分裂节点。我们可以想象，XGBoost会产生一颗很宽的树，因为每层都会为所有节点进行分裂，因此训练过程会比较慢。-而LightGBM则是深度优先，在每层分裂时，只挑所有叶子节点中增益最大的叶子节点进行分裂。每次只分一个节点，可想而知，最终生成的树是很深的。-GBDT的训练目标是每个弱学习器都要最大程度的降低损失，因此当采用深度优先的时候，它通过每次只找最佳节点进行分裂，因此这相比广度优先的方式能更快的收敛损失。当然，更快收敛也导致LightGBM容易过拟合。-简单的例子：假设现在有-3-个叶子节点（A-B-C），它们的最优分裂增益如下：-叶子节点-增益（信息增益）-——–-—————-A-0-3-B-0-2-C-0-05-Level-wise：-会把-A、B、C-都分了-→-总共带来增益-0-3-0-2-0-05-0-55，但效率不高；-Leaf-wise：-只分-A（0-3），带来最强的一步梯度下降，下一轮再挑新的最优。-每轮消耗资源一样（比如算一次树），Leaf-wise-每一步都“吃最肥的一块肉”，自然下降更快。-Leaf-wise-的本质是：每轮都最大化对当前梯度的拟合效果（贪心策略），因此在相同轮数下比-Level-wise-学得更快、误差下降得更多。" class="headerlink" title=" 首先，在决策树当中，每个叶子节点都表示着一组样本，每个非叶子节点表示的是一个决策条件。当我们在训练决策树时，我们希望对还未分割的叶子节点进行分裂，也就是决定这个候选节点里的样本要怎么分成左右两个子节点。在分裂节点的时候，就会为每个特征计算增益，最终选出增益最大的特征和切分点，用它来切分节点。这是节点分裂的定义。 现在，我们先看下XGBoost是怎么做节点的分裂的：XGBoost会对当前层的所有节点分别计算最优分裂点，如果信息增益大于阈值，就会分裂节点。我们可以想象，XGBoost会产生一颗很宽的树，因为每层都会为所有节点进行分裂，因此训练过程会比较慢。 而LightGBM则是深度优先，在每层分裂时，只挑所有叶子节点中增益最大的叶子节点进行分裂。每次只分一个节点，可想而知，最终生成的树是很深的。 GBDT的训练目标是每个弱学习器都要最大程度的降低损失，因此当采用深度优先的时候，它通过每次只找最佳节点进行分裂，因此这相比广度优先的方式能更快的收敛损失。当然，更快收敛也导致LightGBM容易过拟合。 简单的例子：假设现在有 3 个叶子节点（A&#x2F;B&#x2F;C），它们的最优分裂增益如下： | 叶子节点 | 增益（信息增益） | | ——– | —————- | | A        | 0.3              | | B        | 0.2              | | C        | 0.05             | - Level-wise： 会把 A、B、C 都分了 → 总共带来增益 &#x3D; 0.3 + 0.2 + 0.05 &#x3D; 0.55，但效率不高； - Leaf-wise： 只分 A（0.3），带来最强的一步梯度下降，下一轮再挑新的最优。 每轮消耗资源一样（比如算一次树），Leaf-wise 每一步都“吃最肥的一块肉”，自然下降更快。 &gt; Leaf-wise 的本质是：每轮都最大化对当前梯度的拟合效果（贪心策略），因此在相同轮数下比 Level-wise 学得更快、误差下降得更多。
- "></a> 首先，在决策树当中，每个叶子节点都表示着一组样本，每个非叶子节点表示的是一个决策条件。当我们在训练决策树时，我们希望对还未分割的叶子节点进行分裂，也就是决定这个候选节点里的样本要怎么分成左右两个子节点。在分裂节点的时候，就会为每个特征计算增益，最终选出增益最大的特征和切分点，用它来切分节点。这是节点分裂的定义。<br><br> 现在，我们先看下XGBoost是怎么做节点的分裂的：XGBoost会对当前层的所有节点分别计算最优分裂点，如果信息增益大于阈值，就会分裂节点。我们可以想象，XGBoost会产生一颗很宽的树，因为每层都会为所有节点进行分裂，因此训练过程会比较慢。<br><br> 而LightGBM则是深度优先，在每层分裂时，只挑所有叶子节点中增益最大的叶子节点进行分裂。每次只分一个节点，可想而知，最终生成的树是很深的。<br><br> GBDT的训练目标是每个弱学习器都要最大程度的降低损失，因此当采用深度优先的时候，它通过每次只找最佳节点进行分裂，因此这相比广度优先的方式能更快的收敛损失。当然，更快收敛也导致LightGBM容易过拟合。<br><br> 简单的例子：假设现在有 3 个叶子节点（A&#x2F;B&#x2F;C），它们的最优分裂增益如下：<br><br> | 叶子节点 | 增益（信息增益） |<br> | ——– | —————- |<br> | A        | 0.3              |<br> | B        | 0.2              |<br> | C        | 0.05             |<br><br> - <strong>Level-wise：</strong> 会把 A、B、C 都分了 → 总共带来增益 &#x3D; 0.3 + 0.2 + 0.05 &#x3D; 0.55，但效率不高；<br> - <strong>Leaf-wise：</strong> 只分 A（0.3），带来<strong>最强的一步梯度下降</strong>，下一轮再挑新的最优。<br><br> 每轮消耗资源一样（比如算一次树），Leaf-wise 每一步都“吃最肥的一块肉”，自然下降更快。<br><br> &gt; Leaf-wise 的本质是：<strong>每轮都最大化对当前梯度的拟合效果（贪心策略）</strong>，因此在相同轮数下比 Level-wise 学得更快、误差下降得更多。
- </h2><p> <strong>副作用</strong></p>
-<p> Leaf-wise 虽然下降快，但容易在某些“局部区域”长得很深 → 过拟合。并且由于树结构不平衡，部署时可能消耗很大的资源更多。为了解决这个问题，需要用正则 + 参数限制来防止过拟合：</p>
+<li><strong>叶子优先的生长策略</strong></li>
+</ol>
+<p>首先，在决策树当中，每个叶子节点都表示着一组样本，每个非叶子节点表示的是一个决策条件。当我们在训练决策树时，我们希望对还未分割的叶子节点进行分裂，也就是决定这个候选节点里的样本要怎么分成左右两个子节点。在分裂节点的时候，就会为每个特征计算增益，最终选出增益最大的特征和切分点，用它来切分节点。这是节点分裂的定义。</p>
+<p>现在，我们先看下XGBoost是怎么做节点的分裂的：XGBoost会对当前层的所有节点分别计算最优分裂点，如果信息增益大于阈值，就会分裂节点。我们可以想象，XGBoost会产生一颗很宽的树，因为每层都会为所有节点进行分裂，因此训练过程会比较慢。</p>
+<p>而LightGBM则是深度优先，在每层分裂时，只挑所有叶子节点中增益最大的叶子节点进行分裂。每次只分一个节点，可想而知，最终生成的树是很深的。</p>
+<p>GBDT的训练目标是每个弱学习器都要最大程度的降低损失，因此当采用深度优先的时候，它通过每次只找最佳节点进行分裂，因此这相比广度优先的方式能更快的收敛损失。当然，更快收敛也导致LightGBM容易过拟合。</p>
+<p>简单的例子：假设现在有 3 个叶子节点（A&#x2F;B&#x2F;C），它们的最优分裂增益如下：</p>
+<table>
+<thead>
+<tr>
+<th>叶子节点</th>
+<th>增益（信息增益）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>B</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>C</td>
+<td>0.05</td>
+</tr>
+</tbody></table>
+<ul>
+<li>Level-wise： 会把 A、B、C 都分了 → 总共带来增益 &#x3D; 0.3 + 0.2 + 0.05 &#x3D; 0.55，但效率不高；</li>
+<li>Leaf-wise：只分 A（0.3），带来<strong>最强的一步梯度下降</strong>，下一轮再挑新的最优。</li>
+</ul>
+<blockquote>
+<p>Leaf-wise 的本质是：<strong>每轮都最大化对当前梯度的拟合效果（贪心策略）</strong>，因此在相同轮数下比 Level-wise 学得更快、误差下降得更多。</p>
+</blockquote>
+<hr>
+<p><strong>副作用</strong></p>
+<p>Leaf-wise 虽然下降快，但容易在某些“局部区域”长得很深 → 过拟合。并且由于树结构不平衡，部署时可能消耗很大的资源更多。为了解决这个问题，需要用正则 + 参数限制来防止过拟合：</p>
 <ul>
 <li><code>max_depth</code></li>
 <li><code>num_leaves</code></li>
 <li><code>min_data_in_leaf</code></li>
 <li><code>lambda_l1</code> &#x2F; <code>lambda_l2</code></li>
 </ul>
-</li>
-<li><p>基于直方图的特征分裂</p>
-</li>
+<ol start="2">
+<li>基于直方图的特征分裂</li>
 </ol>
-<p>​		基于直方图的特征分裂是LightGBM里很核心的一个优化点。前面我们能注意到，GBDT在每次训练弱学习器时，都需要先遍历每个特征的所有取值，尝试每个可能的分裂点，再计算信息增益，最后选最佳分裂点。从计算复杂度上，涉及遍历非常耗时。</p>
-<p>​		现在LGBM选择将连续特征进行分箱，把将连续的特征值离散化为有限个有序的bins，只在这些bin的边界上尝试分裂。例如：将一个连续特征 <code>[2.1, 3.3, 7.9, 8.2, 10.5]</code> 离散为 4 个 bins，比如：</p>
+<p>基于直方图的特征分裂是LightGBM里的一个核心优化点。前面我们能注意到，GBDT在每次训练弱学习器时，都需要先遍历每个特征的所有取值，尝试每个可能的分裂点，再计算信息增益，最后选最佳分裂点。从计算复杂度上，涉及遍历非常耗时。</p>
+<p>现在LGBM选择将连续特征进行分箱，把将连续的特征值离散化为有限个有序的bins，只在这些bin的边界上尝试分裂。例如：将一个连续特征 <code>[2.1, 3.3, 7.9, 8.2, 10.5]</code> 离散为 4 个 bins，比如：</p>
 <table>
 <thead>
 <tr>
@@ -509,7 +538,7 @@
 <td>3</td>
 </tr>
 </tbody></table>
-<p>​		默认LGBM会将连续特征分成255个bin，这个分箱密度已经足够保证一定的精度，而带来的训练速度提升是巨大的。分箱之后，在节点分裂时，会用bin的边界作为分裂点。例如在上面的例子里，模型可能会分裂出<code>是否bin&lt;=2</code>，也就是代表数值是否小于等于7.9。</p>
+<p>默认LGBM会将连续特征分成255个bin，这个分箱密度已经足够保证一定的精度，而带来的训练速度提升是巨大的。分箱之后，在节点分裂时，会用bin的边界作为分裂点。例如在上面的例子里，模型可能会分裂出<code>是否bin&lt;=2</code>，也就是代表数值是否小于等于7.9。</p>
 <ul>
 <li><strong>GOSS（Gradient-based One Side Sampling）</strong>： 仅采样梯度较大的数据，保留重要信息。</li>
 <li><strong>EFB（Exclusive Feature Bundling）</strong>： 将互斥稀疏特征打包为单一特征，降低维度。</li>
@@ -524,11 +553,9 @@
 <h2 id="CatBoost"><a href="#CatBoost" class="headerlink" title="CatBoost"></a>CatBoost</h2><p><strong>核心优化</strong></p>
 <ul>
 <li>专注于类别变量处理</li>
-<li>无需手动独热编码，使用统计方式编码：<ul>
+<li>无需手动独热编码，使用统计方式编码：</li>
 <li>基于目标编码（target statistics）</li>
 <li>采用“排列顺序”（permutation）防止 target leakage</li>
-</ul>
-</li>
 </ul>
 <p><strong>工程亮点</strong></p>
 <ul>
