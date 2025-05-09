@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/mmoe.png">
 <meta property="article:published_time" content="2025-05-09T05:44:42.000Z">
-<meta property="article:modified_time" content="2025-05-09T09:01:29.620Z">
+<meta property="article:modified_time" content="2025-05-09T09:35:16.227Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="机器学习">
 <meta property="article:tag" content="MMOE">
@@ -282,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          1.3k 字
         
       </span>
     
@@ -360,6 +360,7 @@
 <ul>
 <li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2023/03/23/recommendation-multi-scenario-task.html">ICDE 2023 | 多场景多任务学习在美团到店餐饮推荐的实践</a></li>
 <li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1560684">多任务学习，如何设计一个更好的参数共享机制？| AAAI 2020</a></li>
+<li><a target="_blank" rel="noopener" href="https://hypergrowths.com/entrepreneur/digital-transformation/16734/topic-352428655/">当我们在谈论MTL</a></li>
 </ul>
 <p>25年博客的更新频率慢了很多，一方面是工作量比去年大了，另一方面是学习的方向比以前要更细了。之前什么都看看，属于是样样通样样松（笑）。今年主要聚焦在机器学习，风控方面，内容也偏向论文+代码复现，因此节奏会慢很多。顺便一提，五月假期的时候回了趟西班牙，在那里完成了准备已久的求婚，是人生里的值得回忆的重要节点，这个留到以后再记录。</p>
 <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>言归正传，这次要学习的是谷歌团队发表于2018年的MMOE，方向是多任务学习。关于多任务学习，通俗的理解是一个模型学习和预测多个任务，通常来说是反直觉的，因为我们往往只希望模型精准的学习到一个精准具体的任务。不过在很多业务场景下，任务本身有自己的痛点，以消金产品的短信营销为例，算法不光需要考虑用户的点击率，注册率，还需要考虑用户的完件率。电商场景同理，也需要考虑用户的点击率和转化率。</p>
@@ -374,7 +375,7 @@
 <p>上图展示整个架构的演变经历，图a是一个简单的共享特征的多塔模型，两个任务共享输入的特征表示，走不同的任务的权重来得到最后的结果。随后作者认为不同任务可能会需要不同的特征输入，不能用单一的特征，因此在图b中，用专家网络来为输入加权输出特征，并用一个门控网络来决定不同专家的权重分配，最终用统一的加权过后的特征表示输入给多塔。</p>
 <p>图c则更进一步，认为每个任务间，尤其是不相似的任务之间，还是不能完全共享同一套特征，因此为每个任务都分配了一个门控，来定制输入塔的加权特征向量。在实践中，每个门控网络都是一个简单线性层+Softmax，专家和塔都是常规的DNN。</p>
 <p><strong>任务相似度的取舍</strong></p>
-<p>上面的多门控网络比较适用于任务相似度较大的情况，作者在实验里发现任务间余弦相似度&#x3D;0.5时，网络效果比较好。具体怎么做到这一点，作者自己合成了数据，来控制不同任务的相似程度。</p>
+<p>上面的多门控网络比较适用于任务相似度较大的情况，作者在实验里发现任务间余弦相似度&#x3D;0.5时，网络效果比较好。具体怎么做到这一点，作者自己合成了数据，来控制不同任务的相似程度，如下图所示，多门控专家在任何情况下收敛的都更快，而当子任务越相似时，多门控近似等于单门控，合乎逻辑。</p>
 <p><img src="/images/250509-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>2025&#x2F;5&#x2F;9 于苏州</p>
 
