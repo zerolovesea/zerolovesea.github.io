@@ -39,9 +39,25 @@
     <link href="/2025/05/22/Swift%E5%BC%80%E5%8F%91%EF%BC%9A%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%B0%8F%E5%B0%8F%E7%9A%84IOS%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/"/>
     <url>/2025/05/22/Swift%E5%BC%80%E5%8F%91%EF%BC%9A%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%B0%8F%E5%B0%8F%E7%9A%84IOS%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/</url>
     
-    <content type="html"><![CDATA[]]></content>
+    <content type="html"><![CDATA[<p>Swift是我前段时间接触到的，其实是出于兴趣，看到很多人在搞vibe coding，开发了不少应用。正好今年的生态都切到了IOS，于是也萌生了做一些自己的应用的打算。</p><p>在三月的时候，简单做了一个通过左右滑动，以类似探探app的交互形式来清理相册的ios应用。纯粹是为了了解一下swift的语法，而最近又有一个其他的想法：一个解决天秤座选择困难症的随机抽签应用。</p>]]></content>
     
     
+    <categories>
+      
+      <category>随笔</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>瞎折腾</tag>
+      
+      <tag>Swift</tag>
+      
+      <tag>IOS开发</tag>
+      
+    </tags>
     
   </entry>
   
