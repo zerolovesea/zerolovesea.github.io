@@ -24,14 +24,14 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="微软开发的Deepspeed中的ZeRO1&#x2F;2&#x2F;3。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/deepspeed.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/deepspeed.png">
 <meta property="article:published_time" content="2024-05-12T01:55:43.000Z">
-<meta property="article:modified_time" content="2024-05-12T13:58:19.619Z">
+<meta property="article:modified_time" content="2025-05-28T14:33:33.866Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="分布式训练">
 <meta property="article:tag" content="Deepspeed">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/deepspeed.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/deepspeed.png">
   
   
   
@@ -373,7 +373,7 @@
 <li>ZeRO3：在ZeRO2的基础上，对模型参数进行拆分。<strong>模型占用的显存被平均分配到每个 GPU 中，显存消耗量与数据并行的并行度成线性反比关系，但通信量会有些许增加。</strong></li>
 </ol>
 <p>论文中给出了三个阶段的显存消耗分布情况：</p>
-<p><img src="/images/zerodp.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-1.jpg" srcset="/img/loading.gif" lazyload></p>
 <h2 id="ZeRO1"><a href="#ZeRO1" class="headerlink" title="ZeRO1"></a>ZeRO1</h2><p>模型训练中，正向传播和反向传播并不会用到优化器状态，只有在梯度更新的时候才会使用梯度和优化器状态计算新参数。因此每个进程单独使用一段优化器状态，对各自进程的参数更新完之后，再把各个进程的模型参数合并形成完整的模型。</p>
 <p>假设我们有 𝑁𝑑 个并行的进程，<strong>ZeRO-1</strong> 会将完整优化器的状态等分成 𝑁𝑑 份并储存在各个进程中。当反向传播完成之后，每个进程的优化器会对自己储存的优化器状态（包括Momentum、Variance 与 FP32 Master Parameters）进行计算与更新。更新过后的<code>Partitioned FP32 Master Parameters</code>会通过<code>All-gather</code>传回到各个进程中。完成一次完整的参数更新。</p>
 <p>通过 ZeRO-1 对优化器状态的分段化储存，7.5B 参数量的模型内存占用将由原始数据并行下的 <strong>120GB 缩减到 31.4GB</strong>。</p>
@@ -385,60 +385,60 @@
 <ol>
 <li>首先我们有一个16个Transformer块构成的模型，每一个块都是一个Transformer块。</li>
 </ol>
-<p><img src="/images/deep1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/Users/zyaztec/Blog/public/images/240512-2.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="2">
 <li>有一个很大的数据集和四个GPU。</li>
 </ol>
-<p><img src="/images/deep2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-3.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="3">
 <li>我们使用三阶段策略，将OPG和数据都进行拆分放在四张卡上。</li>
 </ol>
-<p><img src="/images/deep3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-4.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="4">
 <li>每个模块下的格子代表模块占用的显存。第一行是FP16版本的模型权重参数，第二行是FP16的梯度，用来反向传播时更新权重，剩下的大部分绿色部分是优化器使用的显存部分，包含（FP32梯度，FP32方差，FP32动量，FP32参数）它只有在FP16梯度计算后才会被使用。ZeRO3使用了混合精度，因此前向传播中使用了半精度的参数。</li>
 </ol>
-<p><img src="/images/deep4.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/images/deep5.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-5.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-6.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="5">
 <li>每个模块还需要一部分空间用于存放激活值，也就是上面蓝色的部分。</li>
 </ol>
-<p><img src="/images/deep6.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-7.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="6">
 <li>每个GPU都会负责模型的一部分，也就是图中的$M_0 - M_3$。</li>
 </ol>
-<p><img src="/images/deep7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-8.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="7">
 <li>现在进入ZeRO3的一个分布式训练流程：</li>
 </ol>
 <ul>
 <li>首先，GPU_0将自身已经有的模型部分权重$M_0$通过<code>broadcast</code>发送到其他GPU。</li>
 </ul>
-<p><img src="/images/deep8.gif" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-9.gif" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>当所有GPU都有了权重$M_0$后，除了GPU_0以外的GPU会将他们存储在一个临时缓存中。</li>
 <li>进行前向传播，每个GPU都会使用$M_0$的参数在自己的进程的数据上进行前向传播，只有每个层的激活值会被保留。</li>
 <li>$M_0$计算完成后，其他GPU删除这部分的模型参数。</li>
 </ul>
-<p><img src="/images/deep9.gif" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-10.gif" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>接下来，GPU_1将自己的模型权重参数$M_1$广播发送到其他GPU。所有GPU上使用$M_1$进行前向传播。</li>
 <li>$M_1$计算完成后，其他GPU删除这部分的模型参数。</li>
 <li>依次类推，将每个GPU上的各自的模型权重都训练完。</li>
 <li>前向传播结束后，每个GPU都根据自己数据集计算一个损失。</li>
 </ul>
-<p><img src="/images/deep10.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-11.png" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>开始反向传播。首先所有GPU都会拿到最后一个模型分块（也就是$M_3$）的损失。反向传播会在这块模型上进行，$M_3$的激活值会从保存好的激活值上进行计算。</li>
 </ul>
-<p><img src="/images/deep11.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="/images/deep12.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-12.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-13.png" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>其他GPU将自己计算的$M_3$的梯度发送给GPU_3进行梯度累积，最后在GPU_3上更新并保存最终的$M_3$权重参数。</li>
 </ul>
 <blockquote>
 <p>备注：梯度累积之前讲过，将几个小批次的数据的梯度累积，累加够一个大批次后更新模型权重。</p>
 </blockquote>
-<p><img src="/images/deep13.gif" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-14.gif" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>其他GPU删除临时存储的$M_3$权重参数和梯度，所有GPU都删除$M_3$的激活值。</li>
 <li>GPU_2发送$M_2$参数到其他GPU，以便它们进行反向传播并计算梯度。</li>
@@ -446,11 +446,11 @@
 <li>现在每个GPU都有自己的梯度了，开始计算参数更新。</li>
 <li>优化器部分在每个GPU上开始并行。</li>
 </ul>
-<p><img src="/images/deep14.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-15.png" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>优化器会生成FP32精度的模型权重，然后转换至FP16精度。</li>
 </ul>
-<p><img src="/images/deep15.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240512-16.png" srcset="/img/loading.gif" lazyload></p>
 <ul>
 <li>FP16精度的权重成为了下一个迭代开始时的模型参数，至此一个训练迭代完成。</li>
 </ul>

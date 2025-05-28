@@ -24,13 +24,13 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="一个非常精简的无机器学习搜索系统实现。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/search.jpg">
+<meta property="og:image" content="http://images.zerolovesea.top/blog/search.jpg">
 <meta property="article:published_time" content="2024-03-10T08:51:22.000Z">
-<meta property="article:modified_time" content="2024-03-10T09:20:48.427Z">
+<meta property="article:modified_time" content="2025-05-28T13:47:51.947Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="搜索系统">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/search.jpg">
+<meta name="twitter:image" content="http://images.zerolovesea.top/blog/search.jpg">
   
   
   
@@ -376,7 +376,7 @@
 <p>最后就是检索的方法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">retrive</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span>, inverted_index: <span class="hljs-built_in">dict</span>[<span class="hljs-built_in">str</span>, <span class="hljs-built_in">list</span>[<span class="hljs-built_in">int</span>]]</span>) -&gt; <span class="hljs-built_in">list</span>[<span class="hljs-built_in">int</span>]:<br>    words = jieba.cut_for_search(query)<br>    result = <span class="hljs-built_in">set</span>()<br>    <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> words:<br>        <span class="hljs-keyword">if</span> word <span class="hljs-keyword">in</span> inverted_index:<br>            result.update(inverted_index[word])<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">list</span>(result)<br><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    invert_index = build_invert_index(forward_index)<br><br>    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>        query = <span class="hljs-built_in">input</span>(<span class="hljs-string">&quot;请输入查询词：&quot;</span>)<br>        <span class="hljs-keyword">if</span> query == <span class="hljs-string">&quot;q&quot;</span>:<br>            <span class="hljs-keyword">break</span><br>        result = retrive(query, invert_index)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;查询词：<span class="hljs-subst">&#123;query&#125;</span>的结果为：&quot;</span>)<br>        <span class="hljs-keyword">for</span> doc <span class="hljs-keyword">in</span> result:  <br>            <span class="hljs-built_in">print</span>(forward_index[doc])<br><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;=&quot;</span> * <span class="hljs-number">20</span>)<br></code></pre></td></tr></table></figure>
 
-<p><img src="/images/171958.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="http://images.zerolovesea.top/blog/240310-1.png" srcset="/img/loading.gif" lazyload><img src="/Users/zyaztec/Blog/public/images/240310-1.png" srcset="/img/loading.gif" lazyload alt="240310-1"></p>
 <p>2024&#x2F;3&#x2F;10 于苏州</p>
 
                 

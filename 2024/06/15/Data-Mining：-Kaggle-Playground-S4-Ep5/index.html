@@ -24,16 +24,16 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="Kaggle Playground S4 Ep5的相关特征工程。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/data_mining.jpg">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/data_mining.jpg">
 <meta property="article:published_time" content="2024-06-15T11:38:53.000Z">
-<meta property="article:modified_time" content="2024-08-04T07:52:11.766Z">
+<meta property="article:modified_time" content="2025-05-28T15:04:47.545Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="Kaggle">
 <meta property="article:tag" content="数据挖掘">
 <meta property="article:tag" content="特征工程">
 <meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/data_mining.jpg">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/data_mining.jpg">
   
   
   
@@ -359,188 +359,191 @@
                 
                 <p>工作之后大概有十个月没碰Kaggle，最近打算重新捡起，因此先从最近的Playground开始慢慢热手。</p>
 <p>S4 Ep5的主题是洪水回归预测（Regression with a Flood Prediction Dataset），要求基于一系列特征预测未来是否会发生洪水。</p>
-<h1>数据集展示</h1>
-<p>训练数据集中包含21个特征，目标变量是<code>FloodProbability</code>，一个概率值。评估指标是R2。</p>
+<h1 id="数据集展示"><a href="#数据集展示" class="headerlink" title="数据集展示"></a>数据集展示</h1><p>训练数据集中包含21个特征，目标变量是<code>FloodProbability</code>，一个概率值。评估指标是R2。</p>
 <p>打印一下看看：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><br>df_train = pd.read_csv(<span class="hljs-string">&#x27;/kaggle/input/playground-series-s4e5/train.csv&#x27;</span>)<br>df_train.head()<br></code></pre></td></tr></table></figure>
+
 <table>
 <thead>
 <tr>
-<th style="text-align:left">id</th>
-<th style="text-align:left">MonsoonIntensity</th>
-<th style="text-align:left">TopographyDrainage</th>
-<th style="text-align:left">RiverManagement</th>
-<th style="text-align:left">Deforestation</th>
-<th style="text-align:left">Urbanization</th>
-<th style="text-align:left">ClimateChange</th>
-<th style="text-align:left">DamsQuality</th>
-<th style="text-align:left">Siltation</th>
-<th style="text-align:left">AgriculturalPractices</th>
-<th style="text-align:left">…</th>
-<th style="text-align:left">DrainageSystems</th>
-<th style="text-align:left">CoastalVulnerability</th>
-<th style="text-align:left">Landslides</th>
-<th style="text-align:left">Watersheds</th>
-<th style="text-align:left">DeterioratingInfrastructure</th>
-<th style="text-align:left">PopulationScore</th>
-<th style="text-align:left">WetlandLoss</th>
-<th style="text-align:left">InadequatePlanning</th>
-<th style="text-align:left">PoliticalFactors</th>
-<th style="text-align:left">FloodProbability</th>
+<th align="left">id</th>
+<th align="left">MonsoonIntensity</th>
+<th align="left">TopographyDrainage</th>
+<th align="left">RiverManagement</th>
+<th align="left">Deforestation</th>
+<th align="left">Urbanization</th>
+<th align="left">ClimateChange</th>
+<th align="left">DamsQuality</th>
+<th align="left">Siltation</th>
+<th align="left">AgriculturalPractices</th>
+<th align="left">…</th>
+<th align="left">DrainageSystems</th>
+<th align="left">CoastalVulnerability</th>
+<th align="left">Landslides</th>
+<th align="left">Watersheds</th>
+<th align="left">DeterioratingInfrastructure</th>
+<th align="left">PopulationScore</th>
+<th align="left">WetlandLoss</th>
+<th align="left">InadequatePlanning</th>
+<th align="left">PoliticalFactors</th>
+<th align="left">FloodProbability</th>
 <th></th>
 </tr>
 </thead>
-<tbody>
-<tr>
-<td style="text-align:left">0</td>
-<td style="text-align:left">0</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">…</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">3</td>
+<tbody><tr>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">5</td>
+<td align="left">8</td>
+<td align="left">5</td>
+<td align="left">8</td>
+<td align="left">6</td>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">…</td>
+<td align="left">5</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">5</td>
+<td align="left">4</td>
+<td align="left">7</td>
+<td align="left">5</td>
+<td align="left">7</td>
+<td align="left">3</td>
 <td>0.445</td>
 </tr>
 <tr>
-<td style="text-align:left">1</td>
-<td style="text-align:left">1</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">…</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">0</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">3</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">6</td>
+<td align="left">7</td>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">8</td>
+<td align="left">8</td>
+<td align="left">3</td>
+<td align="left">5</td>
+<td align="left">4</td>
+<td align="left">…</td>
+<td align="left">7</td>
+<td align="left">2</td>
+<td align="left">0</td>
+<td align="left">3</td>
+<td align="left">5</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">4</td>
+<td align="left">3</td>
 <td>0.450</td>
 </tr>
 <tr>
-<td style="text-align:left">2</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">1</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">…</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">6</td>
+<td align="left">5</td>
+<td align="left">6</td>
+<td align="left">7</td>
+<td align="left">3</td>
+<td align="left">7</td>
+<td align="left">1</td>
+<td align="left">5</td>
+<td align="left">4</td>
+<td align="left">…</td>
+<td align="left">7</td>
+<td align="left">3</td>
+<td align="left">7</td>
+<td align="left">5</td>
+<td align="left">6</td>
+<td align="left">8</td>
+<td align="left">2</td>
+<td align="left">3</td>
+<td align="left">3</td>
 <td>0.530</td>
 </tr>
 <tr>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">…</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">7</td>
-<td style="text-align:left">5</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">4</td>
+<td align="left">6</td>
+<td align="left">5</td>
+<td align="left">4</td>
+<td align="left">8</td>
+<td align="left">4</td>
+<td align="left">7</td>
+<td align="left">6</td>
+<td align="left">…</td>
+<td align="left">2</td>
+<td align="left">4</td>
+<td align="left">7</td>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">6</td>
+<td align="left">5</td>
+<td align="left">7</td>
+<td align="left">5</td>
 <td>0.535</td>
 </tr>
 <tr>
-<td style="text-align:left">4</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">5</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">…</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">6</td>
-<td style="text-align:left">4</td>
-<td style="text-align:left">1</td>
-<td style="text-align:left">2</td>
-<td style="text-align:left">3</td>
-<td style="text-align:left">5</td>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">5</td>
+<td align="left">3</td>
+<td align="left">2</td>
+<td align="left">6</td>
+<td align="left">4</td>
+<td align="left">4</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">3</td>
+<td align="left">…</td>
+<td align="left">2</td>
+<td align="left">2</td>
+<td align="left">6</td>
+<td align="left">6</td>
+<td align="left">4</td>
+<td align="left">1</td>
+<td align="left">2</td>
+<td align="left">3</td>
+<td align="left">5</td>
 <td>0.415</td>
 </tr>
-</tbody>
-</table>
-<h2 id="目标分布">目标分布</h2>
-<p>初始的特征主要是一些环境/城市化相关的特征，我们观察一下目标变量的分布。</p>
+</tbody></table>
+<h2 id="目标分布"><a href="#目标分布" class="headerlink" title="目标分布"></a>目标分布</h2><p>初始的特征主要是一些环境&#x2F;城市化相关的特征，我们观察一下目标变量的分布。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">plt.figure(figsize=(<span class="hljs-number">6</span>, <span class="hljs-number">2</span>))<br>plt.hist(train.FloodProbability, bins=np.linspace(<span class="hljs-number">0.2825</span>, <span class="hljs-number">0.7275</span>, <span class="hljs-number">90</span>), density=<span class="hljs-literal">True</span>)<br>plt.ylabel(<span class="hljs-string">&#x27;density&#x27;</span>)<br>plt.xlabel(<span class="hljs-string">&#x27;FloodProbability&#x27;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
-<p><img src="/images/pgs4e5_1.png" srcset="/img/loading.gif" lazyload alt=""></p>
+
+<p><img src="https://images.zerolovesea.top/blog/240615-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>目标变量是一个离散值，然而只有83个Unique values，范围在0.285至0.725。且所有数值都是0.005的倍数。</p>
 <p><strong>目标变量属于泊松分布</strong></p>
 <p>使用单样本 K-S 检验能够检验样本是否来自某一分布。我们使用 <code>scipy.stats</code> 包中的 <code>ks_2samp</code> 函数来执行 Kolmogorov-Smirnov 检验，并使用 <code>numpy</code> 来生成泊松分布随机样本。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python">target_data = df_train[<span class="hljs-string">&#x27;FloodProbability&#x27;</span>]<br><br><span class="hljs-comment"># 计算目标变量的均值作为泊松分布的 lambda</span><br>lambda_val = target_data.mean()<br><br><span class="hljs-comment"># 生成与目标变量相同大小的泊松分布样本</span><br>poisson_sample = np.random.poisson(lam=lambda_val, size=<span class="hljs-built_in">len</span>(target_data))<br><br><span class="hljs-comment"># 进行 K-S 检验</span><br>d_statistic, p_value = ks_2samp(target_data, poisson_sample)<br><br><span class="hljs-comment"># 打印结果</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;K-S test: D-statistic = <span class="hljs-subst">&#123;d_statistic&#125;</span>, p-value = <span class="hljs-subst">&#123;p_value&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 判断是否符合泊松分布</span><br><span class="hljs-keyword">if</span> p_value &gt; <span class="hljs-number">0.05</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;无法拒绝零假设，目标变量可能符合泊松分布。&quot;</span>)<br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;拒绝零假设，目标变量不符合泊松分布。&quot;</span>)<br></code></pre></td></tr></table></figure>
-<h2 id="特征分布">特征分布</h2>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">features = df_train.drop(<span class="hljs-string">&#x27;FloodProbability&#x27;</span>,axis=<span class="hljs-number">1</span>).columns<br>_, axs = plt.subplots(<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">12</span>))<br><span class="hljs-keyword">for</span> col, ax <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(features, axs.ravel()):<br>    vc = train[col].value_counts() / <span class="hljs-built_in">len</span>(train)<br>    ax.bar(vc.index, vc)<br>    vc = test[col].value_counts() / <span class="hljs-built_in">len</span>(test)<br>    ax.bar(vc.index, vc, alpha=<span class="hljs-number">0.6</span>)<br>    ax.set_title(col)<br>    ax.xaxis.set_major_locator(MaxNLocator(integer=<span class="hljs-literal">True</span>)) <span class="hljs-comment"># only integer labels</span><br>plt.tight_layout()<br>plt.show()<br></code></pre></td></tr></table></figure>
-<p><img src="/images/pgs4e5_2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+
+
+
+<h2 id="特征分布"><a href="#特征分布" class="headerlink" title="特征分布"></a>特征分布</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">features = df_train.drop(<span class="hljs-string">&#x27;FloodProbability&#x27;</span>,axis=<span class="hljs-number">1</span>).columns<br>_, axs = plt.subplots(<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">12</span>))<br><span class="hljs-keyword">for</span> col, ax <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(features, axs.ravel()):<br>    vc = train[col].value_counts() / <span class="hljs-built_in">len</span>(train)<br>    ax.bar(vc.index, vc)<br>    vc = test[col].value_counts() / <span class="hljs-built_in">len</span>(test)<br>    ax.bar(vc.index, vc, alpha=<span class="hljs-number">0.6</span>)<br>    ax.set_title(col)<br>    ax.xaxis.set_major_locator(MaxNLocator(integer=<span class="hljs-literal">True</span>)) <span class="hljs-comment"># only integer labels</span><br>plt.tight_layout()<br>plt.show()<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://images.zerolovesea.top/blog/240615-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>大部分特征都呈现右偏分布，即长尾出现在右边。此外，所有特征都是离散值。</p>
-<h2 id="相关性">相关性</h2>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">cc = np.corrcoef(train[corr_features], rowvar=<span class="hljs-literal">False</span>)<br>plt.figure(figsize=(<span class="hljs-number">11</span>, <span class="hljs-number">11</span>))<br>sns.heatmap(cc, center=<span class="hljs-number">0</span>, annot=<span class="hljs-literal">True</span>, fmt=<span class="hljs-string">&#x27;.1f&#x27;</span>,<br>            xticklabels=corr_features, yticklabels=corr_features)<br>plt.title(<span class="hljs-string">&#x27;Correlation matrix&#x27;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
-<p><img src="/images/pgs4e5_3.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<h2 id="相关性"><a href="#相关性" class="headerlink" title="相关性"></a>相关性</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">cc = np.corrcoef(train[corr_features], rowvar=<span class="hljs-literal">False</span>)<br>plt.figure(figsize=(<span class="hljs-number">11</span>, <span class="hljs-number">11</span>))<br>sns.heatmap(cc, center=<span class="hljs-number">0</span>, annot=<span class="hljs-literal">True</span>, fmt=<span class="hljs-string">&#x27;.1f&#x27;</span>,<br>            xticklabels=corr_features, yticklabels=corr_features)<br>plt.title(<span class="hljs-string">&#x27;Correlation matrix&#x27;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://images.zerolovesea.top/blog/240615-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>从相关系数上来看，特征之间没有相关性，但所有特征都与目标相关。</p>
-<h2 id="共线性">共线性</h2>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> statsmodels.stats.outliers_influence <span class="hljs-keyword">import</span> variance_inflation_factor<br><span class="hljs-keyword">from</span> statsmodels.tools.tools <span class="hljs-keyword">import</span> add_constant<br><br>df_train_with_const = add_constant(df_train) <br><br>vif_data = pd.DataFrame()<br>vif_data[<span class="hljs-string">&quot;feature&quot;</span>] = df_train_with_const.columns<br>vif_data[<span class="hljs-string">&quot;VIF&quot;</span>] = [variance_inflation_factor(df_train_with_const.values, i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(df_train_with_const.shape[<span class="hljs-number">1</span>])]<br><br><span class="hljs-built_in">print</span>(vif_data)<br></code></pre></td></tr></table></figure>
+<h2 id="共线性"><a href="#共线性" class="headerlink" title="共线性"></a>共线性</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> statsmodels.stats.outliers_influence <span class="hljs-keyword">import</span> variance_inflation_factor<br><span class="hljs-keyword">from</span> statsmodels.tools.tools <span class="hljs-keyword">import</span> add_constant<br><br>df_train_with_const = add_constant(df_train) <br><br>vif_data = pd.DataFrame()<br>vif_data[<span class="hljs-string">&quot;feature&quot;</span>] = df_train_with_const.columns<br>vif_data[<span class="hljs-string">&quot;VIF&quot;</span>] = [variance_inflation_factor(df_train_with_const.values, i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(df_train_with_const.shape[<span class="hljs-number">1</span>])]<br><br><span class="hljs-built_in">print</span>(vif_data)<br></code></pre></td></tr></table></figure>
+
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python">                            feature         VIF<br><span class="hljs-number">0</span>                             const  <span class="hljs-number">152.517829</span><br><span class="hljs-number">1</span>                                <span class="hljs-built_in">id</span>    <span class="hljs-number">1.000011</span><br><span class="hljs-number">2</span>                  MonsoonIntensity    <span class="hljs-number">1.331574</span><br><span class="hljs-number">3</span>                TopographyDrainage    <span class="hljs-number">1.348860</span><br><span class="hljs-number">4</span>                   RiverManagement    <span class="hljs-number">1.343868</span><br><span class="hljs-number">5</span>                     Deforestation    <span class="hljs-number">1.338782</span><br><span class="hljs-number">6</span>                      Urbanization    <span class="hljs-number">1.347294</span><br><span class="hljs-number">7</span>                     ClimateChange    <span class="hljs-number">1.338716</span><br><span class="hljs-number">8</span>                       DamsQuality    <span class="hljs-number">1.346030</span><br><span class="hljs-number">9</span>                         Siltation    <span class="hljs-number">1.338225</span><br><span class="hljs-number">10</span>            AgriculturalPractices    <span class="hljs-number">1.339117</span><br><span class="hljs-number">11</span>                    Encroachments    <span class="hljs-number">1.346542</span><br><span class="hljs-number">12</span>  IneffectiveDisasterPreparedness    <span class="hljs-number">1.343053</span><br><span class="hljs-number">13</span>                  DrainageSystems    <span class="hljs-number">1.340917</span><br><span class="hljs-number">14</span>             CoastalVulnerability    <span class="hljs-number">1.351291</span><br><span class="hljs-number">15</span>                       Landslides    <span class="hljs-number">1.343013</span><br><span class="hljs-number">16</span>                       Watersheds    <span class="hljs-number">1.345418</span><br><span class="hljs-number">17</span>      DeterioratingInfrastructure    <span class="hljs-number">1.334803</span><br><span class="hljs-number">18</span>                  PopulationScore    <span class="hljs-number">1.346067</span><br><span class="hljs-number">19</span>                      WetlandLoss    <span class="hljs-number">1.339142</span><br><span class="hljs-number">20</span>               InadequatePlanning    <span class="hljs-number">1.340360</span><br><span class="hljs-number">21</span>                 PoliticalFactors    <span class="hljs-number">1.348455</span><br><span class="hljs-number">22</span>                 FloodProbability    <span class="hljs-number">6.449539</span><br></code></pre></td></tr></table></figure>
+
 <p>检查一下共线性。通常来说，VIF小于5，都可以认为共线性没有那么大的影响。VIF超过10时就需要处理一下特征。这里大部分特征之间都没有共线性，因此无需处理。</p>
 <p>这一点也可以通过PCA分析来进行确认：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">pca = PCA()<br>pca.fit(train[features])<br>plt.figure(figsize=(<span class="hljs-number">3</span>, <span class="hljs-number">2.5</span>))<br>plt.plot(pca.explained_variance_ratio_.cumsum())<br>plt.gca().xaxis.set_major_locator(MaxNLocator(integer=<span class="hljs-literal">True</span>)) <span class="hljs-comment"># only integer labels</span><br>plt.title(<span class="hljs-string">&#x27;Principal Components Analysis&#x27;</span>)<br>plt.xlabel(<span class="hljs-string">&#x27;component#&#x27;</span>)<br>plt.ylabel(<span class="hljs-string">&#x27;explained variance ratio&#x27;</span>)<br>plt.yticks([<span class="hljs-number">0</span>, <span class="hljs-number">1</span>])<br>plt.show()<br></code></pre></td></tr></table></figure>
-<p><img src="/images/pgs4e5_4.png" srcset="/img/loading.gif" lazyload alt=""></p>
+
+<p><img src="https://images.zerolovesea.top/blog/240615-4.png" srcset="/img/loading.gif" lazyload></p>
 <p>基本上是一条直线，没有显著的特征能够解释大部分方差。</p>
-<h1>特征工程</h1>
-<p>一些社区内的特征工程：</p>
+<h1 id="特征工程"><a href="#特征工程" class="headerlink" title="特征工程"></a>特征工程</h1><p>一些社区内的特征工程：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">transform</span>(<span class="hljs-params">dataframe: pd.DataFrame</span>) -&gt; pd.DataFrame:<br>    df_copy = dataframe.copy()<br>    features = df_copy.columns.tolist()<br><br>    <span class="hljs-comment"># 计算所有特征的平均值，并乘以 0.1</span><br>    df_copy[<span class="hljs-string">&#x27;mean_features&#x27;</span>] = <span class="hljs-number">0.1</span> * df_copy[features].mean(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的标准差</span><br>    df_copy[<span class="hljs-string">&#x27;std_features&#x27;</span>] = df_copy[features].std(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的最大值</span><br>    df_copy[<span class="hljs-string">&#x27;max_features&#x27;</span>] = df_copy[features].<span class="hljs-built_in">max</span>(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的最小值</span><br>    df_copy[<span class="hljs-string">&#x27;min_features&#x27;</span>] = df_copy[features].<span class="hljs-built_in">min</span>(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的中位数，并乘以 0.1</span><br>    df_copy[<span class="hljs-string">&#x27;median_features&#x27;</span>] = <span class="hljs-number">0.1</span> * df_copy[features].median(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 假设 NUMERIC_COLS 是一个包含数值列名的列表</span><br>    <span class="hljs-comment"># 计算数值列的总和</span><br>    NUMERIC_COLS = features  <span class="hljs-comment"># 如果所有列都是数值列</span><br>    df_copy[<span class="hljs-string">&#x27;sum_features&#x27;</span>] = df_copy[NUMERIC_COLS].<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 排序数值列并创建新列</span><br>    sorted_features = [<span class="hljs-string">f&#x27;sort_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span> <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> np.arange(<span class="hljs-built_in">len</span>(NUMERIC_COLS))]<br>    df_copy[sorted_features] = np.sort(df_copy[NUMERIC_COLS], axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算四分位数</span><br>    df_copy[<span class="hljs-string">&#x27;q1&#x27;</span>] = df_copy[features].quantile(<span class="hljs-number">0.25</span>, axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;q2&#x27;</span>] = df_copy[features].quantile(<span class="hljs-number">0.50</span>, axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;q3&#x27;</span>] = df_copy[features].quantile(<span class="hljs-number">0.75</span>, axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 删除原始特征列</span><br>    df_copy = df_copy.drop(features, axis=<span class="hljs-number">1</span>)<br>    <br>    <span class="hljs-comment"># 一些特征交叉</span><br>    df_copy[<span class="hljs-string">&#x27;ClimateAnthropogenicInteraction&#x27;</span>] = (df[<span class="hljs-string">&#x27;MonsoonIntensity&#x27;</span>] + df[<span class="hljs-string">&#x27;ClimateChange&#x27;</span>]) * (df[<span class="hljs-string">&#x27;Deforestation&#x27;</span>] + df[<span class="hljs-string">&#x27;Urbanization&#x27;</span>] + df[<span class="hljs-string">&#x27;AgriculturalPractices&#x27;</span>] + df[<span class="hljs-string">&#x27;Encroachments&#x27;</span>])<br>    df_copy[<span class="hljs-string">&#x27;InfrastructurePreventionInteraction&#x27;</span>] = (df[<span class="hljs-string">&#x27;DamsQuality&#x27;</span>] + df[<span class="hljs-string">&#x27;DrainageSystems&#x27;</span>] + df[<span class="hljs-string">&#x27;DeterioratingInfrastructure&#x27;</span>]) * (df[<span class="hljs-string">&#x27;RiverManagement&#x27;</span>] + df[<span class="hljs-string">&#x27;IneffectiveDisasterPreparedness&#x27;</span>] + df[<span class="hljs-string">&#x27;InadequatePlanning&#x27;</span>])<br><br>    <span class="hljs-comment"># 计算统计特征</span><br>    df_copy[<span class="hljs-string">&#x27;sum&#x27;</span>] = df[features].<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;std&#x27;</span>] = df[features].std(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;mean&#x27;</span>] = df[features].mean(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;max&#x27;</span>] = df[features].<span class="hljs-built_in">max</span>(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;min&#x27;</span>] = df[features].<span class="hljs-built_in">min</span>(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;mode&#x27;</span>] = df[features].mode(axis=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]  <span class="hljs-comment"># 注意：mode 返回的是 DataFrame，需要取第一个值</span><br>    df_copy[<span class="hljs-string">&#x27;median&#x27;</span>] = df[features].median(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;skew&#x27;</span>] = df[features].skew(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;kurt&#x27;</span>] = df[features].kurt(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;entropy&#x27;</span>] = df[num_cols].apply(<span class="hljs-keyword">lambda</span> x: -<span class="hljs-number">1</span>*(x*np.log(x)).<span class="hljs-built_in">sum</span>(), axis=<span class="hljs-number">1</span>)<br>    <br>    <span class="hljs-keyword">return</span> df_copy<br><br></code></pre></td></tr></table></figure>
-<p>2024/6/15 于苏州</p>
+
+<p>2024&#x2F;6&#x2F;15 于苏州</p>
 
                 
               </div>

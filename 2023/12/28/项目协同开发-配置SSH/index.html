@@ -24,14 +24,14 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="了解SSH，是从象牙塔走入实际开发的第一步。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/1.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/ssh.png">
 <meta property="article:published_time" content="2023-12-28T11:34:13.000Z">
-<meta property="article:modified_time" content="2024-06-04T23:55:17.344Z">
+<meta property="article:modified_time" content="2025-05-28T14:48:59.316Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="SSH">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/1.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/ssh.png">
   
   
   
@@ -369,7 +369,7 @@
 <p>在命令行中输入</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh-keygen -t rsa<br></code></pre></td></tr></table></figure>
 <p>随后需要进行三次回车</p>
-<p><img src="/images/2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/231228-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>可以看到密钥被保存在&#x2F;.ssh&#x2F;路径下</p>
 <p>我们输入</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> ~/.ssh/id_rsa.pub<br></code></pre></td></tr></table></figure>
@@ -391,12 +391,12 @@
 <ol start="4">
 <li>确认之后需要输入服务器密码，输入的时候不会显示密码</li>
 </ol>
-<p><img src="/images/3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/231228-2.png" srcset="/img/loading.gif" lazyload></p>
 <ol start="5">
 <li>在VSCode-<code>远程资源管理器</code>-<code>SSH</code>-<code>新建远程</code> 输入<code>ssh -p 29967 root@connect.southb.gpuhub.com</code> 并回车，服务器配置将被保存在VSCode的配置文件。</li>
 <li>现在刷新一下，你就可以在远程资源管理器中见到这个服务器了。未来登陆时也不再需要重复输入密码。</li>
 </ol>
-<p><img src="/images/4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/231228-3.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="配置SSH端口映射"><a href="#配置SSH端口映射" class="headerlink" title="配置SSH端口映射"></a>配置SSH端口映射</h2><p>有的时候在服务器上部署服务时，想要在本地调用服务，那就需要进行端口映射了。我们以<code>ssh -p 46206 root@connect.westb.seetacloud.com</code>为例，如果设置的服务器端口是8501，只需要在命令行中输入以下代码，即可将服务器的端口映射到本地的8501端口。此时运行localhost:8501即可启动服务。</p>
  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ssh -L 8501:172.17.0.2:8501 -p 46206 root@connect.westb.seetacloud.com<br></code></pre></td></tr></table></figure>
 

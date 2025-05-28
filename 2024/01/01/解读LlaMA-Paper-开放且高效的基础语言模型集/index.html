@@ -24,15 +24,15 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="精读Meta团队发布于2022年的论文：原文翻译及架构分析。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/llama.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/llama.png">
 <meta property="article:published_time" content="2024-01-01T03:22:53.000Z">
-<meta property="article:modified_time" content="2024-01-01T07:43:11.656Z">
+<meta property="article:modified_time" content="2025-05-28T13:26:16.819Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="LlaMA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/llama.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/llama.png">
   
   
   
@@ -374,7 +374,7 @@
 <li>ArXiv [2.5%]</li>
 <li>Stack Exchange [2%]</li>
 </ul>
-<h1 id="LLaMA模型架构"><a href="#LLaMA模型架构" class="headerlink" title="LLaMA模型架构"></a>LLaMA模型架构</h1><p><img src="/images/llama_stru.png" srcset="/img/loading.gif" lazyload alt="LLaMA模型架构"><br>LLaMA1的架构已经有很多分析了，总结一共有以下几点：</p>
+<h1 id="LLaMA模型架构"><a href="#LLaMA模型架构" class="headerlink" title="LLaMA模型架构"></a>LLaMA模型架构</h1><p><img src="http://images.zerolovesea.top/blog/240101-1.png" srcset="/img/loading.gif" lazyload alt="LLaMA模型架构"><br>LLaMA1的架构已经有很多分析了，总结一共有以下几点：</p>
 <ul>
 <li><p>前置归一化(Pre-normalizatio)：受到GPT3的启发，LLaMa 对每个 Transformer 子层的输入进行归一化，而不是对输出进行归一化。这是为了训练的稳定性。</p>
 </li>
@@ -723,11 +723,11 @@
 <h3 id="5-1-真实的有毒提示-RealToxicityPrompts包含约100k个提示"><a href="#5-1-真实的有毒提示-RealToxicityPrompts包含约100k个提示" class="headerlink" title="5.1 真实的有毒提示(RealToxicityPrompts包含约100k个提示)"></a>5.1 真实的有毒提示(RealToxicityPrompts包含约100k个提示)</h3><p>语言模型可以生成有毒的语言(toxic language)，例如侮辱、仇恨言论或威胁。模型可以生成的有毒内容范围非常广泛，使得进行全面评估具有挑战性。近期的几项研究（Zhang等，2022；Hoffmann等，2022）已将RealToxicityPrompts基准（Gehman等，2020）视为其模型有多毒的指标。</p>
 <p>RealToxicityPrompts包含约100k个提示，模型必须完成这些提示；然后通过向PerspectiveAPI 3发送请求自动评估其毒性得分。我们无法控制第三方PerspectiveAPI使用的流程，这使得与先前模型进行比较变得困难。</p>
 <p>对于这100k个提示中的每一个，我们使用我们的模型贪婪地生成结果，并测量其毒性得分。每个提示的得分范围从0（非有毒）到1（有毒）。在表11中，我们报告了我们在RealToxicityPrompts的基础和尊重提示类别上的平均得分。这些得分与我们在文献中观察到的是“可比较的”（例如，Chinchilla为0.087），但这些工作和我们的方法（在采样策略、提示数量和API时间方面）存在差异。</p>
-<p><img src="/images/134725.png" srcset="/img/loading.gif" lazyload alt="表11：RealToxicityPrompts"></p>
+<p><img src="http://images.zerolovesea.top/blog/240101-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>我们观察到，随着模型大小的增加，哪怕是对于要求尊重的提示，毒性也会增加。这也在之前的研究中观察到（Zhang等，2022），但Hoffmann等人（2022）是一个显著的例外，他们并未观察到Chinchilla和Gopher之间有任何差异，尽管大小不同。这可能是由于更大的模型Gopher的性能比Chinchilla差，表明毒性与模型大小之间的关系可能只适用于同一模型系列内。</p>
 <h3 id="5-2-CrowS-Pairs"><a href="#5-2-CrowS-Pairs" class="headerlink" title="5.2 CrowS-Pairs"></a>5.2 CrowS-Pairs</h3><p>我们在CrowS-Pairs（Nangia等，2020）上评估我们模型的偏见。这个数据集允许在9个类别中测量偏见：性别、宗教、种族&#x2F;肤色、性取向、年龄、国籍、残疾、外貌和社会经济地位。每个示例由一个刻板印象和一个反刻板印象组成，我们使用zero-shot设置中两个句子的困惑度来测量模型对刻板句子的偏好。因此，较高的分数表示较高的偏见。</p>
 <p>我们在表12中与GPT-3和OPT-175B进行比较。平均而言，LLaMA与这两个模型相比略有优势。我们的模型在宗教类别中尤其偏见明显（与OPT-175B相比增加了+10%），其次是年龄和性别。我们预计这些偏见来自CommonCrawl，尽管经过了多个过滤步骤。</p>
-<p><img src="/images/134901.png" srcset="/img/loading.gif" lazyload alt="表12：CrowS-Pairs。我们将LLaMA-65B、OPT-175B和GPT-3-175B中包含的偏见水平进行了比较。得分越高表示偏见越大。"></p>
+<p><img src="http://images.zerolovesea.top/blog/240101-3.png" srcset="/img/loading.gif" lazyload alt="表12：CrowS-Pairs。我们将LLaMA-65B、OPT-175B和GPT-3-175B中包含的偏见水平进行了比较。得分越高表示偏见越大。"></p>
 <h3 id="5-3-WinoGender"><a href="#5-3-WinoGender" class="headerlink" title="5.3 WinoGender"></a>5.3 WinoGender</h3><p>为了进一步研究我们模型在性别类别上的偏见，我们查看了WinoGender基准测试（Rudinger等，2018），这是一个共指解析数据集。WinoGender由Winograd模式组成，通过确定模型的共指解析性能是否受到代词性别的影响来评估偏见。</p>
 <blockquote>
 <p>人们为了避免重复，习惯用代词、称谓和缩略语来指代前面提到的实体全称。 例如，在文章开始处会写“哈尔滨工业大学”，后面可能会说“哈工大”、“工大”等，还会提到“这所大学”、“她”等。 这种现象称为共指现象。共指解析的目的就在于自动识别表示同一个实体的名词短语或代词，并将他们归类。</p>
@@ -737,9 +737,9 @@
 <p>在表13中，我们报告了数据集中包含的三种不同代词的共指得分。我们观察到，我们的模型在为“their&#x2F;them&#x2F;someone”代词执行共指解析时明显优于“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词。之前的工作（Rae等，2021年；Hoffmann等，2022）也有类似的观察，并可能表明存在性别偏见。</p>
 <p>确实，在“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词的情况下，模型可能使用职业的大多数性别进行共指解析，而不是使用句子的证据。为了进一步研究这一假设，我们查看了WinoGender数据集中“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词的“gotcha”案例集。这些案例对应于代词不匹配职业的大多数性别的句子，而职业是正确答案。</p>
 <p>在表13中，我们观察到我们的模型LLaMA-65B在“gotcha”示例上的错误更多，明确显示它捕捉到了与性别和职业相关的社会偏见。无论性别如何，我们的模型在“her&#x2F;her&#x2F;she”和“his&#x2F;him&#x2F;he”代词上的性能下降，这表明存在偏见。</p>
-<p><img src="/images/135040.png" srcset="/img/loading.gif" lazyload alt="表13：WinoGender"></p>
+<p><img src="http://images.zerolovesea.top/blog/240101-4.png" srcset="/img/loading.gif" lazyload alt="表13：WinoGender"></p>
 <p>在表14中，我们报告了我们模型在两个问题上的性能，以测量真实模型和真实性和信息性的交集。与GPT-3相比，我们的模型在两个类别中得分更高，但正确答案的比率仍然很低，显示我们的模型可能会产生错误答案。</p>
-<p><img src="/images/135147.png" srcset="/img/loading.gif" lazyload alt="表14：Truthful QA"></p>
+<p><img src="http://images.zerolovesea.top/blog/240101-5.png" srcset="/img/loading.gif" lazyload alt="表14：Truthful QA"></p>
 <h3 id="5-4-TruthfulQA"><a href="#5-4-TruthfulQA" class="headerlink" title="5.4 TruthfulQA"></a>5.4 TruthfulQA</h3><p>TruthfulQA（Lin等，2021）旨在衡量模型的真实性，即其识别某个声明是否真实的能力。Lin等人（2021）考虑了“真实”在“实际世界的字面真实”意义上的定义，而不是只在信仰系统或传统背景下为真的声明。这个基准测试可以评估模型生成错误信息或错误声明的风险。这些问题以多种风格编写，涵盖了38个类别，并且旨在具有对抗性。</p>
 <h2 id="6-碳足迹（Carbon-footprint）"><a href="#6-碳足迹（Carbon-footprint）" class="headerlink" title="6 碳足迹（Carbon footprint）"></a>6 碳足迹（Carbon footprint）</h2><p>训练 LLaMA 消耗了大量能源，排放了很多二氧化碳。我们遵循最近的文献，将总能耗和产生的碳足迹分解在表 15 中：</p>
 <p><img src="https://arthurchiao.art/assets/img/llama-paper/table-15.png" srcset="/img/loading.gif" lazyload alt="表15：同一数据中心训练不同模型的碳足迹"></p>

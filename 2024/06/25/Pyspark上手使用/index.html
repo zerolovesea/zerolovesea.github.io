@@ -24,15 +24,15 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="使用Spark的高级封装API：Pyspark的一些上手复习。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/spark.jpeg">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/spark.jpeg">
 <meta property="article:published_time" content="2024-06-25T08:05:42.000Z">
-<meta property="article:modified_time" content="2024-08-04T07:51:38.313Z">
+<meta property="article:modified_time" content="2025-05-28T14:51:57.266Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="Spark">
 <meta property="article:tag" content="Big Data">
 <meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/spark.jpeg">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/spark.jpeg">
   
   
   
@@ -282,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          469 字
+          477 字
         
       </span>
     
@@ -358,39 +358,33 @@
                 
                 <p>前面复习了一下Spark一些的架构内容，这次复习一下上手Pyspark做一些数据处理。</p>
 <p>上手之前看了一下文档，发现在Spark2.0之后，RDD的概念被Dataset取代了，Dataset也是一个分布式数据集，只不过做了一些底层的优化。</p>
-<h1>简单Demo</h1>
-<p>首先上手一个简单的Pyspark的Demo，对数据进行一些处理。</p>
+<h1 id="简单Demo"><a href="#简单Demo" class="headerlink" title="简单Demo"></a>简单Demo</h1><p>首先上手一个简单的Pyspark的Demo，对数据进行一些处理。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> pyspark.sql <span class="hljs-keyword">import</span> SparkSession<br><span class="hljs-keyword">from</span> pyspark.sql.functions <span class="hljs-keyword">import</span> *<br><br>spark = SparkSession.builder.appName(<span class="hljs-string">&quot;CSV Loader&quot;</span>).getOrCreate()<br>df = spark.read.csv(<span class="hljs-string">&quot;train.csv&quot;</span>, header=<span class="hljs-literal">True</span>, inferSchema=<span class="hljs-literal">True</span>)<br><br>line_id_0 = df.<span class="hljs-built_in">filter</span>(df.<span class="hljs-built_in">id</span>==<span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># 需要show才能看到</span><br>line_id_0.show()<br><br><span class="hljs-comment"># 计算AveRooms字段的单词数，并显示</span><br><span class="hljs-comment"># select用于选择，size用于计算长度，split用于分割</span><br>df.select(size(split(df.AveRooms, <span class="hljs-string">&quot; &quot;</span>)).alias(<span class="hljs-string">&quot;num_words&quot;</span>)).show()<br><br><span class="hljs-comment"># 缓存</span><br>log_data = df.cache()<br>log_data.count()<br><br>log_data.select(<span class="hljs-string">&quot;id&quot;</span>,<span class="hljs-string">&quot;AveRooms&quot;</span>).show(<span class="hljs-number">5</span>)<br><br><span class="hljs-comment"># 选择AveRooms列，并将其转换为一个列表</span><br>nums = log_data.select(<span class="hljs-string">&quot;AveRooms&quot;</span>).rdd.flatMap(<span class="hljs-keyword">lambda</span> x: x).collect()<br><span class="hljs-built_in">print</span>(nums)<br></code></pre></td></tr></table></figure>
-<h1>流程解析</h1>
-<p>分析一下上面的流程：</p>
+
+<h1 id="流程解析"><a href="#流程解析" class="headerlink" title="流程解析"></a>流程解析</h1><p>分析一下上面的流程：</p>
 <ul>
-<li>首先需要实例化一个SparkSession对象，这是Spark所有功能的入口。例如：
-<ul>
+<li>首先需要实例化一个SparkSession对象，这是Spark所有功能的入口。例如：<ul>
 <li><code>spark = SparkSession.builder.appName(&quot;CSV Loader&quot;).getOrCreate()</code>。</li>
 </ul>
 </li>
-<li>随后，需要从一个数据源创建Spark中的DataFrame。例如：
-<ul>
+<li>随后，需要从一个数据源创建Spark中的DataFrame。例如：<ul>
 <li><code>df = spark.read.csv(&quot;train.csv&quot;, header=True, inferSchema=True)</code>。</li>
 <li><code>df = spark.read.json(&quot;examples/src/main/resources/people.json&quot;)</code>。</li>
 </ul>
 </li>
-<li>在获取到DataFrame之后，能够进行一些基础的操作，例如查看Schema，展示数据，groupBy等操作。例如：
-<ul>
+<li>在获取到DataFrame之后，能够进行一些基础的操作，例如查看Schema，展示数据，groupBy等操作。例如：<ul>
 <li><code>df.printSchema()</code></li>
 <li><code>df.select(&quot;name&quot;).show()</code></li>
-<li><code>df.select(df['name'], df['age'] + 1).show()</code></li>
-<li><code>df.filter(df['age'] &gt; 21).show()</code></li>
+<li><code>df.select(df[&#39;name&#39;], df[&#39;age&#39;] + 1).show()</code></li>
+<li><code>df.filter(df[&#39;age&#39;] &gt; 21).show()</code></li>
 <li><code>df.groupBy(&quot;age&quot;).count().show()</code></li>
 </ul>
 </li>
-<li>此外，能够直接执行一些SQL语句。例如：
-<ul>
+<li>此外，能够直接执行一些SQL语句。例如：<ul>
 <li><code>sqlDF = spark.sql(&quot;SELECT * FROM people&quot;)</code></li>
 </ul>
 </li>
-<li>为了加速读取数据，能够对一些需要长期执行的数据进行缓存，这种方式能够将内存更合理的利用，例如：
-<ul>
+<li>为了加速读取数据，能够对一些需要长期执行的数据进行缓存，这种方式能够将内存更合理的利用，例如：<ul>
 <li><code>log_data = df.cache()</code></li>
 </ul>
 </li>
@@ -398,7 +392,7 @@
 <blockquote>
 <p>Pyspark涵盖了多个接口，建议直接查看源码。路径是<code>examples/src/main/python</code></p>
 </blockquote>
-<p>2024/6/26 于苏州</p>
+<p>2024&#x2F;6&#x2F;26 于苏州</p>
 
                 
               </div>

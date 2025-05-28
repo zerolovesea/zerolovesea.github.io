@@ -24,16 +24,16 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="Python中的并发多线程编程的实现，以及多线程与多进程的基础知识。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/python.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/python.png">
 <meta property="article:published_time" content="2024-01-31T11:55:25.000Z">
-<meta property="article:modified_time" content="2024-02-03T12:26:18.089Z">
+<meta property="article:modified_time" content="2025-05-28T13:39:34.686Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="Python">
 <meta property="article:tag" content="多线程">
 <meta property="article:tag" content="多进程">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/python.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/python.png">
   
   
   
@@ -445,10 +445,6 @@
 <p>上面这段函数对线程池进行了实例化，并使用了<code>add_done_callback</code>方法，将线程的结果放入下一个函数进行执行。这相当于构建了一个pipeline。例如，task可以执行下载任务，done函数执行写入任务。</p>
 <h2 id="显示线程结果"><a href="#显示线程结果" class="headerlink" title="显示线程结果"></a>显示线程结果</h2><p>如果要获取线程的结果，只需要使用线程的<code>result</code>这个方法即可提取：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">from</span> concurrent.futures <span class="hljs-keyword">import</span> ThreadPoolExecutor, Future<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">task</span>(<span class="hljs-params">url</span>):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;mission start.&#x27;</span>)<br>    time.sleep(<span class="hljs-number">5</span>)<br>    <span class="hljs-keyword">return</span> random.randint(<span class="hljs-number">0</span>,<span class="hljs-number">10</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">done</span>(<span class="hljs-params">response</span>):<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;response number&#x27;</span>, response.result())<br><br>pool = ThreadPoolExecutor(<span class="hljs-number">10</span>) <span class="hljs-comment"># 最多维护10个线程</span><br><br>future_list = []<br><br>url_list = [<span class="hljs-string">&#x27;www.xxx_&#123;&#125;.com&#x27;</span>.<span class="hljs-built_in">format</span>(i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">100</span>)]<br><span class="hljs-keyword">for</span> url <span class="hljs-keyword">in</span> url_list:<br>    future = pool.submit(task, url) <span class="hljs-comment"># 提交任务</span><br>    future_list.append(future)<br>    <br>pool.shutdown(<span class="hljs-literal">True</span>)<br><br><span class="hljs-keyword">for</span> fu <span class="hljs-keyword">in</span> future_list:<br>    <span class="hljs-built_in">print</span>(fu.result())<br></code></pre></td></tr></table></figure>
-
-
-
-
 
 <p>2024&#x2F;2&#x2F;1 于苏州家中</p>
 

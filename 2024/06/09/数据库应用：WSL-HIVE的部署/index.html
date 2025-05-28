@@ -24,14 +24,14 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="如何在WSL中部署Apache Hive。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/hive.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/hive.png">
 <meta property="article:published_time" content="2024-06-09T01:46:22.000Z">
-<meta property="article:modified_time" content="2024-06-09T04:11:14.642Z">
+<meta property="article:modified_time" content="2025-05-28T14:58:43.603Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="HIVE">
 <meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/hive.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/hive.png">
   
   
   
@@ -391,7 +391,7 @@ graph TD
 </pre>
 
 <p>以下是一个更具体的流程图：</p>
-<p><img src="/images/map_2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240609-1.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="Hadoop"><a href="#Hadoop" class="headerlink" title="Hadoop"></a>Hadoop</h1><p>Hadoop是一个用Java编写的开源框架，旨在实现分布式数据处理。它的组件包括了以下：</p>
 <ul>
 <li>Hadoop HDFS：Hadoop 分布式存储系统。</li>
@@ -456,7 +456,7 @@ graph TD
 
 <p>这样就能够依次启动Hadoop文件系统和Yarn脚本。<code>hdfs namenode -format </code>用来初始化<code>namenode</code>，只需要第一次执行就可以了。</p>
 <p>至此Hadoop安装完毕，我们可以通过访问转发后的端口<code>http://localhost:转发端口/</code>来直接访问到Hadoop的服务。</p>
-<p><img src="/images/hadoop.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240609-2.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="Hive"><a href="#Hive" class="headerlink" title="Hive"></a>Hive</h1><p>Hive和Hadoop的关系可能让有些人不太理解，前者实际上是基于后者的一个衍生工具。由于Hadoop由Java编写，当用户需要实现具体功能的时候，需要使用Java来编写MapReduce任务。也就是需要分开写多个Java代码来实现Map和Reduce的功能，这让一些只懂SQL的用户增加了学习成本。</p>
 <p>为了解决这个问题，才出现了Hive，它用来将SQL转换为MapReduce任务，以帮助用户更快的实现需求。</p>
 <p>Hive的主要组件包括：</p>
@@ -511,22 +511,22 @@ graph TD
 <p>最后启动Hive：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">hive<br></code></pre></td></tr></table></figure>
 
-<p><img src="/images/hive_1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240609-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>至此大功告成，我们可以创建一个表，插入数据来验证安装是否成功：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> test (id <span class="hljs-type">INT</span>, name STRING);<br>LOAD DATA <span class="hljs-keyword">LOCAL</span> INPATH <span class="hljs-string">&#x27;/usr/local/hive/examples/files/kv1.txt&#x27;</span> <span class="hljs-keyword">INTO</span> <span class="hljs-keyword">TABLE</span> test;<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> test;<br></code></pre></td></tr></table></figure>
 
 <p>我们可以通过<code>SHOW TABLES;</code>来查看当前数据库中的所有表：</p>
-<p><img src="/images/hive_2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240609-4.png" srcset="/img/loading.gif" lazyload></p>
 <p>也可以查看其中的内容：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">USE database_name;<br><span class="hljs-keyword">SHOW</span> TABLES;<br></code></pre></td></tr></table></figure>
 
-<p><img src="/images/hive_3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240609-5.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="使用DBeaver连接Hive"><a href="#使用DBeaver连接Hive" class="headerlink" title="使用DBeaver连接Hive"></a>使用DBeaver连接Hive</h1><p>使用命令行连数据库还是比较麻烦，因此考虑使用DBeaver来连接Hive。要实现它，首先需要让WSL和Windows进行通信。我们在WSL中输出<code>hostname -I</code>来获取WSL的IP地址。</p>
 <p>随后在WSL启动HiveServer2：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">hiveserver2<br></code></pre></td></tr></table></figure>
 
 <p>这时就可以在DBeaver中配置新连接了。在创建新连接中选择Apache Hive，随后连接参数里填上主机，端口，数据库，用户名和密码，就可以连接到WSL的Hive了。</p>
-<p><img src="/images/hive_4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240609-6.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="停止服务"><a href="#停止服务" class="headerlink" title="停止服务"></a>停止服务</h1><p>如果需要停止服务，需要执行以下内容：</p>
 <h4 id="停止Hadoop服务"><a href="#停止Hadoop服务" class="headerlink" title="停止Hadoop服务"></a>停止Hadoop服务</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 停止YARN</span><br>stop-yarn.sh<br><br><span class="hljs-comment"># 停止HDFS</span><br>stop-dfs.sh<br></code></pre></td></tr></table></figure>
 
