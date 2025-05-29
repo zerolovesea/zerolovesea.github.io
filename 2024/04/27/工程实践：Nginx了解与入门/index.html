@@ -26,7 +26,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://images.zerolovesea.top/blog/nginx.png">
 <meta property="article:published_time" content="2024-04-27T00:13:58.000Z">
-<meta property="article:modified_time" content="2025-05-28T14:22:40.239Z">
+<meta property="article:modified_time" content="2025-05-29T03:14:14.208Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="工程实践">
 <meta property="article:tag" content="后端">
@@ -399,7 +399,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>		<br>		root C:/nginx-1.26.0/html;<br>		index test.html;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>这时访问<code>localhost</code>，就可以正确显示了。</p>
-<p><img src="https://images.zerolovesea.top/blog/240427-1.png" srcset="/img/loading.gif" lazyload><img src="/Users/zyaztec/Blog/public/images/240427-1.png" srcset="/img/loading.gif" lazyload alt="240427-1"></p>
+<p><img src="https://images.zerolovesea.top/blog/240427-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>有的时候，需要在页面文件内引入各种其他文件。在配置文件的相同路径下，有一个<code>mime.types</code>的文件，这是对于各种文件类型的解析。我们需要对它进行引入，才能让web服务器正确解析文件。因此，我们需要在配置文件中加上<code>include</code>字段：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash">events &#123;<br>   <br>&#125;<br><br>http &#123;<br>	include mime.types; <span class="hljs-comment"># 由于是同路径，按照相对路径导入</span><br>	server &#123;<br>		listen 80;<br>		server_name localhost; <span class="hljs-comment"># IP地址或域名</span><br>		<br>		root C:/nginx-1.26.0/html;<br>		index test.html;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
