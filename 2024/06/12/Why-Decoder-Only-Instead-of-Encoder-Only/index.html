@@ -24,14 +24,14 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="分析为什么当前的语言模型都使用Decoder-Only架构。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/llm.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/llm.png">
 <meta property="article:published_time" content="2024-06-11T22:17:24.000Z">
-<meta property="article:modified_time" content="2024-06-22T09:39:26.360Z">
+<meta property="article:modified_time" content="2025-05-28T15:38:29.102Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="LLM">
 <meta property="article:tag" content="NLP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/llm.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/llm.png">
   
   
   
@@ -357,7 +357,7 @@
                 
                 <p>为什么现在的语言模型都采用Decoder Only的架构？这是一道经典面试题，这次整理一下做一个记录。</p>
 <p>首先话不多说，先上Transformer架构图：</p>
-<p><img src="/images/transformer.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240612-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>我们把处理模型输入的模型叫做Encoder，生成输出的模型叫做Decoder。Transformer的具体架构细节无需赘言，左侧是编码器Encoder，右侧是解码器Decoder。我们可以看到，去除掉网络尾部的前馈层，Decoder只比Encoder多了一个Masked后的多头注意力，也就是通过上三角矩阵遮掩掉一部分未来的信息。这时候问题就转变为，为什么语言模型都需要Masked的多头注意力？</p>
 <p><strong>文本生成</strong></p>
 <p>首先，需要明确的是，Encoder在整个网络的架构中，负责将输入的信息转化为高维的内部表示，而Decoder负责根据这个内部表示，生成下一个概率最大的Token。从两者任务上来看，生成式语言模型更加关注于后者的生成特性，对于前者的编码特性并不是那么关注。</p>

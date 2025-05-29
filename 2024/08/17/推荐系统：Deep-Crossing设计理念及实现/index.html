@@ -24,16 +24,16 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="Deep Crossing的原理，设计理念及Python实现。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
 <meta property="article:published_time" content="2024-08-17T01:51:19.000Z">
-<meta property="article:modified_time" content="2024-08-18T11:04:51.778Z">
+<meta property="article:modified_time" content="2025-05-29T00:43:47.974Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="特征工程">
 <meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="机器学习">
 <meta property="article:tag" content="Deep Crossing">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/rec.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
   
   
   
@@ -358,16 +358,14 @@
               <div class="markdown-body">
                 
                 <p>在推荐系统中，特征交叉和特征筛选是一个永恒不灭的话题。从逻辑回归时代的人工特征交互，到poly2的完全特征交互，到FM的隐向量特征交互，再到GDBT+LR的自动特征交互，都是在深度学习方法开始之前的特征工程的发展历史。</p>
-<p>在14年Resnet解决了层数过深导致的梯度消失问题后，深度神经网络被广泛运用到工业界。2016年微软发布了Deep Crossing模型，用于CTR等二分类任务，原论文链接如下：<a target="_blank" rel="noopener" href="https://www.kdd.org/kdd2016/papers/files/adf0975-shanA.pdf">Deep Crossing: Web-Scale Modeling without<br>
-Manually Crafted Combinatorial Features<br>
+<p>在14年Resnet解决了层数过深导致的梯度消失问题后，深度神经网络被广泛运用到工业界。2016年微软发布了Deep Crossing模型，用于CTR等二分类任务，原论文链接如下：<a target="_blank" rel="noopener" href="https://www.kdd.org/kdd2016/papers/files/adf0975-shanA.pdf">Deep Crossing: Web-Scale Modeling without<br>Manually Crafted Combinatorial Features
 </a></p>
-<h1>论文解读</h1>
-<p>看名字就知道它要解决的是人工组合特征的问题。通过构建网络来实现特征的深度交叉。在Deep Crossing中，支持文本，分类，ID，数值这样的特征。</p>
+<h1 id="论文解读"><a href="#论文解读" class="headerlink" title="论文解读"></a>论文解读</h1><p>看名字就知道它要解决的是人工组合特征的问题。通过构建网络来实现特征的深度交叉。在Deep Crossing中，支持文本，分类，ID，数值这样的特征。</p>
 <p>Deep Crossing的网络架构如下：</p>
-<p><img src="/images/deepcrossing.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="https://images.zerolovesea.top/blog/240818-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>核心是四个部分：Embedding层用于嵌入特征，Stacking层用于将嵌入层简单的concat在一起，随后通过多个Residual模块提取特征。最后利用一个Scoring层来进行打分，也就是最后得到的logit值。通过对logit值进行排序，实现投放广告的排序。</p>
 <p>原文中，微软使用的特征如下所示：</p>
-<p><img src="/images/deepcrossing2.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="https://images.zerolovesea.top/blog/240818-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>对于一些关键的概念也进行了解释：</p>
 <table>
 <thead>
@@ -376,8 +374,7 @@ Manually Crafted Combinatorial Features<br>
 <th>含义</th>
 </tr>
 </thead>
-<tbody>
-<tr>
+<tbody><tr>
 <td>搜索词</td>
 <td>用户在搜索框中输入的搜索词</td>
 </tr>
@@ -417,24 +414,26 @@ Manually Crafted Combinatorial Features<br>
 <td>点击样例</td>
 <td>一个广告点击的例子，记录了广告在实际点击场景的相关信息</td>
 </tr>
-</tbody>
-</table>
+</tbody></table>
 <p>每个单独的特征都被转为向量，例如对于Query等文本特征，将转为49292维的向量。例如匹配类型的低基数分类输入进行one hot处理。对于一些高基数的特征，例如Campaign ID特征，它表示的是不同的广告计划，通常会有数百万个ID，原作者的思路是根据CampaignID的历史点击率，选择Top10000个，编号从0到9999，将剩余的ID统一编号为10001。同时构建其衍生特征，将所有ID对应的历史点击率组合成10001维的稠密矩阵，各个元素分别为对应ID的历史CTR，最后一个元素为剩余ID的平均CTR。通过降维引入衍生特征的方式，可以有效的减少高基数特征带来的参数量剧增问题。</p>
 <p>这也是原图中展示的Campaign ID 10001维度的由来。</p>
 <p>文章对特征嵌入没有讲的很明确，翻阅了很多网上的解释，我对这一部分依旧不是很理解。原文针对自己的场景有一些tricks，整体的思想就是将高维稀疏矩阵嵌入为低维稠密矩阵。</p>
 <p>嵌入层之后经过Stacking层的拼接，直接传到残差层。</p>
-<p><img src="/images/deepcrossing3.png" srcset="/img/loading.gif" lazyload alt=""></p>
+<p><img src="https://images.zerolovesea.top/blog/240818-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>针对ResNet中的残差模块，将原本的卷积核替换为了普通的MLP层。经过多层残差后，输出一个score，用于评估用户是否会点击对应的广告。</p>
-<h1>代码实现</h1>
-<p>用pytorch实现一下代码，假设特征工程和预处理已经结束，我们需要实现数据集类，模型，训练/预测代码：</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>用pytorch实现一下代码，假设特征工程和预处理已经结束，我们需要实现数据集类，模型，训练&#x2F;预测代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomDataset</span>(<span class="hljs-title class_ inherited__">Dataset</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, X, y=<span class="hljs-literal">None</span></span>):<br>        self.X = X  <span class="hljs-comment"># Dataframe</span><br>        self.y = y<br>        <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__len__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.X)<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__getitem__</span>(<span class="hljs-params">self, index</span>):<br>        X_item = torch.tensor(self.X.iloc[index].values, dtype=torch.float32)<br>        <span class="hljs-keyword">if</span> self.y <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            y_item = torch.tensor(self.y.iloc[index], dtype=torch.float32)<br>            <span class="hljs-keyword">return</span> X_item, y_item<br>        <span class="hljs-keyword">return</span> X_item<br>        <br>        <br>train_dataset = CustomDataset(X_train, y_train)<br>test_dataset = CustomDataset(X_test, y_test)<br><br>train_loader = DataLoader(train_dataset, batch_size=<span class="hljs-number">32</span>, shuffle=<span class="hljs-literal">True</span>)<br>test_loader = DataLoader(test_dataset, batch_size=<span class="hljs-number">32</span>, shuffle=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
+
 <p>定义模型：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">DeepCrossing</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, input_dims, embedding_dim, residual_dims, output_dim=<span class="hljs-number">1</span></span>):<br>        <span class="hljs-built_in">super</span>(DeepCrossing, self).__init__()<br>        <br>        <span class="hljs-comment"># 对每维特征进行嵌入</span><br>        self.embeddings = nn.ModuleList([<br>            nn.Linear(input_dim, embedding_dim) <span class="hljs-keyword">if</span> input_dim &gt; embedding_dim <span class="hljs-keyword">else</span> nn.Identity()<br>            <span class="hljs-keyword">for</span> input_dim <span class="hljs-keyword">in</span> input_dims<br>        ])<br>        <br>        <span class="hljs-comment"># Stacking layer</span><br>        self.stack_dim = <span class="hljs-built_in">sum</span>(embedding_dim <span class="hljs-keyword">if</span> input_dim &gt; embedding_dim <span class="hljs-keyword">else</span> input_dim <span class="hljs-keyword">for</span> input_dim <span class="hljs-keyword">in</span> input_dims)<br>        <br>        <span class="hljs-comment"># 残差块</span><br>        self.residual_units = nn.Sequential(<br>            *[ResidualUnit(self.stack_dim, dim) <span class="hljs-keyword">for</span> dim <span class="hljs-keyword">in</span> residual_dims]<br>        )<br>        <br>        <span class="hljs-comment"># 评分层</span><br>        self.scoring_layer = nn.Linear(self.stack_dim, output_dim)<br>        <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, inputs</span>):<br>        embedded = [embedding(<span class="hljs-built_in">input</span>) <span class="hljs-keyword">for</span> embedding, <span class="hljs-built_in">input</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(self.embeddings, inputs)]<br>        <span class="hljs-comment"># 直接concat特征</span><br>        stacked = torch.cat(embedded, dim=<span class="hljs-number">1</span>)<br>        <br>        out = self.residual_units(stacked)<br>        out = torch.sigmoid(self.scoring_layer(out))<br>        <span class="hljs-keyword">return</span> out<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">ResidualUnit</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, input_dim, hidden_dim</span>):<br>        <span class="hljs-built_in">super</span>(ResidualUnit, self).__init__()<br>        self.fc1 = nn.Linear(input_dim, hidden_dim)<br>        self.fc2 = nn.Linear(hidden_dim, input_dim)<br>        <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        residual = x<br>        out = F.relu(self.fc1(x))<br>        out = self.fc2(out)<br>        out += residual<br>        <span class="hljs-keyword">return</span> F.relu(out)<br></code></pre></td></tr></table></figure>
+
 <p>下面就是训练部分：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 假设输入维度是10</span><br>input_dims = <span class="hljs-number">10</span><br><br>embedding_dim = <span class="hljs-number">8</span><br>residual_dims = [<span class="hljs-number">64</span>, <span class="hljs-number">128</span>, <span class="hljs-number">64</span>, <span class="hljs-number">32</span>]<br><br>model = DeepCrossing(input_dims, embedding_dim, residual_dims)<br><br><span class="hljs-comment"># 4. 训练模型</span><br>criterion = nn.BCELoss()<br>optimizer = optim.Adam(model.parameters(), lr=<span class="hljs-number">0.001</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">model, train_loader, criterion, optimizer, num_epochs=<span class="hljs-number">10</span></span>):<br>    model.train()<br>    <span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>        running_loss = <span class="hljs-number">0.0</span><br>        <span class="hljs-keyword">for</span> inputs, labels <span class="hljs-keyword">in</span> train_loader:<br>            inputs = [inputs[:, i].unsqueeze(<span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(inputs.shape[<span class="hljs-number">1</span>])]<br>            <br>            optimizer.zero_grad()<br>            outputs = model(inputs).squeeze()<br>            loss = criterion(outputs, labels)<br>            loss.backward()<br>            optimizer.step()<br>            running_loss += loss.item() * inputs[<span class="hljs-number">0</span>].size(<span class="hljs-number">0</span>)<br>        <br>        epoch_loss = running_loss / <span class="hljs-built_in">len</span>(train_loader.dataset)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;Epoch <span class="hljs-subst">&#123;epoch+<span class="hljs-number">1</span>&#125;</span>/<span class="hljs-subst">&#123;num_epochs&#125;</span>, Loss: <span class="hljs-subst">&#123;epoch_loss:<span class="hljs-number">.4</span>f&#125;</span>&#x27;</span>)<br><br>train(model, train_loader, criterion, optimizer)<br></code></pre></td></tr></table></figure>
+
 <p>模型评估：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">evaluate</span>(<span class="hljs-params">model, test_loader</span>):<br>    model.<span class="hljs-built_in">eval</span>()<br>    predictions = []<br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        <span class="hljs-keyword">for</span> inputs, labels <span class="hljs-keyword">in</span> test_loader:<br>            inputs = [inputs[:, i].unsqueeze(<span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(inputs.shape[<span class="hljs-number">1</span>])]<br>            outputs = model(inputs).squeeze()<br>            predictions.extend(outputs.tolist())<br>    <span class="hljs-keyword">return</span> predictions<br><br>predictions = evaluate(model, test_loader)<br>predictions = np.array(predictions) &gt; <span class="hljs-number">0.5</span>  <span class="hljs-comment"># 将输出转换为二分类预测</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Predictions: &quot;</span>, predictions)<br></code></pre></td></tr></table></figure>
-<p>2024/8/18 于苏州</p>
+
+<p>2024&#x2F;8&#x2F;18 于苏州</p>
 
                 
               </div>

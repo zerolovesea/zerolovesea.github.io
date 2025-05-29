@@ -24,9 +24,9 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="GBDT以及基于它的后续改进模型。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/20250119.jpg">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/statistic.jpg">
 <meta property="article:published_time" content="2025-04-03T13:03:20.000Z">
-<meta property="article:modified_time" content="2025-04-03T23:38:47.070Z">
+<meta property="article:modified_time" content="2025-05-28T15:22:52.418Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="统计机器学习">
 <meta property="article:tag" content="集成学习">
@@ -35,7 +35,7 @@
 <meta property="article:tag" content="LGBM">
 <meta property="article:tag" content="Catboost">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/20250119.jpg">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/statistic.jpg">
   
   
   
@@ -364,7 +364,7 @@
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/pinard/p/6140514.html">梯度提升树(GBDT)原理小结</a></p>
 </blockquote>
 <p>周末苏州的天气很暖和，一度到了28度，着实很适合出去溜达。去吃了顿烧烤，打了会球，回来刚好还有时间，顺便更新一下博客。</p>
-<p><img src="/images/250323-1.jpeg" srcset="/img/loading.gif" lazyload alt="变态辣翅"></p>
+<p><img src="https://images.zerolovesea.top/blog/250323-1.jpeg" srcset="/img/loading.gif" lazyload alt="变态辣翅"></p>
 <p>上篇博文回顾了Bagging和Boosting，这次继续扩展一下Boosting下的GBDT，以及由它衍生出的后续模型。</p>
 <h1 id="GBDT原理"><a href="#GBDT原理" class="headerlink" title="GBDT原理"></a>GBDT原理</h1><p>和Adaboost不同，Adaboost利用每轮学习器的误差率来更新样本权重，以此进行迭代，这种方式并不限制学习器的类型。而GBDT使用了前向分步算法，并且限制了每轮的弱学习器只能是CART回归树。</p>
 <p>为什么GBDT的弱学习器是回归树？原因在于Adaboost通过调整样本权重来优化模型，它只关心弱学习器是否能正确预测目标，所以只要学习器能计算分类错误率就能够参与前向分步。GBDT则通过拟合负梯度（残差）直接修正预测误差。每一轮新模型的目标是拟合当前模型输出与真实值的梯度方向，而不是调整样本权重，这就要求损失函数需要可导，因此弱学习器需要能输出连续值。</p>

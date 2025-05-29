@@ -24,15 +24,15 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="矩阵分解的介绍和实现，以及奇异值分解的原理。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
 <meta property="article:published_time" content="2024-08-03T15:30:47.000Z">
-<meta property="article:modified_time" content="2024-08-15T23:48:45.159Z">
+<meta property="article:modified_time" content="2025-05-28T15:32:43.867Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="机器学习">
 <meta property="article:tag" content="SVD">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/rec.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
   
   
   
@@ -424,7 +424,7 @@
 <li>$U^TU&#x3D;I$,$V^TV&#x3D;I$。</li>
 </ul>
 <p>类似的，奇异值也代表着矩阵在特定方向的拉伸程度，也是矩阵$A^TA$或 $A^TA$的特征值的平方根。当方阵$A$对称且正定时，$A^TA$就是一个方阵，它的奇异值是特征值的绝对值。</p>
-<p><img src="/images/svd1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>知乎上有个对奇异值很好的描述：</p>
 <blockquote>
 <p>奇异值分解是一个有着很明显的物理意义的一种方法，它可以将一个比较复杂的矩阵用更小更简单的几个子矩阵的相乘来表示，这些小矩阵描述的是矩阵的重要的特性。</p>
@@ -452,9 +452,9 @@
 <h2 id="加入时序信息的timeSVD"><a href="#加入时序信息的timeSVD" class="headerlink" title="加入时序信息的timeSVD++"></a>加入时序信息的timeSVD++</h2><p>通过引入时间信息，原本的共现矩阵现在变为了三维矩阵。对它进行分解后，增加了一项用于计算用户兴趣随时间影响的效应。</p>
 <h1 id="SVD在其他领域的应用"><a href="#SVD在其他领域的应用" class="headerlink" title="SVD在其他领域的应用"></a>SVD在其他领域的应用</h1><h2 id="潜在语义索引LSA"><a href="#潜在语义索引LSA" class="headerlink" title="潜在语义索引LSA"></a>潜在语义索引LSA</h2><p>LSA用于获取潜在的语义信息，这和矩阵分解有点类似。以下例子来源于以下链接：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/LeftNotEasy/archive/2011/01/19/svd-and-applications.html">机器学习中的数学(5)-强大的矩阵奇异值分解(SVD)及其应用 - LeftNotEasy - 博客园 (cnblogs.com)</a></p>
 <p>假设我们有多个文章标题和索引的单词，我们想知道这些标题的特征性质以及单词的特征性质。</p>
-<p><img src="/images/svd2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>我们对这个矩阵进行SVD，会得到以下三个矩阵：</p>
-<p><img src="/images/svd3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>其中， 左奇异向量表示词的一些特性，右奇异向量表示文档的一些特性，中间的奇异值矩阵表示左奇异向量的一行与右奇异向量的一列的重要程序，也是拉伸的程度。</p>
 <p>从这里就能看出它和矩阵分解的思路是一样的，只不过MF采用了另一种方法实现。</p>
 <p>在吴军老师的数据之美中这样解释：</p>
@@ -465,23 +465,23 @@
 <p>中间的矩阵则表示类词和文章之间的相关性。因此，我们只要对关联矩阵A进行一次奇异值分解，我们就可以同时完成了近义词分类和文章的分类。（同时得到每类文章和每类词的相关性）。”</p>
 </blockquote>
 <h2 id="SVD用于图像压缩"><a href="#SVD用于图像压缩" class="headerlink" title="SVD用于图像压缩"></a>SVD用于图像压缩</h2><p>SVD同样用于图像领域，由于图像本身就是矩阵，通过SVD后，能找到对于原图更重要的特征，去除不重要的特征，已达到图像压缩的效果。</p>
-<p><img src="/images/svd7.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-7.png" srcset="/img/loading.gif" lazyload></p>
 <p>同样摘抄来自知乎的一个例子：</p>
 <p>原图如下：</p>
-<p><img src="/images/svd4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-4.png" srcset="/img/loading.gif" lazyload></p>
 <p>原图视为矩阵$A$，奇异值分解后将矩阵分解为多个秩一矩阵之和。其实就是将特征单独剥离出来。拆解后得到：</p>
 <p>$A &#x3D; \sigma_1 u_1 v_1^T + \sigma_2 u_2 v_2^T + \ldots + \sigma_r u_r v_r^T$</p>
 <p>可以理解为，将SVD分解后，中间的那个对角矩阵$\lambda$每个奇异值拆出来，作为对应奇异向量的乘积。所有的乘积之和组成了这张完整的照片。我们将其按照奇异值大小排序，并保留前5项，这时的图片就变成了：</p>
-<p><img src="/images/svd5.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-5.jpg" srcset="/img/loading.gif" lazyload></p>
 <p>当保留20项时，图片变为了：</p>
-<p><img src="/images/svd6.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-6.jpg" srcset="/img/loading.gif" lazyload></p>
 <p>原图是一个$450×333的矩阵，需要保存$450×333&#x3D;149850$个元素的值。而如果我们只保留奇异值分解后的前50项，那存储量仅为原图的26%。</p>
 <p>同样的，这也可以用在图像去噪上，我们将一些较小的奇异值认为是噪音，将它们变为0，这时图像就达到了降噪的效果。</p>
 <p>记录一下示例代码，使用numpy就能进行SVD分解：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> cv2<br> <br>img = cv2.imread(<span class="hljs-string">&#x27;harden.jpg&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;origin image shape is &#x27;</span>, img.shape)<br><span class="hljs-comment"># 表示 RGB 中各有一个矩阵，都为300*532</span><br><span class="hljs-comment">#  origin image shape is  (300, 532, 3)</span><br> <br> <br><span class="hljs-keyword">def</span> <span class="hljs-title function_">svd_compression</span>(<span class="hljs-params">img, k</span>):<br>    res_image = np.zeros_like(img)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(img.shape[<span class="hljs-number">2</span>]):<br>        <span class="hljs-comment"># 进行奇异值分解, 从svd函数中得到的奇异值sigma 是从大到小排列的</span><br>        U, Sigma, VT = np.linalg.svd(img[:,:,i])<br>        res_image[:, :, i] = U[:,:k].dot(np.diag(Sigma[:k])).dot(VT[:k,:])<br> <br>    <span class="hljs-keyword">return</span> res_image<br> <br> <br><span class="hljs-comment"># 保留前 k 个奇异值</span><br>res1 = svd_compression(img, k=<span class="hljs-number">300</span>)<br>res2 = svd_compression(img, k=<span class="hljs-number">200</span>)<br>res3 = svd_compression(img, k=<span class="hljs-number">100</span>)<br>res4 = svd_compression(img, k=<span class="hljs-number">50</span>)<br> <br>row11 = np.hstack((res1, res2))<br>row22 = np.hstack((res3, res4))<br>res = np.vstack((row11, row22))<br> <br>cv2.imshow(<span class="hljs-string">&#x27;img&#x27;</span>, res)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br></code></pre></td></tr></table></figure>
 
 <p>分别提取了前300， 200， 100， 50 的奇异值，结果图如下：</p>
-<p><img src="/images/svd8.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/240804-8.png" srcset="/img/loading.gif" lazyload></p>
 <p>可以看到，当我们取到前面300个奇异值来重构图片时，基本与原图看不出来差别。</p>
 <p>2024&#x2F;8&#x2F;4 于苏州</p>
 

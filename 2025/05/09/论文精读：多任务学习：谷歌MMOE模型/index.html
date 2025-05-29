@@ -24,15 +24,15 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="精读Google团队发布于2018年的论文：原文翻译及架构分析。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/mmoe.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/mmoe.png">
 <meta property="article:published_time" content="2025-05-09T05:44:42.000Z">
-<meta property="article:modified_time" content="2025-05-10T13:10:14.634Z">
+<meta property="article:modified_time" content="2025-05-28T15:16:34.413Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="机器学习">
 <meta property="article:tag" content="MMOE">
 <meta property="article:tag" content="多任务学习">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/mmoe.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/mmoe.png">
   
   
   
@@ -371,12 +371,12 @@
 <p><strong>软参数共享</strong></p>
 <p>软参数共享则类似于每个任务都有自己的参数，而不同任务之间会通过某种方式来对参数进行共享。这样一来，模型在每个任务上都会有着不一样的表示，而不是像硬参数共享用同一套特征。从实现上，类似于多塔+门控网络，其实就是之前学习过的MOE网络。后续的很多改进也都是在这一基础上实现。</p>
 <h1 id="论文要点"><a href="#论文要点" class="headerlink" title="论文要点"></a>论文要点</h1><p>完整的论文翻译就不摆上来了，重点看下论文的关键部分。MMOE提出于2018年，同年早期阿里巴巴推出了ESMM，两者都是为了解决一个问题：多任务学习里出现的跷跷板效应，也就是当子任务相关性不大时，不同任务的效果会对彼此有影响。因此它们用不同的方法来学习不同任务之间的关系。对于MMOE来说，使用了门控单元来学习不同任务塔的关系。</p>
-<p><img src="/images/250509.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/250509-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>上图展示整个架构的演变经历，图a是一个简单的共享特征的多塔模型，两个任务共享输入的特征表示，走不同的任务的权重来得到最后的结果。随后作者认为不同任务可能会需要不同的特征输入，不能用单一的特征，因此在图b中，用专家网络来为输入加权输出特征，并用一个门控网络来决定不同专家的权重分配，最终用统一的加权过后的特征表示输入给多塔。</p>
 <p>图c则更进一步，认为每个任务间，尤其是不相似的任务之间，还是不能完全共享同一套特征，因此为每个任务都分配了一个门控，来定制输入塔的加权特征向量。在实践中，每个门控网络都是一个简单线性层+Softmax，专家和塔都是常规的DNN。</p>
 <p><strong>任务相似度的取舍</strong></p>
 <p>上面的多门控网络比较适用于任务相似度较大的情况，作者在实验里发现任务间余弦相似度&#x3D;0.5时，网络效果比较好。具体怎么做到这一点，作者自己合成了数据，来控制不同任务的相似程度，如下图所示，多门控专家在任何情况下收敛的都更快，而当子任务越相似时，多门控近似等于单门控，合乎逻辑。</p>
-<p><img src="/images/250509-1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/250509-2.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>MMOE的开源代码不是很多，大部分是tensorflow，这里我以Deepctr-torch版本的源码作为示例debug：</p>
 <p>核心部分：</p>
 <p>真正的核心架构，去掉注释只有几十行。继承自手搓的BaseModel基类。</p>

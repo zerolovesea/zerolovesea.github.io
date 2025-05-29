@@ -24,13 +24,13 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="推荐算法简述，常用的评估指标，协同过滤的介绍和实现。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/rec.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
 <meta property="article:published_time" content="2024-07-27T10:30:29.000Z">
-<meta property="article:modified_time" content="2024-08-15T23:49:17.088Z">
+<meta property="article:modified_time" content="2025-05-29T00:41:27.614Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/rec.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
   
   
   
@@ -359,7 +359,7 @@
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/vivotech/p/16516494.html">推荐系统-协同过滤在Spark中的实现 - vivo互联网技术 - 博客园 (cnblogs.com)</a></p>
 <p>从上篇博文到现在又隔了一个月，由于工作内容的转变，转向了推荐&#x2F;风控算法，尤其是CTR模型相关，因此准备系统的学习并实现一下一些常用的推荐和分控算法。</p>
 <p>记得曾经看过一句话，推荐算法是没有Query的搜索系统，这句话非常粗略的介绍了推荐算法。正如搜索系统需要想法设法对用户的输入进行信息抽取，推荐算法的Query则是用户自身的历史行为信息和物品的信息。</p>
-<p><img src="/images/rms1.png" srcset="/img/loading.gif" lazyload alt="推荐系统分类"></p>
+<p><img src="https://images.zerolovesea.top/blog/240727-1.png" srcset="/img/loading.gif" lazyload alt="推荐系统分类"></p>
 <p>推荐系统最早出现在90年代，1992年出现了第一个最早的协同过滤系统，由Xerox公司帕罗奥多研究中心研发。当时需要解决的问题是员工需要对大量的邮件进行筛选分类，因此衍生出了这个系统。随着不断的发展，这个协同过滤系统逐渐发展完善，并于1998年被亚马逊公司使用于自己的网站，为用户进行商品的个性化推荐。</p>
 <p>大体上，协同过滤被分为三个子类：User based，Item based和Model based。从核心思想上来介绍协同过滤，可以用一言概括：通过分析用户或者事物之间的相似性来找到目标对象。</p>
 <h1 id="推荐系统的评估指标"><a href="#推荐系统的评估指标" class="headerlink" title="推荐系统的评估指标"></a>推荐系统的评估指标</h1><p>推荐系统和CTR模型简单可以看作是一个多目标&#x2F;单目标分类任务。推荐系统更多考虑到候选物品的排序，CTR则作为一个二分类任务，判断用户是否会点击目标物品。</p>
@@ -452,7 +452,7 @@
 <p>IDCG是理想情况下的DCG最大的值，即推荐的最佳排序顺序，根据相关性从高到低排列。</p>
 <p>最终的公式是：$NDCG_{p}&#x3D;\frac{DCG}{IDCG_{p}}$</p>
 <p>这样计算后，NDCG作为一个相对值，不同长度的检索就可以进行比较了。</p>
-<h1 id="基于用户的协同过滤"><a href="#基于用户的协同过滤" class="headerlink" title="基于用户的协同过滤"></a>基于用户的协同过滤</h1><p><img src="/images/usercf1.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="基于用户的协同过滤"><a href="#基于用户的协同过滤" class="headerlink" title="基于用户的协同过滤"></a>基于用户的协同过滤</h1><p><img src="https://images.zerolovesea.top/blog/240727-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>基于用户的协同过滤简称UserCF，核心是推荐与用户相似的用户喜欢的物品。简单来说，$n$个用户对$m$个物体的打分会成为一个$n*m$的User-Item矩阵。每个用户都是一个$m$维向量，这样就可以通过计算相似度来计算不同用户之间的相似度。最终能够得到一个下三角矩阵，其中包含了每个用户两两之间的相似度。使用较多的是余弦相似度。</p>
 <p>在实际环境中，用户&#x2F;物品评分矩阵是一个稀疏矩阵。</p>
 <p>UserCF的核心是计算用户相似度，完整代码如下：</p>
