@@ -467,41 +467,27 @@
               
             </div>
 
-            
-  
-  
-    <article id="comments" lazyload>
-      
-  <div id="valine"></div>
-  <script type="text/javascript">
-    Fluid.utils.loadComments('#valine', function() {
-      Fluid.utils.createScript('https://cdn.jsdelivr.net/gh/HCLonely/Valine@latest/dist/Valine.min.js', function() {
-        var options = Object.assign(
-          {"appId":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","appKey":"L2ZYyCM9mJIfR5Nxm7ktn3tU","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
-          {
-            el: "#valine",
-            path: window.location.pathname,
-            master: "",
-            friends: "",
-            tagMeta: ["博主","友人","访客"],
-          }
-        )
-        new Valine(options);
-        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
-          var imgSelector = '#valine .vcontent img:not(.vemoji)';
-          Fluid.plugins.imageCaption(imgSelector);
-          Fluid.plugins.fancyBox(imgSelector);
-        })
-      });
-    });
-  </script>
-  <noscript>Please enable JavaScript to view the comments</noscript>
+            <!-- Remark42 评论系统 -->
+<div id="remark42"></div>
 
+<script>
+  var remark_config = {
+    host: 'https://comments.zerolovesea.top',
+    site_id: 'zerolovesea.top',
+    url: window.location.origin + window.location.pathname,
+  };
+</script>
 
-    </article>
-  
-
-
+<script>
+  (function(c) {
+    for (var i = 0; i < c.length; i++) {
+      var d = document, s = d.createElement('script');
+      s.src = remark_config.host + c[i];
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(['/web/embed.js']);
+</script>
           </article>
         </div>
       </div>

@@ -394,8 +394,27 @@
 </body>
 </html>
 
-  
+  <!-- Remark42 评论系统 -->
+<div id="remark42"></div>
 
+<script>
+  var remark_config = {
+    host: 'https://comments.zerolovesea.top',
+    site_id: 'zerolovesea.top',
+    url: window.location.origin + window.location.pathname,
+  };
+</script>
+
+<script>
+  (function(c) {
+    for (var i = 0; i < c.length; i++) {
+      var d = document, s = d.createElement('script');
+      s.src = remark_config.host + c[i];
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(['/web/embed.js']);
+</script>
 </article>
 
 
