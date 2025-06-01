@@ -17,30 +17,28 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="记录一次基于七牛云搭建图床的经历。">
+    <meta name="description" content="记录一次云服务器的购买，部署和改造。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="记录博客升级：配置图床+自动化上传">
-<meta property="og:url" content="http://example.com/2025/05/28/%E8%AE%B0%E5%BD%95%E5%8D%9A%E5%AE%A2%E5%8D%87%E7%BA%A7%EF%BC%9A%E9%85%8D%E7%BD%AE%E5%9B%BE%E5%BA%8A-%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B8%8A%E4%BC%A0/index.html">
+<meta property="og:title" content="服务器折腾之旅：购入服务器，域名绑定与反向代理">
+<meta property="og:url" content="http://example.com/2025/06/01/%E6%8A%98%E8%85%BE%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%B0%E5%BD%95%EF%BC%9A%E5%9F%9F%E5%90%8D%E7%BB%91%E5%AE%9A%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="记录一次基于七牛云搭建图床的经历。">
+<meta property="og:description" content="记录一次云服务器的购买，部署和改造。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250529-1.png">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250529-2.png">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250529-3.png">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250529-4.png">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250529-6.png">
-<meta property="article:published_time" content="2025-05-28T08:26:32.000Z">
-<meta property="article:modified_time" content="2025-05-29T08:35:43.754Z">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/250601-1.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/250601-2.png">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/250601-3.png">
+<meta property="article:published_time" content="2025-06-01T09:22:15.000Z">
+<meta property="article:modified_time" content="2025-06-01T14:38:24.222Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="瞎折腾">
-<meta property="article:tag" content="图床">
-<meta property="article:tag" content="对象存储">
+<meta property="article:tag" content="Nginx">
+<meta property="article:tag" content="反向代理">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://images.zerolovesea.top/blog/250529-1.png">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/250601-1.png">
   
   
   
-  <title>记录博客升级：配置图床+自动化上传 - 我不是算法工程师</title>
+  <title>服务器折腾之旅：购入服务器，域名绑定与反向代理 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -263,7 +261,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="记录博客升级：配置图床+自动化上传"></span>
+            <span id="subtitle" data-typed-text="服务器折腾之旅：购入服务器，域名绑定与反向代理"></span>
           
         </div>
 
@@ -274,8 +272,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-05-28 16:26" pubdate>
-          2025年5月28日 下午
+        <time datetime="2025-06-01 17:22" pubdate>
+          2025年6月1日 下午
         </time>
       </span>
     
@@ -286,7 +284,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          1.3k 字
         
       </span>
     
@@ -297,7 +295,7 @@
         
         
         
-          9 分钟
+          11 分钟
         
       </span>
     
@@ -355,38 +353,45 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">记录博客升级：配置图床+自动化上传</h1>
+            <h1 id="seo-header">服务器折腾之旅：购入服务器，域名绑定与反向代理</h1>
             
             
               <div class="markdown-body">
                 
-                <p>最近又开始折腾博客，现有的hexo框架虽然也很方便，单看起来总还是差那么一点意思。加上在此之前看到过好几个拥有优秀前端界面的博客，于是也有了自己定制一个博客的念头。</p>
-<p>在改进博客的过程中，如何存储图片成为了优化的第一步：现有的hexo博客部署在github pages上，受限于网络，加载图片的速度很不稳定，而图床刚好可以解决这个问题，因此就有了这篇记录。</p>
-<h2 id="图床与对象存储"><a href="#图床与对象存储" class="headerlink" title="图床与对象存储"></a>图床与对象存储</h2><p>图床很好理解，就是一个存储平台，用来存放图片&#x2F;音频等资源，用户用一个统一的url进行访问。由于图床能够通过CDN来加速，很适合搭建网页时存放各种资源，来让不同地方的用户快速访问。</p>
-<p>图床已经有了很成熟的运作模式，建立在对象存储服务上，各家云服务厂商都有相关业务，例如阿里云、腾讯云的 OSS&#x2F;COS。介绍看的眼花缭乱，最后看了一圈价格，还是选了最便宜的七牛云。</p>
-<h2 id="搭建对象存储"><a href="#搭建对象存储" class="headerlink" title="搭建对象存储"></a>搭建对象存储</h2><p>简单注册完七牛云账户以后就可以新建存储空间。注意如果你的域名没有在国内备案，那只能选择海外存储。海外存储的存储套餐会更贵一点，也没有办法享受每个月10G的免费空间，但是对域名就没有限制。此外存储空间需要设定为公开，不然无法其他web服务无法访问图片资源。</p>
-<p><img src="https://images.zerolovesea.top/blog/250529-1.png" srcset="/img/loading.gif" lazyload></p>
-<p>新建完成之后，就可以自由上传照片了，七牛云平台会有一个测试的域名供短期使用，这时可以用<strong>域名&#x2F;图片名</strong>（xxxx.com&#x2F;test.jpg）的方式来访问图片。但三十天之后就需要绑定自己的域名才能用图床了。</p>
-<p><img src="https://images.zerolovesea.top/blog/250529-2.png" srcset="/img/loading.gif" lazyload></p>
-<h2 id="绑定自定义域名"><a href="#绑定自定义域名" class="headerlink" title="绑定自定义域名"></a>绑定自定义域名</h2><p>我自己有一个阿里云域名zerolovesea.top，我想将图床绑定在二级域名images.zerolovesea.top上，需要前往阿里云工作台–&gt;阿里云域名列表–&gt;选择想要的顶级域名解析。</p>
-<ol>
-<li>为现有域名解析新的CNAME</li>
-</ol>
-<p><img src="https://images.zerolovesea.top/blog/250529-3.png" srcset="/img/loading.gif" lazyload></p>
-<ol start="2">
-<li>这里我想绑定在images.zerolovesea.top上，因此加一个images的CNAME，这里需要填入一个记录值，记录值从对象存储平台上，在配置自定义域名时会获取到。</li>
-</ol>
-<p><img src="https://images.zerolovesea.top/blog/250529-4.png" srcset="/img/loading.gif" lazyload></p>
-<ol start="3">
-<li>进七牛云域名管理–&gt;自定义源站域名–&gt;绑定域名，直接输入二级域名，接下来顺序填配置即可。注意未备案域名只能覆盖海外。</li>
-<li>配置完域名以后，会显示CNAME未配置，这时会出现一串CNAME的字符串，复制到阿里云域名解析的二级域名CNAME下，稍等一会就ok了。这时就可以用自己的域名访问图床了。</li>
-</ol>
-<h2 id="配置PicGo-Typora自动上传"><a href="#配置PicGo-Typora自动上传" class="headerlink" title="配置PicGo+Typora自动上传"></a>配置PicGo+Typora自动上传</h2><p>我自己是用Typora写博客的，需要插入图片时，hexo框架会把相对路径变成Github Page上的地址。现在有了图床，我们可以让插入图片的时候，Typora自动上传到图床。需要用PicGo来实现。</p>
-<p>Mac os可以用<code>brew install --cask picgo</code>直接安装，Windows则去<a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/PicGo">Github项目</a>release页面直接下载最新版本。</p>
-<p>安装之后点图床设置–&gt;找到对应的服务，输入对应信息保存即可，其中需要填写的AccessKey和SercetKey都来自七牛云–&gt;密钥管理。</p>
-<p>随后前往Typora，在设置–&gt;图像里，将插入图片时的操作定义为上传图片，并将上传服务设定设置为PicGo，大功告成。设置完成后，每次在Typora里复制图片的时候，Typora会先把图片上传到图床，然后将图片外链直接粘贴到markdown里，这样一来大大减少了工作量。</p>
-<p><img src="https://images.zerolovesea.top/blog/250529-6.png" srcset="/img/loading.gif" lazyload></p>
-<p>2025&#x2F;5&#x2F;29 于苏州</p>
+                <p>宝贵的端午假期，干了几件事：科目二终于上车实操了；买了属于自己的云服务器。关于云服务器，两年以前我试用过阿里云的服务器，并在上面<a target="_blank" rel="noopener" href="https://www.zerolovesea.top/2024/06/30/SyncTV-Alist-%E9%98%BF%E9%87%8C%E4%BA%91%E7%9B%98%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E8%A7%82%E5%BD%B1%E5%BD%B1%E9%99%A2/">搭建起了自己的应用</a>，当时的体验还不错，不过试用期三个月过去，并没有继续续费。</p>
+<p>今年上旬随着关注了一些Github项目，拥有一个服务器的想法愈发强烈。假期第一天，在斟酌许久以后，终于在阿里云下单了一个两年的香港服务器，共计1900大洋。</p>
+<h2 id="服务器采购之旅"><a href="#服务器采购之旅" class="headerlink" title="服务器采购之旅"></a>服务器采购之旅</h2><p>下单服务器之前，看了很多个厂商：阿里云是首选，腾讯云，华为云，火山引擎，七牛云都在清单上。从价格和服务上，阿里云都是性价比最高的选择。我最开始下单了一台华东的服务器，价格上两年只要一千块，但是在部署服务的时候遇到了不少需要折腾的地方：</p>
+<p>首先就是大陆服务器的限制问题，导致docker的官方镜像源没办法拉，虽然可以用阿里云的加速源解决，但是还是有部分镜像在国内镜像源始终无法拉取。</p>
+<p>其次是致命的访问问题，我在服务器上部署了几个应用，但是在安全组端口策略和防火墙策略已经放开的情况下，始终无法访问。这里附上我提的工单，不得不提，阿里云的售后服务效率很高，本以为假期无法回复，想不到迅速就给出了解答。</p>
+<p>在解答的过程中，注意到是代理的问题，由于我的电脑和主机长年开着代理，导致访问时会出现阻塞，使用一个国际服务器在一定程度上可以解决这个问题。</p>
+<p><img src="https://images.zerolovesea.top/blog/250601-1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/250601-2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/250601-3.png" srcset="/img/loading.gif" lazyload></p>
+<p>亚太服务器中，香港和新加坡都是不错的选择。前者在国内访问速度更快，后者比前者要便宜300块钱，并且对国际访问更友好，权衡之下最终决定购入香港服务器。</p>
+<h2 id="域名绑定与Nginx反向代理"><a href="#域名绑定与Nginx反向代理" class="headerlink" title="域名绑定与Nginx反向代理"></a>域名绑定与Nginx反向代理</h2><p>Nginx反代在<a target="_blank" rel="noopener" href="https://www.zerolovesea.top/2024/04/27/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9ANginx%E4%BA%86%E8%A7%A3%E4%B8%8E%E5%85%A5%E9%97%A8/">这篇博客</a>里简单介绍过，这里记录一下这次服务器部署的服务。首先，我在服务器上起了一个web服务，指向0.0.0.0:4444端口，在安全组策略配置过以后，可以通过IP:4444直接访问到这个服务，但是这显然不安全。</p>
+<p>由于我有一个zerolovesea.top的域名，我希望将这个服务绑定在service.zerolovesea.top上，这样通过访问这个域名可以直接使用这个服务。首先需要在阿里云域名–&gt;域名解析处添加一条A类型的主机记录，主机记录命名为se rvice，记录值为服务器ip。这样当访问service.zerolovesea.top时，就会跳转到服务器ip。</p>
+<p>随后就是Nginx配置，首先我们添加一下<code>service.zerolovesea.top.conf</code>作为配置项（<code>vim /etc/nginx/conf.d/service.zerolovesea.top.conf</code>），配置如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>		<span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> service.zerolovesea.top;<br>	<br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:4444;<br>        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们需要监听服务器的http默认80端口，并将外部访问通过 <a target="_blank" rel="noopener" href="http://service.zerolovesea.top/">http://service.zerolovesea.top</a> 的请求，反向代理到本地的 <a href="http://127.0.0.1:4444。随后配置设置代理请求头，将客户端信息传递给服务器。">http://127.0.0.1:4444。随后配置设置代理请求头，将客户端信息传递给服务器。</a></p>
+<p>写完配置后，检查一下配置，并重启nginx：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo nginx -t &amp;&amp; sudo systemctl reload nginx<br></code></pre></td></tr></table></figure>
+
+<p>在这之后，可以为域名申请一下SSL证书，使用certbot可以一键为nginx配置Https。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt update<br>sudo apt install certbot python3-certbot-nginx<br><br>sudo certbot --nginx<br></code></pre></td></tr></table></figure>
+
+<p>执行后，certbot会识别Nginx配置的所有域名，请求Let’s Encrypt 免费证书，随后修改 Nginx 配置文件，加上 SSL 配置。最后自动重启 Nginx 以生效。</p>
+<h2 id="Cloudflare代理配置"><a href="#Cloudflare代理配置" class="headerlink" title="Cloudflare代理配置"></a>Cloudflare代理配置</h2><p>如果没有使用代理，那么之前的操作已经足够了，不过由于此前我的域名是通过CF代理的，因此需要在CF上配置一下DNS。同样添加一条A类型的service记录，指向服务器IP，代理状态打开。这时就大功告成了。访问service.zerolovesea.top直接可以访问到部署的应用。</p>
+<h2 id="streamlit服务部署踩坑"><a href="#streamlit服务部署踩坑" class="headerlink" title="streamlit服务部署踩坑"></a>streamlit服务部署踩坑</h2><p>最后顺便记录一个踩坑心得。写了一个streamlit服务，使用Docker进行部署后，发现浏览器怎么都无法打开，显示Bad gateway Error code 502，该网页无法正常运作。安全组和入方向规则均已开放了端口，并且服务器和外网使用curl指令都可以获取到返回，就是浏览器上打不开。</p>
+<p>检查后发现是由于Nginx 默认不转发Streamlit默认使用的WebSocket 协议头，在nginx配置里加上后就可以正常访问了。</p>
+<blockquote>
+<p>curl 只取 HTML，不涉及 WebSocket、JS 执行，所以它不会暴露这个问题。</p>
+</blockquote>
+<p>附上了最后我的配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">server_name</span> aidash.zerolovesea.top;<br><br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:18502;<br>        <span class="hljs-attribute">proxy_http_version</span> <span class="hljs-number">1</span>.<span class="hljs-number">1</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> Upgrade <span class="hljs-variable">$http_upgrade</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> Connection <span class="hljs-string">&quot;upgrade&quot;</span>;<br><br><br>        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>修改完以后，<code>sudo nginx -t &amp;&amp; sudo systemctl reload nginx</code>一下，顺利解决。</p>
+<p>2025&#x2F;6&#x2F;1 于苏州</p>
 
                 
               </div>
@@ -422,9 +427,9 @@
       
         <a href="/tags/%E7%9E%8E%E6%8A%98%E8%85%BE/" class="print-no-link">#瞎折腾</a>
       
-        <a href="/tags/%E5%9B%BE%E5%BA%8A/" class="print-no-link">#图床</a>
+        <a href="/tags/Nginx/" class="print-no-link">#Nginx</a>
       
-        <a href="/tags/%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8/" class="print-no-link">#对象存储</a>
+        <a href="/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" class="print-no-link">#反向代理</a>
       
     </div>
   
@@ -438,18 +443,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/06/01/%E6%8A%98%E8%85%BE%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%AE%B0%E5%BD%95%EF%BC%9A%E5%9F%9F%E5%90%8D%E7%BB%91%E5%AE%9A%E4%B8%8E%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/" title="服务器折腾之旅：购入服务器，域名绑定与反向代理">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">服务器折腾之旅：购入服务器，域名绑定与反向代理</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/05/25/%E9%87%91%E8%9E%8D%E7%A7%91%E6%8A%80%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%EF%BC%9F/" title="金融科技的机器学习？">
-                        <span class="hidden-mobile">金融科技的机器学习？</span>
+                      <a href="/2025/05/28/%E8%AE%B0%E5%BD%95%E5%8D%9A%E5%AE%A2%E5%8D%87%E7%BA%A7%EF%BC%9A%E9%85%8D%E7%BD%AE%E5%9B%BE%E5%BA%8A-%E8%87%AA%E5%8A%A8%E5%8C%96%E4%B8%8A%E4%BC%A0/" title="记录博客升级：配置图床+自动化上传">
+                        <span class="hidden-mobile">记录博客升级：配置图床+自动化上传</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
