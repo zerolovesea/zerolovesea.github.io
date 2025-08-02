@@ -17,23 +17,24 @@
   <meta name="author" content="Yang Zhou">
   <meta name="keywords" content="">
   
-    <meta name="description" content="本文摘录自一篇介绍机器学习中常见指标的博文。">
+    <meta name="description" content="近期学习的一些收获和心得。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解AUC">
-<meta property="og:url" content="http://example.com/2025/06/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AUC/index.html">
+<meta property="og:title" content="推荐算法迷思-V1：近期学习有感">
+<meta property="og:url" content="http://example.com/2025/08/02/%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95%E8%BF%B7%E6%80%9D-V1%EF%BC%9A%E8%BF%91%E6%9C%9F%E5%AD%A6%E4%B9%A0%E6%9C%89%E6%84%9F/index.html">
 <meta property="og:site_name" content="我不是算法工程师">
-<meta property="og:description" content="本文摘录自一篇介绍机器学习中常见指标的博文。">
+<meta property="og:description" content="近期学习的一些收获和心得。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
-<meta property="article:published_time" content="2025-06-22T08:06:46.000Z">
-<meta property="article:modified_time" content="2025-06-22T09:13:22.722Z">
+<meta property="article:published_time" content="2025-08-02T03:50:37.000Z">
+<meta property="article:modified_time" content="2025-08-02T06:25:52.957Z">
 <meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="推荐系统">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
   
   
   
-  <title>深入理解AUC - 我不是算法工程师</title>
+  <title>推荐算法迷思-V1：近期学习有感 - 我不是算法工程师</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -256,7 +257,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="深入理解AUC"></span>
+            <span id="subtitle" data-typed-text="推荐算法迷思-V1：近期学习有感"></span>
           
         </div>
 
@@ -267,8 +268,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-06-22 16:06" pubdate>
-          2025年6月22日 下午
+        <time datetime="2025-08-02 11:50" pubdate>
+          2025年8月2日 中午
         </time>
       </span>
     
@@ -279,7 +280,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.9k 字
+          1.8k 字
         
       </span>
     
@@ -290,7 +291,7 @@
         
         
         
-          24 分钟
+          16 分钟
         
       </span>
     
@@ -348,111 +349,48 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">深入理解AUC</h1>
+            <h1 id="seo-header">推荐算法迷思-V1：近期学习有感</h1>
             
             
               <div class="markdown-body">
                 
-                <p>原文链接：<br><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html">深入理解AUC</a></p>
-<p>在机器学习的评估指标中，AUC是一个最常见也是最常用的指标之一。 AUC本身的定义是基于几何的，但是其意义十分重要，应用十分广泛。 本文作者深入理解AUC，并总结于下。</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#auc%E6%98%AF%E4%BB%80%E4%B9%88">AUC是什么</a></li>
-<li>AUC的概率解释<ul>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#%E6%A6%82%E7%8E%87%E8%A7%A3%E9%87%8A%E7%9A%84%E8%AF%81%E6%98%8E">概率解释的证明</a></li>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#auc%E7%9A%84%E6%8E%92%E5%BA%8F%E7%89%B9%E6%80%A7">AUC的排序特性</a></li>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#auc%E5%AF%B9%E6%AD%A3%E8%B4%9F%E6%A0%B7%E6%9C%AC%E6%AF%94%E4%BE%8B%E4%B8%8D%E6%95%8F%E6%84%9F">AUC对正负样本比例不敏感</a></li>
-</ul>
-</li>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#auc%E7%9A%84%E8%AE%A1%E7%AE%97">AUC的计算</a></li>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#auc%E7%9A%84%E4%BC%98%E5%8C%96">AUC的优化</a></li>
-<li><a target="_blank" rel="noopener" href="https://tracholar.github.io/machine-learning/2018/01/26/auc.html#auc%E8%A6%81%E5%88%B0%E5%A4%9A%E5%B0%91%E6%89%8D%E7%AE%97%E5%A5%BD%E7%9A%84%E6%A8%A1%E5%9E%8B">AUC要到多少才算好的模型</a></li>
-</ul>
-<h2 id="AUC是什么"><a href="#AUC是什么" class="headerlink" title="AUC是什么"></a>AUC是什么</h2><p>在统计和机器学习中，常常用AUC来评估二分类模型的性能。AUC的全称是 area under the curve，即曲线下的面积。 通常这里的曲线指的是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">受试者操作曲线(Receiver operating characteristic, ROC)</a>。 相比于准确率、召回率、F1值等依赖于判决阈值的评估指标，AUC则没有这个问题。</p>
-<p>ROC曲线早在第二次世界大战期间就被使用在电子工程和雷达工程当中，被用于军事目标检测。 后来，ROC曲线也被应用到心理学、医学、机器学习和数据挖掘等领域的模型性能评估。</p>
-<p>对于二分类问题，预测模型会对每一个样本预测一个得分$s$或者一个概率$p$。 然后，可以选取一个阈值$t$，让得分$s&gt;t$的样本预测为正，而得分$s&lt;t$的样本预测为负。 这样一来，根据预测的结果和实际的标签可以把样本分为4类：</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>正样本</th>
-<th>负样本</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>预测为正</td>
-<td>TP(真正例)</td>
-<td>FP(假正例)</td>
-</tr>
-<tr>
-<td>预测为负</td>
-<td>FN(假负例)</td>
-<td>TN(真负例)</td>
-</tr>
-</tbody></table>
-<p>随着阈值t选取的不同，这四类样本的比例各不相同。定义真正例率TPR和假正例率FPR为：</p>
-<p>$$<br>\text{TPR} &#x3D; \frac{\text{TP}}{\text{TP} + \text{FN}}<br>$$<br>$$<br>\text{FPR} &#x3D; \frac{\text{FP}}{\text{FP} + \text{TN}}<br>$$</p>
-<p>对于真正例率TPR，分子是得分&gt;t里面正样本的数目，分母是总的正样本数目。 而对于假正例率FPR，分子是得分&gt;t里面负样本的数目，分母是总的负样本数目。 因此，如果定义${N_+ (t)}$,${N_- (t)}$分别为得分大于t的样本中正负样本数目，${N_+ }$,${N_- }$为总的正负样本数目， 那么TPR和FPR可以表达为阈值t的函数</p>
-<p>$$<br>\text{TPR}(t) &#x3D; \frac{N_+ (t)}{N_+}<br>$$</p>
-<p>$$<br>\text{FPR}(t) &#x3D; \frac{N_- (t)}{N_-}<br>$$</p>
-<p>随着阈值t的变化，TPR和FPR在坐标图上形成一条曲线，这条曲线就是ROC曲线。 显然，如果模型是随机的，模型得分对正负样本没有区分性，那么得分大于t的样本中，正负样本比例和总体的正负样本比例应该基本一致。 也就是说</p>
-<p>$$<br>\frac{N_+(t)}{N_-(t)} &#x3D; \frac{N_+}{N_-}<br>$$</p>
-<p>结合上面的式子可知TPR和FPR相等，对应的ROC曲线是一条直线！</p>
-<p>反之，如果模型的区分性非常理想，也就是说正负样本的得分可以完全分开，所有的正样本都比负样本得分高，此时ROC曲线表现为「 字形。 因为正例得分都比负例高，所以要么TPR&#x3D;0要么FPR&#x3D;0！</p>
-<p><img src="https://tracholar.github.io/assets/images/ROC_curves.svg" srcset="/img/loading.gif" lazyload alt="ROC曲线"></p>
-<p>实际的模型的ROC曲线则是一条上凸的曲线，介于随机和理想的ROC曲线之间。而ROC曲线下的面积，即为AUC！</p>
-<p>$$<br>AUC &#x3D; \int_{t &#x3D; \infty}^{-\infty} y(t) d x(t)<br>$$</p>
-<p>这里的x和y分别对应TPR和FPR，也是ROC曲线的横纵坐标。</p>
-<h2 id="AUC的概率解释"><a href="#AUC的概率解释" class="headerlink" title="AUC的概率解释"></a>AUC的概率解释</h2><h3 id="概率解释的证明"><a href="#概率解释的证明" class="headerlink" title="概率解释的证明"></a>概率解释的证明</h3><p>AUC常常被用来作为模型排序好坏的指标，原因在于AUC可以看做随机从正负样本中选取一对正负样本，其中正样本的得分大于负样本的概率！ 这个结论很容易证明，考虑随机取得这对正负样本中，负样本得分在$[t, t+\Delta t]$之间的概率为</p>
-<p>$$<br>P(t \leq s_{-} &lt; t + \Delta t)<br>&#x3D; P(s_{-} &gt; t) - P(s_{-}&gt; t + \Delta t)<br>&#x3D; \frac{N_{-}(t) - N_{-}(t + \Delta t)}{N_{-}}<br>&#x3D; x(t) - x(t + \Delta t) &#x3D; -\Delta x(t)<br>$$</p>
-<p>如果$\Delta t$很小，那么该正样本得分大于该负样本的概率为</p>
-<p>$$P(s_+ &gt; s_- \mid t \leq s_- &lt; t + \Delta t) \approx P(s_+ &gt; t) &#x3D; \frac{N_+(t)}{N_+} &#x3D; y(t)$$</p>
-<p>所以，</p>
-<p>$$<br>P(s_+ &gt; s_-)<br>&#x3D; \sum P(t \leq s_- &lt; t + \Delta t)P(s_+ &gt; s_- \mid t \leq s_- &lt; t + \Delta t)<br>&#x3D; -\sum y(t)\Delta x(t)<br>&#x3D; -\int_{t&#x3D;-\infty}^{\infty} y(t)dx(t)<br>&#x3D; \int_{t&#x3D;\infty}^{-\infty} y(t)dx(t)<br>$$</p>
-<p>注意积分区间，$t&#x3D;-\infty$对应ROC图像最右上角的点，而$t&#x3D;\infty$对应ROC图像最左下角的点。所以，计算面积是$\int_{t&#x3D;\infty}^{-\infty}$。 可以看出，积分项里面实际上是这样一个事件的概率：<strong>随机取一对正负样本，负样本得分为t且正样本大于t！</strong> 因此，对这个概率微元积分就可以到正样本得分大于负样本的概率！</p>
-<h3 id="AUC的排序特性"><a href="#AUC的排序特性" class="headerlink" title="AUC的排序特性"></a>AUC的排序特性</h3><p>根据上述概率解释，AUC实际上在说一个模型把正样本排在负样本前面的概率！ 所以，AUC常用在排序场景的模型评估，比如搜索和推荐等场景！ 这个解释还表明，如果将所有的样本的得分都加上一个额外的常数，并不改变这个概率，因此AUC不变！ 因此，在广告等需要绝对的点击率场景下，AUC并不适合作为评估指标，而是用logloss等指标。</p>
-<h3 id="AUC对正负样本比例不敏感"><a href="#AUC对正负样本比例不敏感" class="headerlink" title="AUC对正负样本比例不敏感"></a>AUC对正负样本比例不敏感</h3><p>利用概率解释，还可以得到AUC另外一个性质，对正负样本比例不敏感。 在训练模型的时候，如果正负比例差异比较大，例如正负比例为1:1000，训练模型的时候通常要对负样本进行下采样。当一个模型训练完了之后，用负样本下采样后的测试集计算出来的AUC和未采样的测试集计算的AUC基本一致，或者说前者是后者的无偏估计！ 如果采样是随机的，对于给定的正样本，假定得分为$s+$，那么得分小于$s+$的负样本比例不会因为采样而改变！ 例如，假设采样前负样本里面得分小于$s+$的样本占比为70%，如果采样是均匀的，即$&gt;s+$的负样本和$&lt;s+$的负样本留下的概率是相同的，那么显然采样后这个比例仍然是70%！ 这表明，该正样本得分大于选取的负样本的概率不会因为采样而改变，也就是$y(t)dx(t)$是不变的，因此，AUC也不变！</p>
-<p>相比于其他评估指标，例如准确率、召回率和F1值，负样本下采样相当于只将一部分真实的负例排除掉了，然而模型并不能准确地识别出这些负例，所以用下采样后的样本来评估会高估准确率；因为采样只对负样本采样，正样本都在，所以采样对召回率并没什么影响。这两者结合起来，最终导致高估F1值！</p>
-<h2 id="AUC的计算"><a href="#AUC的计算" class="headerlink" title="AUC的计算"></a>AUC的计算</h2><p>AUC可以直接根据ROC曲线，利用梯形积分进行计算。此外，还有一个比较有意思的是，可以 利用AUC与Wilcoxon-Mann-Whitney测试的U统计量的关系，来计算AUC。这可以从AUC的概率意义推导而来。</p>
-<p>假设我们将测试集的正负样本按照模型预测得分<strong>从小到大</strong>排序，对于第$j$个正样本，假设它的排序为 $r_j$， 那么说明排在这个正样本前面的总样本有$r_j−1$个，其中正样本有$j−1$个（因为这个正样本在所有的正样本里面排第j）， 所以排在第$j$个正样本前面(得分比它小)的负样本个数为 $r_j−j$个。也就是说，对于第$j$个正样本来说，其得分比随机取的一个负样本大(排序比它靠后)的概率是 (rj−j)&#x2F;N−,其中$N−$是总的负样本数目。所以，平均下来，随机取的正样本得分比负样本大的概率为</p>
-<p>$\frac{1}{N_+} \sum_{j&#x3D;1}^{N_+} \frac{r_j - j}{N_-} &#x3D; \frac{\sum_{j&#x3D;1}^{N_+} r_j - \frac{N_+(N_+ + 1)}{2}}{N_+N_-}$</p>
-<p>所以</p>
-<p>$\text{AUC} &#x3D; \frac{\sum_{j&#x3D;1}^{N_+} r_j - \dfrac{N_+(N_+ + 1)}{2}}{N_+ N_-}$</p>
-<p>因此，很容易写出计算AUC的SQL代码</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span><br>	(ry - <span class="hljs-number">0.5</span>*n1*(n1+<span class="hljs-number">1</span>))/n0/n1 <span class="hljs-keyword">as</span> auc<br><span class="hljs-keyword">from</span>(<br>	<span class="hljs-keyword">select</span><br>		sum(<span class="hljs-keyword">if</span>(y=<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)) <span class="hljs-keyword">as</span> n0,<br>		sum(<span class="hljs-keyword">if</span>(y=<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>)) <span class="hljs-keyword">as</span> n1,<br>		sum(<span class="hljs-keyword">if</span>(y=<span class="hljs-number">1</span>, r, <span class="hljs-number">0</span>)) <span class="hljs-keyword">as</span> ry<br>	<span class="hljs-keyword">from</span>(<br>		<span class="hljs-keyword">select</span> y, row_number() <span class="hljs-keyword">over</span>(<span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> score <span class="hljs-keyword">asc</span>) <span class="hljs-keyword">as</span> r<br>		<span class="hljs-keyword">from</span>(<br>			<span class="hljs-keyword">select</span> y, score<br>			<span class="hljs-keyword">from</span> <span class="hljs-keyword">some</span>.<span class="hljs-keyword">table</span><br>		)A<br>	)B<br>)C<br></code></pre></td></tr></table></figure>
-
-<h2 id="AUC的优化"><a href="#AUC的优化" class="headerlink" title="AUC的优化"></a>AUC的优化</h2><p>采用极大似然估计对应的损失函数是logloss，因此极大似然估计的优化目标并不是AUC。 在一些排序场景下，AUC比logloss更贴近目标，因此直接优化AUC可以达到比极大似然估计更好的效果。 实际上，pairwise的目标函数就可以看做一种对AUC的近似。因为损失函数都是作用与正负样本得分差之上！ 例如，</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Loss Function</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>rank-SVM</td>
-<td><code>max(0, -s₊ + s₋ + Δ)</code></td>
-</tr>
-<tr>
-<td>rank-net</td>
-<td><code>log(1 + exp(-(s₊ - s₋)))</code></td>
-</tr>
-<tr>
-<td>指数损失</td>
-<td><code>exp(-(s₊ - s₋))</code></td>
-</tr>
-<tr>
-<td>TOP 损失</td>
-<td><code>∑ₛ₊ max(0, -s₊ + s₋ + Δ)</code></td>
-</tr>
-</tbody></table>
-<p>显然，这些损失函数都是对$s+&lt;s−$的正负样本对进行惩罚！ 此外，也有一些其它对AUC近似度更好的损失函数，例如</p>
-<p>$E \left[ (1 - w^T(s_+ - s_-))^2 \right] &#x3D; \frac{1}{n_+ n_-} \sum_{i&#x3D;1}^{n_+} \sum_{j&#x3D;1}^{n_-} (1 - w^T(s_i^+ - s_j^-))^2$</p>
-<p>$s_i^+$, $s_i^-$分别表示正例和负例的得分。 这解释了为什么某些问题中，利用排序损失函数比logloss效果更好，<strong>因为在这些问题中排序比概率更重要</strong>！</p>
-<h2 id="AUC要到多少才算好的模型"><a href="#AUC要到多少才算好的模型" class="headerlink" title="AUC要到多少才算好的模型"></a>AUC要到多少才算好的模型</h2><p>AUC越大表示模型区分正例和负例的能力越强，那么AUC要达到多少才表示模型拟合的比较好呢？在实际建模中发现，预测点击的模型比预测下单的模型AUC要低很多，在月活用户里面预测下单和日活用户里面预测下单的AUC差异也很明显，预测用户未来1小时下单和预测未来1天的下单模型AUC差异也很大。这表明，AUC非常依赖于具体任务。</p>
-<p>以预测点击和预测下单为例，下单通常决策成本比点击高很多，这使得点击行为比下单显得更加随意，也更加难以预测，所以导致点击率模型的AUC通常比下单率模型低很多。</p>
-<p>那么月活用户和日活用户那个更容易区分下单与不下单用户呢？显然月活用户要容易一些，因为里面包含很多最近不活跃的用户，所以前者的AUC通常要高一些。</p>
-<p>对于预测1小时和预测1天的模型，哪一个更加困难？因为时间越长，用户可能发生的意料之外的事情越多，也越难预测。举个极端的例子，预测用户下一秒中内会干啥，直接预测他会做正在干的事情即可，这个模型的准确率就会很高，但是预测长期会干啥就很困难了。所以对于这两个模型，后者更加困难，所以AUC也越低。</p>
-<p>2025&#x2F;6&#x2F;22 于苏州</p>
+                <p>近期的工作里，陆陆续续将推荐算法相关的内容，在业务上做了一些尝试。除了对于模型架构层面的探索学习，来自POSO作者赵致辰的推荐算法系列博文带给我很多业务层面的理解。截止至2025年8月2日，我打算当下的一些心得记录在此以便后续学习。</p>
+<h2 id="关于精排"><a href="#关于精排" class="headerlink" title="关于精排"></a>关于精排</h2><p>精排作为推荐系统里最顶端的环节，是最纯粹的排序模型。而恰恰是因为精排训练的数据来自于自身，很容易出现类似风控算法中的样本分布漂移（实际业务中，只有通过的客户才有后续的还款行为，从而有“是否违约”的标签。而那些被拒绝的用户，我们永远不知道他们是否会违约），正样本越来越少。风控对此的解决方法是拒绝推断，将被拒绝用户“推断”出一个可能的风险标签（即是否会违约），从而扩充训练数据、减少样本偏差，这实际上也是数据增强的一种。</p>
+<p>另一方面，精排决定了整个系统的喜好，如果在前面的召回环节做了改进点，而这个改进点不被精排模型认可，那根本不会在结果中体现出效果。</p>
+<p>精排的两个问题：</p>
+<ol>
+<li>正样本不够置信：正样本是用户选择的明确正样本，但负样本却不一定。曝光流量一定程度上决定了这个样本到底有多大的概率成为正样本。有些不够幸运的样本，哪怕事实上足够吸引用户，但未被曝光，那就只能被系统慢慢淘汰。</li>
+<li>自激：也就是上面提到的样本分布偏移。一言蔽之：<strong>自己学自己，那么很有可能在大方向上越走越远</strong>。</li>
+</ol>
+<h2 id="关于粗排和召回"><a href="#关于粗排和召回" class="headerlink" title="关于粗排和召回"></a>关于粗排和召回</h2><p>粗排充当的是精排的助手，为了缓解精排模型的压力，学习的是精排的输出结果，因此使用NDCG作为排序的评估指标。而召回除了为后续模型提供筛选过的基本盘，还需要为后面的模型提供补全：当精排模型因为种种原因，输出不了某一类内容时，就需要一路召回，专门提供相关内容。因此，召回可以是规则，也可以是模型，也可以是双塔相似度计算。</p>
+<blockquote>
+<p>多路召回输出的结果，在融合时需要去重。而分配的顺序也很重要。先部署的召回更有可能会影响整个系统，并且在后续的发展中逐渐占据主导，例如先召回A内容，导致喜欢B内容的客户离开，那么之后哪怕再上线召回B内容的策略，由于客户已经离开，也收获不了正向收益了。</p>
+</blockquote>
+<p>上面这一观点，在精准营销也会有体现，例如被不同策略命中的用户，如果先被外呼渠道营销到，那么他可能在某种层面上就有了“抵抗力”，那么后续再对他进行营销时，就不是一个“新鲜”的客户了，这个策略的转换就会下滑。同样，不同的产品在对同一个用户营销时，谁先营销到，就会占据主动地位，因此运营在营销中的地位举足轻重。</p>
+<h2 id="关于策略和模型"><a href="#关于策略和模型" class="headerlink" title="关于策略和模型"></a>关于策略和模型</h2><p>写模型并非高级，写规则也并非平凡。各种层面上，规则都必须存在，不光是为了给模型纠偏，还有商业上的考量，也就是广告主的广告位。</p>
+<h2 id="关于树模型在精排中的应用"><a href="#关于树模型在精排中的应用" class="headerlink" title="关于树模型在精排中的应用"></a>关于树模型在精排中的应用</h2><p>在Kaggle中，树模型非常常见，然而在实际业务中，树模型鲜见在精排模型中。本质原因在于树模型难以处理在线学习中源源不断出现的新ID类特征。尽管树模型可以为未知特征赋予默认值，但在实际业务中，新ID的增长非常迅速。Facebook此前的解决方法是一天一更新模型，但是也与在线学习相悖，并且随着业务的增长，哪怕是树模型也很可能难以在一天内实现收敛。</p>
+<p>相反，使用Embedding则可以解决这个问题，对新ID开辟新的Embedding空间，对部署流程几乎没有改动。</p>
+<p>下文摘录自赵致辰原文：</p>
+<blockquote>
+<p>目前为止还没有看到树模型和embedding很好地结合的例子，或者准确地说是树模型没什么加embedding的必要和意义。embedding本质上是把低维的ID映射到一个更高的空间中，记录更细致的信息（我个人也有一些相关的经验，比如把所有特征的embedding长度都翻倍，基本上涨幅有大有小，但是从来不会掉点。这表明更大的embedding拥有更多的信息空间），而决策树是按照特征本身的信息划分的。</p>
+<p>embedding是很强很暴力，但是embedding需要大量的空间来存,这个时候，树模型就可以大展身手了。既然它不需要embedding，那它就很省空间。一些边边角角的地方，需要模型时都可以考虑用它。不要小看这些边边角角的场合，有些是发挥很大作用的，举两个例子：</p>
+<p>判断一个Item处于生命周期中的哪个阶段（简单理解为，一个Item有刚开始起量，稳定膨胀，流量下滑和死亡这么几个阶段，根据这个阶段可以做不同的针对性决策），此时用Item ID做特征显然是没有意义的，而是Item现在总的曝光量，已经投放了多久，每个阶段的曝光，转化等等。<br>预测一个用户第二天是不是还会来，有各种行为特征，比如在某个类别下观看了多少视频，用户已经用了多长时间，今天的总播放时长是多少等等。</p>
+</blockquote>
+<p>最后归纳：当满足两个条件时，可以优先使用树模型：</p>
+<ol>
+<li>特征中没有不断新增的ID类特征，类别特征可以穷举，比如年龄，城市等。</li>
+<li>当输入的特征混有各种各样的类别，数值等等类型的特征时，尤其对于像counter（计数类特征，比如用户在APP上的时间）类很有效果。</li>
+</ol>
+<h2 id="关于DNN的范式"><a href="#关于DNN的范式" class="headerlink" title="关于DNN的范式"></a>关于DNN的范式</h2><p>DNN在推荐算法工业界已经有了标准化的操作，基本流程是：</p>
+<ol>
+<li>对于所有特征，通过哈希映射将其转化为ID。</li>
+<li>每个ID通过嵌入表映射为固定长度的嵌入。</li>
+<li>嵌入拼接，输入网络。</li>
+</ol>
+<p>2019年Facebook发布的DLRM框架如图：</p>
+<p><img src="https://images.zerolovesea.top/blog/250802-1.png" srcset="/img/loading.gif" lazyload></p>
+<p>其中的Sparse Features即稀疏特征，为各类ID，Dense Features为数值特征。稀疏特征通过嵌入查表得到嵌入向量，和数值特征拼接后做两两内积，充当特征交叉，最后进入网络。</p>
+<p>2025&#x2F;8&#x2F;2 于苏州</p>
 
                 
               </div>
@@ -471,7 +409,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="category-chain-item">机器学习</a>
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
   
   
 
@@ -483,6 +421,13 @@
     </div>
   
   
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+    </div>
+  
 </div>
 
 
@@ -493,18 +438,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2025/08/02/%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95%E8%BF%B7%E6%80%9D-V1%EF%BC%9A%E8%BF%91%E6%9C%9F%E5%AD%A6%E4%B9%A0%E6%9C%89%E6%84%9F/" title="推荐算法迷思-V1：近期学习有感">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">推荐算法迷思-V1：近期学习有感</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2025/06/14/Python%E5%BC%80%E5%8F%91%EF%BC%9A%E5%B9%B6%E5%8F%91%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E6%96%AD%E7%82%B9%E7%BB%AD%E4%BC%A0%E6%8E%A2%E7%B4%A2/" title="Python开发：并发场景下的断点续传探索">
-                        <span class="hidden-mobile">Python开发：并发场景下的断点续传探索</span>
+                      <a href="/2025/06/22/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3AUC/" title="深入理解AUC">
+                        <span class="hidden-mobile">深入理解AUC</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
