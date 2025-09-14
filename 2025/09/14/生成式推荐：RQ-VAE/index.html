@@ -1,0 +1,881 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="RQ-VAE的原理学习。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生成式推荐：RQ-VAE">
+<meta property="og:url" content="http://example.com/2025/09/14/%E7%94%9F%E6%88%90%E5%BC%8F%E6%8E%A8%E8%8D%90%EF%BC%9ARQ-VAE/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="RQ-VAE的原理学习。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta property="article:published_time" content="2025-09-14T00:49:03.000Z">
+<meta property="article:modified_time" content="2025-09-14T06:08:05.476Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="生成式推荐">
+<meta property="article:tag" content="RQ-VAE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
+  
+  
+  
+  <title>生成式推荐：RQ-VAE - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="生成式推荐：RQ-VAE"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-09-14 08:49" pubdate>
+          2025年9月14日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">生成式推荐：RQ-VAE</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近开始接触一些生成式推荐的范式，实际上也是赶了个晚集了，早在2023年，生成式模型就进入了推荐算法工业界的视野，以谷歌Tiger为主的一系列框架在随后两年发展迅速，今年国内的大厂也纷纷落地。接着这个周末，学习一下其中较为核心的RQ-VAE。</p>
+<h2 id="从Item-ID到语义ID"><a href="#从Item-ID到语义ID" class="headerlink" title="从Item ID到语义ID"></a>从Item ID到语义ID</h2><p>在推荐算法发展到Embedding+DNN的范式之后，整个行业的特征相对规范化，尤其是电商行业里，底层特征大多数是由Item ID，User ID，画像特征，行为序列组成。其中的Item ID，通常是item经过hash编码得到的一个独立ID，然后通过查表获取Embedding。这已经足够好用，不过依然会面临几个问题：</p>
+<ol>
+<li>Hash碰撞</li>
+<li>采用原始的物品 ID将导致词汇表非常大</li>
+<li>数字ID处理冷启动表现不佳</li>
+<li>无法利用item自身语义</li>
+</ol>
+<p>因此，学术界提出了语义ID（Semantic ID），用多个ID来表示一个item。而实现它的方式就是RQ-VAE。要了解它，需要先了解一下VAE。</p>
+<h2 id="VAE"><a href="#VAE" class="headerlink" title="VAE"></a>VAE</h2><p>RQ-VAE是对VAE（自分编码器）的改进，后者是一个生成模型，目标是通过学习输入数据的分布，输出类似的分布，使用KL散度作为评估指标。</p>
+<p>VAE的结构由编码器，重参数化和解码器组成：</p>
+<ol>
+<li><p>编码器将输入映射为描述隐变量$z$的两个分布参数，即两个向量：均值 $\mu(x)$ 和标准差 $\sigma(x)$。</p>
+</li>
+<li><p>学习潜在分布时涉及随机采样，而采样这一操作不是可微分的，导致梯度无法回传，因此需要重参数化把采样过程可微化：<br>$$<br>z &#x3D; \mu(x) + \sigma(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1)<br>$$</p>
+</li>
+<li><p>最后解码器将潜在变量 $z$ 转换回数据空间，得到重构的 $\hat{x}$，也就是模型学习的原数据分布。</p>
+</li>
+</ol>
+<p>VAE 的损失由两部分组成，其中重构损失保证重建数据与原数据相似。KL散度让潜在空间接近标准正态分布，便于采样生成新数据。<br>$$<br>\mathcal{L} &#x3D; \underbrace{\text{重构损失} ; | x - \hat{x} |^2}<em>{\text{确保数据重构准确}} +<br>\underbrace{\text{KL散度} ; D</em>{KL}(q(z|x) | p(z))}_{\text{约束潜在变量分布}}<br>$$</p>
+<p>VAE应用的范围比较广，生成式模型，信息压缩都有用到，这篇文章仅提及其信息压缩的应用。</p>
+<h3 id="VAE的信息压缩"><a href="#VAE的信息压缩" class="headerlink" title="VAE的信息压缩"></a>VAE的信息压缩</h3><p>简单来说，VAE类似于一个embedding层，以文本数据为例，将其映射到低维空间。由于VAE需要输入一个向量，因此需要对文本进行分词和嵌入&#x2F;one hot，这样每个token都会得到一个高维度向量，随后将这个高维序列传入编码器（RNN&#x2F;GRN&#x2F;CNN&#x2F;Transformer），来将序列压缩为低维向量，这就是最终需要的低维向量。</p>
+<p>在之后的训练过程中，将这个压缩的低维中间向量通过解码器还原为预测的文本序列，并通过loss来控制编码器的嵌入性能。</p>
+<h3 id="和Bert类模型的对比"><a href="#和Bert类模型的对比" class="headerlink" title="和Bert类模型的对比"></a>和Bert类模型的对比</h3><p>同样作为嵌入模型，VAE和Bert类模型都会将文本通过编码器映射为低维向量，但是两者的训练方式不一样，前者通过重构样本，让模型学文本的原始分布，后者的目标则是通过mask来预测masked token或next token。</p>
+<p>由于两者目的不一样，VAE对序列数据和上下文不敏感，只专注还原重构这个任务，Bert则通过自注意力机制，在生成token时会捕捉上下文信息。作为结果，VAE生成的embedding通常表达整体的主题，而不像Bert一样能获取每个词的语义表示。</p>
+<h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>将Chat老师生成了python代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><span class="hljs-keyword">import</span> torch.nn.functional <span class="hljs-keyword">as</span> F<br><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> Dataset, DataLoader<br><br><span class="hljs-comment"># 1. 示例文本数据</span><br>texts = [<br>    <span class="hljs-string">&quot;hello world&quot;</span>,<br>    <span class="hljs-string">&quot;machine learning&quot;</span>,<br>    <span class="hljs-string">&quot;deep learning&quot;</span>,<br>    <span class="hljs-string">&quot;hello machine&quot;</span>,<br>    <span class="hljs-string">&quot;world of learning&quot;</span><br>]<br><br><span class="hljs-comment"># 构建简单词表</span><br>vocab = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">set</span>(<span class="hljs-string">&quot; &quot;</span>.join(texts).split()))<br>word2idx = &#123;w: i <span class="hljs-keyword">for</span> i, w <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(vocab)&#125;<br>idx2word = &#123;i: w <span class="hljs-keyword">for</span> w, i <span class="hljs-keyword">in</span> word2idx.items()&#125;<br>vocab_size = <span class="hljs-built_in">len</span>(vocab)<br><br><span class="hljs-comment"># 文本 -&gt; one-hot 向量</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">text_to_bow</span>(<span class="hljs-params">text</span>):<br>    vec = torch.zeros(vocab_size)<br>    <span class="hljs-keyword">for</span> w <span class="hljs-keyword">in</span> text.split():<br>        vec[word2idx[w]] = <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> vec<br><br>dataset = torch.stack([text_to_bow(t) <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> texts])<br><br>train_loader = DataLoader(dataset, batch_size=<span class="hljs-number">2</span>, shuffle=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># 2. 文本 VAE 模型</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TextVAE</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, input_dim, hidden_dim=<span class="hljs-number">32</span>, latent_dim=<span class="hljs-number">16</span></span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-comment"># 编码器</span><br>        self.fc1 = nn.Linear(input_dim, hidden_dim)<br>        self.fc_mu = nn.Linear(hidden_dim, latent_dim)<br>        self.fc_logvar = nn.Linear(hidden_dim, latent_dim)<br>        <span class="hljs-comment"># 解码器</span><br>        self.fc2 = nn.Linear(latent_dim, hidden_dim)<br>        self.fc3 = nn.Linear(hidden_dim, input_dim)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, x</span>):<br>        h = F.relu(self.fc1(x))<br>        <span class="hljs-keyword">return</span> self.fc_mu(h), self.fc_logvar(h)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">reparameterize</span>(<span class="hljs-params">self, mu, logvar</span>):<br>        std = torch.exp(<span class="hljs-number">0.5</span> * logvar)<br>        eps = torch.randn_like(std)<br>        <span class="hljs-keyword">return</span> mu + eps * std<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">decode</span>(<span class="hljs-params">self, z</span>):<br>        h = F.relu(self.fc2(z))<br>        <span class="hljs-keyword">return</span> torch.sigmoid(self.fc3(h))  <span class="hljs-comment"># 输出每个词的概率</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        mu, logvar = self.encode(x)<br>        z = self.reparameterize(mu, logvar)<br>        x_recon = self.decode(z)<br>        <span class="hljs-keyword">return</span> x_recon, mu, logvar<br><br><span class="hljs-comment"># 3. 损失函数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">vae_loss</span>(<span class="hljs-params">x, x_recon, mu, logvar</span>):<br>    recon_loss = F.binary_cross_entropy(x_recon, x, reduction=<span class="hljs-string">&#x27;sum&#x27;</span>)<br>    kl_loss = -<span class="hljs-number">0.5</span> * torch.<span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span> + logvar - mu.<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>) - logvar.exp())<br>    <span class="hljs-keyword">return</span> recon_loss + kl_loss<br><br><span class="hljs-comment"># 4. 训练</span><br>device = <span class="hljs-string">&quot;cuda&quot;</span> <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;cpu&quot;</span><br>model = TextVAE(input_dim=vocab_size).to(device)<br>optimizer = torch.optim.Adam(model.parameters(), lr=<span class="hljs-number">1e-2</span>)<br><br>num_epochs = <span class="hljs-number">50</span><br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>    model.train()<br>    total_loss = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> train_loader:<br>        x = x.to(device)<br>        optimizer.zero_grad()<br>        x_recon, mu, logvar = model(x)<br>        loss = vae_loss(x, x_recon, mu, logvar)<br>        loss.backward()<br>        optimizer.step()<br>        total_loss += loss.item()<br>    <span class="hljs-keyword">if</span> (epoch+<span class="hljs-number">1</span>) % <span class="hljs-number">10</span> == <span class="hljs-number">0</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Epoch <span class="hljs-subst">&#123;epoch+<span class="hljs-number">1</span>&#125;</span>, Loss: <span class="hljs-subst">&#123;total_loss/<span class="hljs-built_in">len</span>(dataset):<span class="hljs-number">.4</span>f&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 5. 生成新文本</span><br>model.<span class="hljs-built_in">eval</span>()<br><span class="hljs-keyword">with</span> torch.no_grad():<br>    z = torch.randn(<span class="hljs-number">3</span>, <span class="hljs-number">16</span>).to(device)  <span class="hljs-comment"># 从标准正态采样</span><br>    x_gen = model.decode(z).cpu()<br>    <span class="hljs-keyword">for</span> i, probs <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(x_gen):<br>        <span class="hljs-comment"># 输出概率大于0.5的词</span><br>        words = [idx2word[j] <span class="hljs-keyword">for</span> j, p <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(probs) <span class="hljs-keyword">if</span> p &gt; <span class="hljs-number">0.5</span>]<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Generated text <span class="hljs-subst">&#123;i+<span class="hljs-number">1</span>&#125;</span>: <span class="hljs-subst">&#123;<span class="hljs-string">&#x27; &#x27;</span>.join(words)&#125;</span>&quot;</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://images.zerolovesea.top/blog/250914-2.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="RQ-VAE（Residual-Quantized-VAE）"><a href="#RQ-VAE（Residual-Quantized-VAE）" class="headerlink" title="RQ-VAE（Residual Quantized VAE）"></a>RQ-VAE（Residual Quantized VAE）</h2><p>VAE已经将输入的高维embedding降低为了一定程度上的低维embedding，不过要对所有item都保存这个向量，对工业的数据存储压力依旧很大，因此希望对这个输出再进行一次压缩，将连续向量压缩为离散低维向量，这就是RQ-VAE试图解决的问题。这里的RQ指的是向量量化（Vector Quantization, VQ）和残差编码（Residual Encoding）。RQ-VAE试图对Item保存为索引ID，计算时通过ID → 查表 → 点积的方式进行召回。</p>
+<h3 id="RQ-VAE的结构"><a href="#RQ-VAE的结构" class="headerlink" title="RQ-VAE的结构"></a>RQ-VAE的结构</h3><p>RQ-VAE通过离散码本（Codebook）索引的组合向量来表示原来的VAE embedding。</p>
+<p>我对于码本的理解，是对语义嵌入的一次嵌入，只不过这次嵌入的输出是包含语义信息的向量，输入则是语义id（sid）。刚好和文本嵌入相反，文本嵌入输入离散的token，输出连续的embedding，codebook接收带语义信息的embedding，输出语义embedding的语义id。这样不需要直接存embedding，而是通过一个码本就可以解决大规模embedding的存储问题。</p>
+<p><img src="https://pic4.zhimg.com/v2-68a25d23f527b7ce60cd9df0109a52eb_1440w.jpg" srcset="/img/loading.gif" lazyload alt="RQ-VAE的结构"></p>
+<p>在VAE的基础上加了量化和残差的模块，结构如下：</p>
+<ol>
+<li><p>编码器输入数据 $x$，输出潜在向量 $z_e$。</p>
+</li>
+<li><p>为了引入离散化，RQ-VAE在潜在表示$z_e$上进行残差量化。</p>
+</li>
+</ol>
+<ul>
+<li>初始量化：首先将 $z_e$映射到一个离散的代码簿（Codebook）中。</li>
+<li>残差计算：计算初始量化后的残差（Residual），即  $z_e$与其量化表示之间的差异。</li>
+<li>残差量化：将残差再次进行量化，并累积到先前的量化结果中。</li>
+<li>通过多次残差量化，可以得到一个更精确、更离散的潜在表示。</li>
+</ul>
+<ol start="3">
+<li>解码器（Decoder）将量化后的向量 $z_q$ 重构为 $\hat{x}$。</li>
+</ol>
+<p>RQ-VAE 的损失函数与 VAE 类似，也有两部分：重构损失保证量化向量重构准确。量化损失（Quantization Loss）保证编码器输出接近码本向量：</p>
+<p>$$<br>\mathcal{L}_{quant} &#x3D; | \text{sg}[z_e] - z_q |^2 + \beta | z_e - \text{sg}[z_q] |^2<br>$$</p>
+<p>其中 <code>sg</code> 表示 <strong>stop-gradient</strong>（梯度不反传），用于控制更新方向。</p>
+<p>最终损失：<br>$$<br>\mathcal{L} &#x3D; \text{重构损失} + \mathcal{L}_{quant}<br>$$</p>
+<p>下文摘录自知乎</p>
+<blockquote>
+<p>RQ-VAE首先通过编码器E将输入编码成学习到的潜在表示形式在零级（ &#x3D; 0）处。</p>
+<p>在每个级别处，我们有一个码书。然后，通过映射到该级别的最近嵌入来进行量化。最接近的嵌入时的索引表示零级码字。对于下一级 &#x3D; 1，然后类似于零级，使用第一级的码书计算第一级的代码。这个过程迭代N次，以获得表示语义标识的N个码字元组。这种递归方法近似于从粗到细的粒度对输入进行估计。</p>
+</blockquote>
+<blockquote>
+<p>为了防止RQ-VAE发生codebook坍塌，即将大部分输入映射到仅几个codebook向量中，我们使用基于k均值聚类的初始codebook初始化。具体而言，在第一个训练批次上应用k均值算法，并使用聚类中心作为初始化，通过聚类特征的指数移动平均值进行更新</p>
+</blockquote>
+<blockquote>
+<p>码本的更新步骤：一般做法</p>
+<ol>
+<li><p>初始化：首先，通过一些初始方法（如K-means聚类）生成初始码本。</p>
+</li>
+<li><p>编码（Encoding）：对于每个模型参数（或参数向量），找到与其最接近的码本向量，并计算残差（即原始参数与码本向量之间的差异）。</p>
+</li>
+<li><p>更新码本（Codebook Update）：<br>聚合：收集所有映射到同一码本向量的残差。<br>平均：将这些残差求平均，得到一个新的向量。<br>更新：用新的向量更新对应的码本向量。</p>
+</li>
+<li><p>迭代：重复编码和更新步骤，直到码本收敛或达到预设的迭代次数。</p>
+</li>
+</ol>
+</blockquote>
+<p>RQ-VAE的细节操作，我还不是很理解。Github上有现成的<a target="_blank" rel="noopener" href="https://github.com/EdoardoBotta/RQ-VAE-Recommender">实现代码</a>，还需要debug一下以了解具体是如何实现码本的更新，以及语义对齐，后续如果有更多理解会同步在博客里。</p>
+<p>2025&#x2F;9&#x2F;14 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+        <a href="/tags/%E7%94%9F%E6%88%90%E5%BC%8F%E6%8E%A8%E8%8D%90/" class="print-no-link">#生成式推荐</a>
+      
+        <a href="/tags/RQ-VAE/" class="print-no-link">#RQ-VAE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/09/14/%E6%91%98%E5%BD%95%EF%BC%9A%E5%9C%A8%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E6%97%B6%E4%BB%A3%E5%A6%82%E4%BD%95%E6%94%B9%E8%BF%9B%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E4%B8%8E%E6%90%9C%E7%B4%A2/" title="摘录：在大语言模型时代如何改进推荐系统与搜索">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">摘录：在大语言模型时代如何改进推荐系统与搜索</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/09/06/2025Q1-Q3%E5%B0%8F%E7%BB%93/" title="2025Q1-Q3流水账">
+                        <span class="hidden-mobile">2025Q1-Q3流水账</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            <!-- Remark42 评论系统 -->
+<div id="remark42"></div>
+
+<script>
+  var remark_config = {
+    host: 'https://comments.zerolovesea.top',
+    site_id: 'zerolovesea.top',
+    url: window.location.origin + window.location.pathname,
+  };
+</script>
+
+<script>
+  (function(c) {
+    for (var i = 0; i < c.length; i++) {
+      var d = document, s = d.createElement('script');
+      s.src = remark_config.host + c[i];
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(['/web/embed.js']);
+</script>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
