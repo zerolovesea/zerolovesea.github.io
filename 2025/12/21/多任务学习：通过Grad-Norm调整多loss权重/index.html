@@ -26,11 +26,12 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
 <meta property="article:published_time" content="2025-12-21T00:47:18.000Z">
-<meta property="article:modified_time" content="2025-12-21T05:43:07.753Z">
+<meta property="article:modified_time" content="2025-12-21T05:58:29.925Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="多任务学习">
 <meta property="article:tag" content="Grad Norm">
+<meta property="article:tag" content="NextRec">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
   
@@ -293,7 +294,7 @@
         
         
         
-          21 分钟
+          20 分钟
         
       </span>
     
@@ -356,7 +357,7 @@
             
               <div class="markdown-body">
                 
-                <p>最近在持续更新自己的开源推荐算法框架<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec">NextRec</a>，目前已经更新到0.4.11，初期的大部分里程碑都进行的差不多了，项目也收获了一些关注。</p>
+                <p>最近在持续更新自己的开源推荐算法框架<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec">NextRec</a>，目前已经更新到0.4.11，初期的大部分里程碑都进行的差不多了。</p>
 <p>在开发过程中，对个人最有收获的，无疑是对不少推荐算法的细节（尤其是工程问题，分布式训练等等）都有了一些更深的体验和了解，很多问题都曾是令前辈们头疼的难题，但是现在都有了更好的解决方案。这次要学习的主题就是，在多任务模型中，逃不过的一个难题：如何平衡多任务的loss。</p>
 <p>我们在业务中尝试多任务学习的时间并不长，频繁接触也只是近半年的事。在业务中，我们大多还是以手动拍脑袋决定不同任务的loss weight，觉得哪个任务重要，我们就给更高的权重。在我们的场景下，包含点击，注册，转化等多个任务，对于业务场景，无疑更关心最后的转化任务。因此，我们通常会给最后一个任务赋予最高的权重。</p>
 <p>在NextRec里，我们通过对模型进行compile时，手动赋予不同任务的权重。</p>
@@ -378,7 +379,7 @@
 <p>所有任务当前梯度的平均是指：对于每个任务i，先看它在共享参数上的梯度，乘当前权重，然后取梯度的l2正则，最后给所有任务做平均。这就得到了等号右边的第一项。</p>
 <p>在第二项，任务$i$的相对训练进度里，分子是任务$i$当前时刻的损失，分母则是起始时刻的损失。它的含义是当前时刻，任务的loss相比刚开始减少的比例，由于无量纲，它更能反映当前任务的学习速度。</p>
 <p>在得到这个学习速度以后，通过一个$\alpha$参数来控制梯度的权重占比。可以预见的是，学的越快，第二项越小，整体梯度也越小。</p>
-<p>最后，我们定义GradNorm的优化目标：$\mathcal{L}<em>{\text{grad}} &#x3D; \sum</em>{i} \left| G_i - \tilde{G}_i \right|$。在每个迭代时，先计算各任务loss，计算加权总loss，更新模型参数；随后计算每个任务的共享层梯度参数，并构造出加权后的新梯度，最后最小化GradNorm的loss，来更新权重。</p>
+<p>最后在每个迭代时，先计算各任务loss，计算加权总loss，更新模型参数；随后计算每个任务的共享层梯度参数，并构造出加权后的新梯度，最后最小化GradNorm的loss，来更新权重。</p>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>在NextRec 0.4.13版本中，加入了对grad norm的支持，只需要将之前comile里的loss_weights方法改为<code>&#123;&quot;method&quot;: &quot;grad_norm&quot;, &quot;alpha&quot;: 1.5, &quot;lr&quot;: 0.025&#125;</code>或”grad_norm”即可。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">model.<span class="hljs-built_in">compile</span>(<br>    optimizer=<span class="hljs-string">&quot;adam&quot;</span>,<br>    optimizer_params=&#123;<span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">5e-4</span>, <span class="hljs-string">&quot;weight_decay&quot;</span>: <span class="hljs-number">1e-4</span>&#125;,<br>    loss=[<span class="hljs-string">&quot;bce&quot;</span>, <span class="hljs-string">&quot;bce&quot;</span>],<br>    loss_weights=&#123;<span class="hljs-string">&quot;method&quot;</span>: <span class="hljs-string">&quot;grad_norm&quot;</span>, <span class="hljs-string">&quot;alpha&quot;</span>: <span class="hljs-number">1.5</span>, <span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">0.025</span>&#125;, <span class="hljs-comment"># 或者可以直接写&quot;grad_norm&quot;</span><br>)<br></code></pre></td></tr></table></figure>
 
@@ -424,6 +425,8 @@
         <a href="/tags/%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%AD%A6%E4%B9%A0/" class="print-no-link">#多任务学习</a>
       
         <a href="/tags/Grad-Norm/" class="print-no-link">#Grad Norm</a>
+      
+        <a href="/tags/NextRec/" class="print-no-link">#NextRec</a>
       
     </div>
   
