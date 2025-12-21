@@ -1,0 +1,829 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Grad Norm的原理学习与代码实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多任务学习：通过Grad Norm调整多loss权重">
+<meta property="og:url" content="http://example.com/2025/12/21/%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%AD%A6%E4%B9%A0%EF%BC%9A%E9%80%9A%E8%BF%87Grad-Norm%E8%B0%83%E6%95%B4%E5%A4%9Aloss%E6%9D%83%E9%87%8D/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="Grad Norm的原理学习与代码实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta property="article:published_time" content="2025-12-21T00:47:18.000Z">
+<meta property="article:modified_time" content="2025-12-21T05:43:07.753Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="多任务学习">
+<meta property="article:tag" content="Grad Norm">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
+  
+  
+  
+  <title>多任务学习：通过Grad Norm调整多loss权重 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="多任务学习：通过Grad Norm调整多loss权重"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-12-21 08:47" pubdate>
+          2025年12月21日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">多任务学习：通过Grad Norm调整多loss权重</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>最近在持续更新自己的开源推荐算法框架<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec">NextRec</a>，目前已经更新到0.4.11，初期的大部分里程碑都进行的差不多了，项目也收获了一些关注。</p>
+<p>在开发过程中，对个人最有收获的，无疑是对不少推荐算法的细节（尤其是工程问题，分布式训练等等）都有了一些更深的体验和了解，很多问题都曾是令前辈们头疼的难题，但是现在都有了更好的解决方案。这次要学习的主题就是，在多任务模型中，逃不过的一个难题：如何平衡多任务的loss。</p>
+<p>我们在业务中尝试多任务学习的时间并不长，频繁接触也只是近半年的事。在业务中，我们大多还是以手动拍脑袋决定不同任务的loss weight，觉得哪个任务重要，我们就给更高的权重。在我们的场景下，包含点击，注册，转化等多个任务，对于业务场景，无疑更关心最后的转化任务。因此，我们通常会给最后一个任务赋予最高的权重。</p>
+<p>在NextRec里，我们通过对模型进行compile时，手动赋予不同任务的权重。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> nextrec.models.multi_task.esmm <span class="hljs-keyword">import</span> ESMM<br><span class="hljs-keyword">from</span> nextrec.basic.features <span class="hljs-keyword">import</span> DenseFeature, SparseFeature, SequenceFeature<br><br>model = ESMM(<br>    dense_features=dense_features,<br>    sparse_features=sparse_features,<br>    sequence_features=sequence_features,<br>    ctr_params=&#123;<span class="hljs-string">&quot;dims&quot;</span>: [<span class="hljs-number">64</span>, <span class="hljs-number">32</span>], <span class="hljs-string">&quot;activation&quot;</span>: <span class="hljs-string">&quot;relu&quot;</span>, <span class="hljs-string">&quot;dropout&quot;</span>: <span class="hljs-number">0.4</span>&#125;,<br>    cvr_params=&#123;<span class="hljs-string">&quot;dims&quot;</span>: [<span class="hljs-number">64</span>, <span class="hljs-number">32</span>], <span class="hljs-string">&quot;activation&quot;</span>: <span class="hljs-string">&quot;relu&quot;</span>, <span class="hljs-string">&quot;dropout&quot;</span>: <span class="hljs-number">0.4</span>&#125;,<br>    target=task_labels,<br>    task=[<span class="hljs-string">&quot;click&quot;</span>, <span class="hljs-string">&quot;conversion&quot;</span>],<br>)<br><br>model.<span class="hljs-built_in">compile</span>(<br>    optimizer=<span class="hljs-string">&quot;adam&quot;</span>,<br>    optimizer_params=&#123;<span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">5e-4</span>, <span class="hljs-string">&quot;weight_decay&quot;</span>: <span class="hljs-number">1e-4</span>&#125;,<br>    loss=[<span class="hljs-string">&quot;bce&quot;</span>, <span class="hljs-string">&quot;bce&quot;</span>],<br>    loss_weights=[<span class="hljs-number">0.3</span>, <span class="hljs-number">0.7</span>] <span class="hljs-comment"># 我们在这里赋予任务权重</span><br>)<br></code></pre></td></tr></table></figure>
+
+<p>在每个epoch里，会为每个任务的loss乘以这个权重值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">BaseModel</span>:<br>		...<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute_loss</span>(<span class="hljs-params">self, y_pred, y_true</span>):<br>    		...<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self.loss_weights, (<span class="hljs-built_in">list</span>, <span class="hljs-built_in">tuple</span>)):<br>            task_losses = [<br>                task_loss * self.loss_weights[i]<br>                <span class="hljs-keyword">for</span> i, task_loss <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(task_losses)<br>            ]<br>        <span class="hljs-keyword">return</span> torch.stack(task_losses).<span class="hljs-built_in">sum</span>()<br></code></pre></td></tr></table></figure>
+
+<p>这是一个非常粗浅的，基于先验知识的方法，显然并不符合数据驱动的宗旨。这当中有几个核心问题：</p>
+<ol>
+<li><strong>不同任务的loss的尺度是不一样的</strong>，尤其是出现在回归任务和分类任务时，mse和bce的尺度差很大，导致大的loss会主导整个训练任务。对于这个问题，工业界层用loss归一化来调整。</li>
+<li><strong>不同任务的loss收敛速度不一致</strong>，对于简单的任务，loss很快收敛，而难的任务则收敛的很慢。然而全局而言，模型只看到了整体的loss快速收敛，而忽视了困难任务。</li>
+</ol>
+<p>在实际场景下，不同任务的损失权重，应该随着样本的变化，训练的变化，才能找到最佳的数值。对于这个问题，2018年发布的论文GradNorm: Gradient Normalization for Adaptive Loss Balancing in Deep Multitask Networks中给出了作者的解决方案。</p>
+<h1 id="GradNorm"><a href="#GradNorm" class="headerlink" title="GradNorm"></a>GradNorm</h1><p>GradNorm的主要思想是，通过每个任务对共享参数的梯度强度，来更细致的了解哪个任务对参数的影响更大，进而调整弱势任务的权重。这比loss更近了一步，上升到了参数层面。</p>
+<p>我们先找到多任务模型的共享参数层$W$，找到它的梯度$$G_i &#x3D; \left| \nabla_W \big( w_i \mathcal{L}_i \big) \right|$$。</p>
+<p>为什么是共享层梯度？因为任务塔的梯度是互相不影响的，大家竞争的点只是共享层。</p>
+<p>GradNorm定义目标梯度是$$\tilde{G}_i &#x3D; \bar{G} \cdot \left( \frac{\mathcal{L}_i(t)}{\mathcal{L}_i(0)} \right)^{\alpha}$$。其中$\bar{G}$是所有任务当前梯度的平均，后者则是任务$i$的相对训练进度。</p>
+<p>所有任务当前梯度的平均是指：对于每个任务i，先看它在共享参数上的梯度，乘当前权重，然后取梯度的l2正则，最后给所有任务做平均。这就得到了等号右边的第一项。</p>
+<p>在第二项，任务$i$的相对训练进度里，分子是任务$i$当前时刻的损失，分母则是起始时刻的损失。它的含义是当前时刻，任务的loss相比刚开始减少的比例，由于无量纲，它更能反映当前任务的学习速度。</p>
+<p>在得到这个学习速度以后，通过一个$\alpha$参数来控制梯度的权重占比。可以预见的是，学的越快，第二项越小，整体梯度也越小。</p>
+<p>最后，我们定义GradNorm的优化目标：$\mathcal{L}<em>{\text{grad}} &#x3D; \sum</em>{i} \left| G_i - \tilde{G}_i \right|$。在每个迭代时，先计算各任务loss，计算加权总loss，更新模型参数；随后计算每个任务的共享层梯度参数，并构造出加权后的新梯度，最后最小化GradNorm的loss，来更新权重。</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>在NextRec 0.4.13版本中，加入了对grad norm的支持，只需要将之前comile里的loss_weights方法改为<code>&#123;&quot;method&quot;: &quot;grad_norm&quot;, &quot;alpha&quot;: 1.5, &quot;lr&quot;: 0.025&#125;</code>或”grad_norm”即可。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">model.<span class="hljs-built_in">compile</span>(<br>    optimizer=<span class="hljs-string">&quot;adam&quot;</span>,<br>    optimizer_params=&#123;<span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">5e-4</span>, <span class="hljs-string">&quot;weight_decay&quot;</span>: <span class="hljs-number">1e-4</span>&#125;,<br>    loss=[<span class="hljs-string">&quot;bce&quot;</span>, <span class="hljs-string">&quot;bce&quot;</span>],<br>    loss_weights=&#123;<span class="hljs-string">&quot;method&quot;</span>: <span class="hljs-string">&quot;grad_norm&quot;</span>, <span class="hljs-string">&quot;alpha&quot;</span>: <span class="hljs-number">1.5</span>, <span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">0.025</span>&#125;, <span class="hljs-comment"># 或者可以直接写&quot;grad_norm&quot;</span><br>)<br></code></pre></td></tr></table></figure>
+
+<p>我们来看下底层实现，核心代码位于<code>nextrec.loss.grad_norm.py</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_grad_norm_shared_params</span>(<span class="hljs-params"></span><br><span class="hljs-params">    model: torch.nn.Module,</span><br><span class="hljs-params">    shared_modules: Iterable[<span class="hljs-built_in">str</span>] | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params"></span>) -&gt; <span class="hljs-built_in">list</span>[torch.nn.Parameter]:<br>  	<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">  	获取共享层参数的工具函数</span><br><span class="hljs-string">  	&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shared_modules:<br>        <span class="hljs-keyword">return</span> [p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> model.parameters() <span class="hljs-keyword">if</span> p.requires_grad]<br>    shared_params = []<br>    seen = <span class="hljs-built_in">set</span>()<br>    <span class="hljs-keyword">for</span> name <span class="hljs-keyword">in</span> shared_modules:<br>        module = <span class="hljs-built_in">getattr</span>(model, name, <span class="hljs-literal">None</span>)<br>        <span class="hljs-keyword">if</span> module <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">continue</span><br>        <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> module.parameters():<br>            <span class="hljs-keyword">if</span> param.requires_grad <span class="hljs-keyword">and</span> <span class="hljs-built_in">id</span>(param) <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> seen:<br>                shared_params.append(param)<br>                seen.add(<span class="hljs-built_in">id</span>(param))<br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shared_params:<br>        <span class="hljs-keyword">return</span> [p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> model.parameters() <span class="hljs-keyword">if</span> p.requires_grad]<br>    <span class="hljs-keyword">return</span> shared_params<br>  <br><span class="hljs-keyword">class</span> <span class="hljs-title class_">GradNormLossWeighting</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    Adaptive multi-task loss weighting with GradNorm.</span><br><span class="hljs-string"></span><br><span class="hljs-string">    Args:</span><br><span class="hljs-string">        num_tasks (int):</span><br><span class="hljs-string">            任务数量，必须大于 1。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        alpha (float):</span><br><span class="hljs-string">            GradNorm 的平衡强度系数，用于控制“扶弱抑强”的程度。</span><br><span class="hljs-string">            alpha 越大，学习进度较慢的任务将获得更大的梯度权重。</span><br><span class="hljs-string">            论文中常用取值为 1.5。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        lr (float):</span><br><span class="hljs-string">            用于优化任务权重 w_i 的学习率。</span><br><span class="hljs-string">            注意该学习率只作用于权重参数，不影响模型参数。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        init_weights (Iterable[float] | None):</span><br><span class="hljs-string">            各任务的初始损失权重。</span><br><span class="hljs-string">            若为 None，则所有任务初始权重均设为 1。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        device (torch.device | str | None):</span><br><span class="hljs-string">            权重参数所在的设备（CPU / GPU）。</span><br><span class="hljs-string">            若为 None，则使用默认设备。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        ema_decay (float | None):</span><br><span class="hljs-string">            可选的 EMA（指数滑动平均）衰减系数，用于平滑各任务的</span><br><span class="hljs-string">            当前 loss，从而稳定相对训练进度的计算。</span><br><span class="hljs-string">            取值范围为 [0.0, 1.0)，值越大，平滑程度越高。</span><br><span class="hljs-string">            若为 None，则直接使用当前 batch 的 loss。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        init_ema_steps (int):</span><br><span class="hljs-string">            用于构建初始 loss 基准的 EMA 累积步数。</span><br><span class="hljs-string">            当该值大于 0 时，将在前 init_ema_steps 个 step 内</span><br><span class="hljs-string">            使用 EMA 累积 loss，并在完成后冻结为初始 loss，</span><br><span class="hljs-string">            以避免仅用首个 batch 作为基准带来的不稳定性。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        init_ema_decay (float):</span><br><span class="hljs-string">            在构建初始 loss EMA（init_ema_steps &gt; 0）时使用的</span><br><span class="hljs-string">            EMA 衰减系数。通常可取 0.9 ~ 0.99。</span><br><span class="hljs-string"></span><br><span class="hljs-string">        eps (float):</span><br><span class="hljs-string">            数值稳定性用的小常数，用于避免除零或梯度范数为 0 的情况。</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self,</span><br><span class="hljs-params">        num_tasks: <span class="hljs-built_in">int</span>,</span><br><span class="hljs-params">        alpha: <span class="hljs-built_in">float</span> = <span class="hljs-number">1.5</span>,</span><br><span class="hljs-params">        lr: <span class="hljs-built_in">float</span> = <span class="hljs-number">0.025</span>,</span><br><span class="hljs-params">        init_weights: Iterable[<span class="hljs-built_in">float</span>] | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        device: torch.device | <span class="hljs-built_in">str</span> | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        ema_decay: <span class="hljs-built_in">float</span> | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        init_ema_steps: <span class="hljs-built_in">int</span> = <span class="hljs-number">0</span>,</span><br><span class="hljs-params">        init_ema_decay: <span class="hljs-built_in">float</span> = <span class="hljs-number">0.9</span>,</span><br><span class="hljs-params">        eps: <span class="hljs-built_in">float</span> = <span class="hljs-number">1e-8</span>,</span><br><span class="hljs-params">    </span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">if</span> num_tasks &lt;= <span class="hljs-number">1</span>:<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">&quot;GradNorm requires num_tasks &gt; 1.&quot;</span>)<br>        self.num_tasks = <span class="hljs-built_in">int</span>(num_tasks)<br>        self.alpha = <span class="hljs-built_in">float</span>(alpha)<br>        self.eps = <span class="hljs-built_in">float</span>(eps)<br>        <span class="hljs-keyword">if</span> ema_decay <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            ema_decay = <span class="hljs-built_in">float</span>(ema_decay)<br>            <span class="hljs-keyword">if</span> ema_decay &lt; <span class="hljs-number">0.0</span> <span class="hljs-keyword">or</span> ema_decay &gt;= <span class="hljs-number">1.0</span>:<br>                <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">&quot;ema_decay must be in [0.0, 1.0).&quot;</span>)<br>        self.ema_decay = ema_decay<br>        self.init_ema_steps = <span class="hljs-built_in">int</span>(init_ema_steps)<br>        <span class="hljs-keyword">if</span> self.init_ema_steps &lt; <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">&quot;init_ema_steps must be &gt;= 0.&quot;</span>)<br>        self.init_ema_decay = <span class="hljs-built_in">float</span>(init_ema_decay)<br>        <span class="hljs-keyword">if</span> self.init_ema_decay &lt; <span class="hljs-number">0.0</span> <span class="hljs-keyword">or</span> self.init_ema_decay &gt;= <span class="hljs-number">1.0</span>:<br>            <span class="hljs-keyword">raise</span> ValueError(<span class="hljs-string">&quot;init_ema_decay must be in [0.0, 1.0).&quot;</span>)<br>        self.init_ema_count = <span class="hljs-number">0</span><br><br>        <span class="hljs-keyword">if</span> init_weights <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            weights = torch.ones(self.num_tasks, dtype=torch.float32)<br>        <span class="hljs-keyword">else</span>:<br>            weights = torch.tensor(<span class="hljs-built_in">list</span>(init_weights), dtype=torch.float32)<br>            <span class="hljs-keyword">if</span> weights.numel() != self.num_tasks:<br>                <span class="hljs-keyword">raise</span> ValueError(<br>                    <span class="hljs-string">&quot;init_weights length must match num_tasks for GradNorm.&quot;</span><br>                )<br>        <span class="hljs-keyword">if</span> device <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            weights = weights.to(device)<br>        self.weights = nn.Parameter(weights)<br>        self.optimizer = torch.optim.Adam([self.weights], lr=<span class="hljs-built_in">float</span>(lr))<br><br>        self.initial_losses: torch.Tensor | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span><br>        self.initial_losses_ema: torch.Tensor | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span><br>        self.loss_ema: torch.Tensor | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span><br>        self.pending_grad: torch.Tensor | <span class="hljs-literal">None</span> = <span class="hljs-literal">None</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">to</span>(<span class="hljs-params">self, device</span>):<br>        device = torch.device(device)<br>        self.weights.data = self.weights.data.to(device)<br>        <span class="hljs-keyword">if</span> self.initial_losses <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            self.initial_losses = self.initial_losses.to(device)<br>        <span class="hljs-keyword">if</span> self.initial_losses_ema <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            self.initial_losses_ema = self.initial_losses_ema.to(device)<br>        <span class="hljs-keyword">if</span> self.loss_ema <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            self.loss_ema = self.loss_ema.to(device)<br>        <span class="hljs-keyword">return</span> self<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute_weighted_loss</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self, </span><br><span class="hljs-params">        task_losses: <span class="hljs-built_in">list</span>[torch.Tensor],</span><br><span class="hljs-params">        shared_params: Iterable[torch.nn.Parameter],</span><br><span class="hljs-params">    </span>) -&gt; torch.Tensor:<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">        计算整体的损失并加权梯度损失</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(task_losses) != self.num_tasks:<br>            <span class="hljs-keyword">raise</span> ValueError(<br>                <span class="hljs-string">f&quot;Expected <span class="hljs-subst">&#123;self.num_tasks&#125;</span> task losses, got <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(task_losses)&#125;</span>.&quot;</span><br>            )<br>        <span class="hljs-comment"># 先找到所有的共享层参数</span><br>        shared_params = [p <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> shared_params <span class="hljs-keyword">if</span> p.requires_grad]<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> shared_params:<br>            <span class="hljs-keyword">return</span> torch.stack(task_losses).<span class="hljs-built_in">sum</span>()<br><br>        <span class="hljs-keyword">with</span> torch.no_grad():<br>            loss_values = torch.tensor(<br>                [loss.item() <span class="hljs-keyword">for</span> loss <span class="hljs-keyword">in</span> task_losses], device=self.weights.device<br>            )<br>            <span class="hljs-comment"># 这里的逻辑是用前几个step的ema loss来代替初始的loss，这样数值更稳定</span><br>            <span class="hljs-keyword">if</span> self.initial_losses <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                <span class="hljs-keyword">if</span> self.init_ema_steps &gt; <span class="hljs-number">0</span>:<br>                    <span class="hljs-keyword">if</span> self.initial_losses_ema <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                        self.initial_losses_ema = loss_values<br>                    <span class="hljs-keyword">else</span>:<br>                        self.initial_losses_ema = (<br>                            self.init_ema_decay * self.initial_losses_ema<br>                            + (<span class="hljs-number">1.0</span> - self.init_ema_decay) * loss_values<br>                        )<br>                    self.init_ema_count += <span class="hljs-number">1</span><br>                    <span class="hljs-keyword">if</span> self.init_ema_count &gt;= self.init_ema_steps:<br>                        self.initial_losses = self.initial_losses_ema.clone()<br>                <span class="hljs-keyword">else</span>:<br>                    self.initial_losses = loss_values<br>				<span class="hljs-comment"># 用当前的权重，得到一个当前的多任务损失</span><br>        weights_detached = self.weights.detach()<br>        weighted_losses = [<br>            weights_detached[i] * task_losses[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.num_tasks)<br>        ]<br>        total_loss = torch.stack(weighted_losses).<span class="hljs-built_in">sum</span>()<br>				<span class="hljs-comment"># 计算得到共享层的梯度</span><br>        grad_norms = self.compute_grad_norms(task_losses, shared_params)<br>        <span class="hljs-keyword">with</span> torch.no_grad():<br>            <span class="hljs-keyword">if</span> self.ema_decay <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                <span class="hljs-keyword">if</span> self.loss_ema <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>                    self.loss_ema = loss_values<br>                <span class="hljs-keyword">else</span>:<br>                    self.loss_ema = (<br>                        self.ema_decay * self.loss_ema<br>                        + (<span class="hljs-number">1.0</span> - self.ema_decay) * loss_values<br>                    )<br>                ratio_source = self.loss_ema<br>            <span class="hljs-keyword">else</span>:<br>                ratio_source = loss_values<br>            <span class="hljs-keyword">if</span> self.initial_losses <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                base_initial = self.initial_losses<br>            <span class="hljs-keyword">elif</span> self.initial_losses_ema <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                base_initial = self.initial_losses_ema<br>            <span class="hljs-keyword">else</span>:<br>                base_initial = loss_values<br>            loss_ratios = ratio_source / (base_initial + self.eps)<br>            inv_rate = loss_ratios / (loss_ratios.mean() + self.eps)<br>            target = grad_norms.mean() * (inv_rate**self.alpha)<br><br>        grad_norm_loss = F.l1_loss(grad_norms, target.detach(), reduction=<span class="hljs-string">&quot;sum&quot;</span>)<br>        grad_w = torch.autograd.grad(grad_norm_loss, self.weights, retain_graph=<span class="hljs-literal">True</span>)[<span class="hljs-number">0</span>]<br>        self.pending_grad = grad_w.detach()<br><br>        <span class="hljs-keyword">return</span> total_loss<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">compute_grad_norms</span>(<span class="hljs-params">self, task_losses, shared_params</span>):<br>        grad_norms = []<br>        <span class="hljs-comment"># 对每个任务的loss求共享参数的梯度</span><br>        <span class="hljs-comment"># 最终返回每个任务的梯度范数</span><br>        <span class="hljs-keyword">for</span> i, task_loss <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(task_losses):<br>            grads = torch.autograd.grad(<br>                self.weights[i] * task_loss,<br>                shared_params,<br>                retain_graph=<span class="hljs-literal">True</span>,<br>                create_graph=<span class="hljs-literal">True</span>,<br>                allow_unused=<span class="hljs-literal">True</span>,<br>            )<br><br>            sq_sum = torch.zeros((), device=self.weights.device)<br>            any_used = <span class="hljs-literal">False</span><br>            <span class="hljs-keyword">for</span> g <span class="hljs-keyword">in</span> grads:<br>                <span class="hljs-keyword">if</span> g <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>                    any_used = <span class="hljs-literal">True</span><br>                    sq_sum = sq_sum + g.<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>).<span class="hljs-built_in">sum</span>()<br><br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> any_used:<br>                total_norm = torch.tensor(self.eps, device=self.weights.device)<br>            <span class="hljs-keyword">else</span>:<br>                total_norm = torch.sqrt(sq_sum + self.eps)<br><br>            grad_norms.append(total_norm)<br><br>        <span class="hljs-keyword">return</span> torch.stack(grad_norms)<br>		<br>    <span class="hljs-comment"># 梯度截断和归一化</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">step</span>(<span class="hljs-params">self</span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-keyword">if</span> self.pending_grad <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            <span class="hljs-keyword">return</span><br><br>        self.optimizer.zero_grad(set_to_none=<span class="hljs-literal">True</span>)<br><br>        <span class="hljs-keyword">if</span> self.weights.grad <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            self.weights.grad = torch.zeros_like(self.weights)<br>        self.weights.grad.copy_(self.pending_grad)<br><br>        self.optimizer.step()<br><br>        <span class="hljs-keyword">with</span> torch.no_grad():<br>            w = self.weights.clamp(<span class="hljs-built_in">min</span>=self.eps)<br>            w = w * self.num_tasks / (w.<span class="hljs-built_in">sum</span>() + self.eps)<br>            self.weights.copy_(w)<br><br>        self.pending_grad = <span class="hljs-literal">None</span><br></code></pre></td></tr></table></figure>
+
+<p>2025&#x2F;12&#x2F;21 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+        <a href="/tags/%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%AD%A6%E4%B9%A0/" class="print-no-link">#多任务学习</a>
+      
+        <a href="/tags/Grad-Norm/" class="print-no-link">#Grad Norm</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/11/30/NextRec%EF%BC%9A%E9%AB%98%E6%95%88%EF%BC%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6/" title="NextRec：高效，模块化的轻量级深度学习推荐系统框架">
+                        <span class="hidden-mobile">NextRec：高效，模块化的轻量级深度学习推荐系统框架</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            <!-- Remark42 评论系统 -->
+<div id="remark42"></div>
+
+<script>
+  var remark_config = {
+    host: 'https://comments.zerolovesea.top',
+    site_id: 'zerolovesea.top',
+    url: window.location.origin + window.location.pathname,
+  };
+</script>
+
+<script>
+  (function(c) {
+    for (var i = 0; i < c.length; i++) {
+      var d = document, s = d.createElement('script');
+      s.src = remark_config.host + c[i];
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(['/web/embed.js']);
+</script>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

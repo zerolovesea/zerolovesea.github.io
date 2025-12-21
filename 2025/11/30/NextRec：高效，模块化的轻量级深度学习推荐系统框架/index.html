@@ -1,0 +1,852 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/logo.png">
+  <link rel="icon" href="/img/logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yang Zhou">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="介绍一下最近自己写的推荐算法框架。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NextRec：高效，模块化的轻量级深度学习推荐系统框架">
+<meta property="og:url" content="http://example.com/2025/11/30/NextRec%EF%BC%9A%E9%AB%98%E6%95%88%EF%BC%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:site_name" content="我不是算法工程师">
+<meta property="og:description" content="介绍一下最近自己写的推荐算法框架。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta property="article:published_time" content="2025-11-30T04:18:41.000Z">
+<meta property="article:modified_time" content="2025-12-21T00:44:45.739Z">
+<meta property="article:author" content="Yang Zhou">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="NextRec">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
+  
+  
+  
+  <title>NextRec：高效，模块化的轻量级深度学习推荐系统框架 - 我不是算法工程师</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":60,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"left","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"wHpSTH8j8vF1pDJWJtnFXbzc-gzGzoHsz","app_key":"L2ZYyCM9mJIfR5Nxm7ktn3tU","server_url":"https://whpsth8j.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>我不是工程师</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/databases/" target="_self">
+                <i class="iconfont icon-books"></i>
+                <span>书单</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/quote/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>写给自己</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/168691.webp') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="NextRec：高效，模块化的轻量级深度学习推荐系统框架"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-11-30 12:18" pubdate>
+          2025年11月30日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="padding-left: 2rem; margin-right: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">NextRec：高效，模块化的轻量级深度学习推荐系统框架</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>[[toc]]</p>
+<p>最近两个月都没有更新博客，是因为在写一个推荐算法框架，现在这个项目已经上线github了，收获了一些好评，因此写一篇介绍性质的文章，来介绍这个框架。</p>
+<p>以下是正文。</p>
+<hr>
+<p>2014年以后，随着深度学习的发展，推荐系统也在高速发展：从最早的CF&#x2F;MF类模型，到LR模型，再到深度模型大一统。在这过程里，模型不断复杂化：Embedding，Transformer，MoE，对比学习，多任务学习，生成式召回各种概念迅速被提出。每一篇论文的发布，都可能多出一个新的思路或架构。</p>
+<p>但问题也随之而来：</p>
+<ul>
+<li>模型越来越多，「样板代码」膨胀</li>
+<li>不同论文模型结构相似，却无法复用</li>
+<li>特征表达层、模型层、推理 pipeline 缺乏统一封装</li>
+<li>学术代码难以落地业务，工业代码不够灵活</li>
+</ul>
+<p>逐渐有了一些开源项目框架尝试解决这些问题：例如<a target="_blank" rel="noopener" href="https://github.com/shenweichen/DeepCTR">DeepCTR</a>，<a target="_blank" rel="noopener" href="https://github.com/reczoo/FuxiCTR">FuxiCTR</a>，<a target="_blank" rel="noopener" href="https://github.com/alibaba/EasyRec">EasyRec</a>，<a target="_blank" rel="noopener" href="https://github.com/datawhalechina/torch-rechub">torch-rechub</a>。出于不同的出发点和设计理念，这些框架的侧重点各不相同，有的框架侧重快速实验和复现，有的专门为工业场景开发。</p>
+<p>面对数据实时性需求不强的场景时，通常的工作流是通过spark集群拉取离线特征的parquet&#x2F;csv，在本地训练后进行T+1日期维度的推理。这个场景下，上述的一些框架可能有些太轻，一些框架又有点太重。NextRec正是在这样的背景下诞生的，本文带你全面认识它的设计理念、模型体系、工程亮点和使用体验。</p>
+<h2 id="NextRec项目架构"><a href="#NextRec项目架构" class="headerlink" title="NextRec项目架构"></a>NextRec项目架构</h2><p>推荐模型就像“搭积木”，Embedding → MLP → Attention → Experts → Towers，这些模块几乎所有主流模型都涵盖。但在论文实现上，各个模型的代码里特征声明方式五花八门；不同模型间难以组合复用。</p>
+<p>NextRec 的思路是<strong>统一 FeatureSpec → EmbeddingLayer → Backbone → Tower → Serving 流程</strong>，让所有模型像拼模块一样组合。此外，模型拆成独立模块，架构与训练目标解耦，模型只负责描述自己的架构。</p>
+<p>NextRec 不只是研究框架，也包含了完整的训练流程（callback、metrics、session 管理），流式推理（支持 path-based inference）和模型存储&#x2F;加载一致化。下面这个流程图简单描述了NextRec的设计架构。</p>
+<p><img src="https://images.zerolovesea.top/blog/nextrec_diagram_zh.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="快速使用NextRec训练一个-DIN-模型"><a href="#快速使用NextRec训练一个-DIN-模型" class="headerlink" title="快速使用NextRec训练一个 DIN 模型"></a>快速使用NextRec训练一个 DIN 模型</h2><p>开发者可以通过<code>pip install nextrec</code>快速安装NextRec的最新版本，环境要求为Python 3.10+，截止2025年11月30日，NextRec的最新版本为0.3.1。</p>
+<p>我们在NextRec的官方<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec">github仓库</a>里提供了详细的上手指南和配套数据集，帮助您熟悉框架的不同功能。在<code>datasets/</code>路径下提供了一个来自电商场景的脱敏数据集子集，数据示例如下：</p>
+<p><img src="https://images.zerolovesea.top/blog/test%20data.png" srcset="/img/loading.gif" lazyload></p>
+<p>接下来我们将用一个简短的示例，展示如何使用NextRec训练一个DIN模型。DIN(Deep Interest Network)来自于阿里妈妈2018年KDD最佳论文模型，用于CTR预估场景。你也可以直接执行<code>python tutorials/example_ranking_din.py</code>来执行训练推理代码。</p>
+<p>开始训练以后，你可以在<code>nextrec_logs/din_tutorial</code>路径下查看详细的训练日志。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">from</span> nextrec.models.ranking.din <span class="hljs-keyword">import</span> DIN<br><span class="hljs-keyword">from</span> nextrec.basic.features <span class="hljs-keyword">import</span> DenseFeature, SparseFeature, SequenceFeature<br><br>df = pd.read_csv(<span class="hljs-string">&#x27;dataset/ranking_task.csv&#x27;</span>)<br><br><span class="hljs-keyword">for</span> col <span class="hljs-keyword">in</span> df.columns <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;sequence&#x27;</span> <span class="hljs-keyword">in</span> col: <span class="hljs-comment"># csv默认将列表读取成文本，我们需要将其转化为对象</span><br>    df[col] = df[col].apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">eval</span>(x) <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(x, <span class="hljs-built_in">str</span>) <span class="hljs-keyword">else</span> x)<br><br><span class="hljs-comment"># 我们需要将不同特征进行定义</span><br>dense_features = [DenseFeature(name=<span class="hljs-string">f&#x27;dense_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span>, input_dim=<span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">8</span>)]<br><br>sparse_features = [SparseFeature(name=<span class="hljs-string">&#x27;user_id&#x27;</span>, embedding_name=<span class="hljs-string">&#x27;user_emb&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;user_id&#x27;</span>].<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>), SparseFeature(name=<span class="hljs-string">&#x27;item_id&#x27;</span>, embedding_name=<span class="hljs-string">&#x27;item_emb&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;item_id&#x27;</span>].<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>),]<br><br>sparse_features.extend([SparseFeature(name=<span class="hljs-string">f&#x27;sparse_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span>, embedding_name=<span class="hljs-string">f&#x27;sparse_<span class="hljs-subst">&#123;i&#125;</span>_emb&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">f&#x27;sparse_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span>].<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>)])<br><br>sequence_features = [<br>    SequenceFeature(name=<span class="hljs-string">&#x27;sequence_0&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;sequence_0&#x27;</span>].apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">max</span>(x)).<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>, padding_idx=<span class="hljs-number">0</span>, embedding_name=<span class="hljs-string">&#x27;item_emb&#x27;</span>),<br>    SequenceFeature(name=<span class="hljs-string">&#x27;sequence_1&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;sequence_1&#x27;</span>].apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">max</span>(x)).<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">16</span>, padding_idx=<span class="hljs-number">0</span>, embedding_name=<span class="hljs-string">&#x27;sparse_0_emb&#x27;</span>),]<br><br>mlp_params = &#123;<br>    <span class="hljs-string">&quot;dims&quot;</span>: [<span class="hljs-number">256</span>, <span class="hljs-number">128</span>, <span class="hljs-number">64</span>],<br>    <span class="hljs-string">&quot;activation&quot;</span>: <span class="hljs-string">&quot;relu&quot;</span>,<br>    <span class="hljs-string">&quot;dropout&quot;</span>: <span class="hljs-number">0.3</span>,<br>&#125;<br><br>model = DIN(<br>    dense_features=dense_features,<br>    sparse_features=sparse_features,<br>    sequence_features=sequence_features,<br>    mlp_params=mlp_params,<br>    attention_hidden_units=[<span class="hljs-number">80</span>, <span class="hljs-number">40</span>],<br>    attention_activation=<span class="hljs-string">&#x27;sigmoid&#x27;</span>,<br>    attention_use_softmax=<span class="hljs-literal">True</span>,<br>    target=[<span class="hljs-string">&#x27;label&#x27;</span>],                                     <span class="hljs-comment"># 目标变量</span><br>    device=<span class="hljs-string">&#x27;mps&#x27;</span>,                                         <br>    embedding_l1_reg=<span class="hljs-number">1e-6</span>,<br>    embedding_l2_reg=<span class="hljs-number">1e-5</span>,<br>    dense_l1_reg=<span class="hljs-number">1e-5</span>,<br>    dense_l2_reg=<span class="hljs-number">1e-4</span>,<br>    session_id=<span class="hljs-string">&quot;din_tutorial&quot;</span>,                            <span class="hljs-comment"># 实验id，用于存放训练日志</span><br>)<br><br><span class="hljs-comment"># 编译模型，设置优化器和损失函数</span><br>model.<span class="hljs-built_in">compile</span>(<br>            optimizer = <span class="hljs-string">&quot;adam&quot;</span>,<br>            optimizer_params = &#123;<span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">1e-3</span>, <span class="hljs-string">&quot;weight_decay&quot;</span>: <span class="hljs-number">1e-5</span>&#125;,<br>            loss = <span class="hljs-string">&quot;focal&quot;</span>,<br>            loss_params=&#123;<span class="hljs-string">&quot;gamma&quot;</span>: <span class="hljs-number">2.0</span>, <span class="hljs-string">&quot;alpha&quot;</span>: <span class="hljs-number">0.25</span>&#125;,<br>        )<br><br>model.fit(<br>    train_data=df,<br>    metrics=[<span class="hljs-string">&#x27;auc&#x27;</span>, <span class="hljs-string">&#x27;gauc&#x27;</span>, <span class="hljs-string">&#x27;logloss&#x27;</span>],  <span class="hljs-comment"># 添加需要查看的指标</span><br>    epochs=<span class="hljs-number">3</span>,<br>    batch_size=<span class="hljs-number">512</span>,<br>    shuffle=<span class="hljs-literal">True</span>,<br>    user_id_column=<span class="hljs-string">&#x27;user_id&#x27;</span>             <span class="hljs-comment"># 用于计算GAUC的id列 </span><br>)<br><br><span class="hljs-comment"># 训练完成后进行指标评估</span><br>metrics = model.evaluate(<br>    df,<br>    metrics=[<span class="hljs-string">&#x27;auc&#x27;</span>, <span class="hljs-string">&#x27;gauc&#x27;</span>, <span class="hljs-string">&#x27;logloss&#x27;</span>],<br>    batch_size=<span class="hljs-number">512</span>,<br>    user_id_column=<span class="hljs-string">&#x27;user_id&#x27;</span><br>)<br><br><span class="hljs-comment"># 也可以直接推理新数据集，输入支持dict，dataframe，pathlike</span><br>predictions = model.predict(df, batch_size=<span class="hljs-number">512</span>)<br></code></pre></td></tr></table></figure>
+
+<p>NextRec拥有统一的日志管理，在训练开始前，NextRec会为你输出以下信息：分别是特征配置Feature Configuration，用于记录特征的维度等信息；模型参数Model Parameters，用于记录模型的架构，和参数量统计；训练参数Training Configuration，用于记录本次训练的超参数等配置项。</p>
+<p><img src="https://images.zerolovesea.top/blog/Feature%20Configuration.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/Model%20Parameters.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://images.zerolovesea.top/blog/Training%20Configuration.png" srcset="/img/loading.gif" lazyload></p>
+<p>开始训练后，则会根据配置的指标，输出每个epoch的评估指标。训练过程中，训练日志会在nextrec_logs&#x2F;session_id路径下生成，并且同步保存特征信息，模型checkpoint等相关文件。</p>
+<p><img src="https://images.zerolovesea.top/blog/Training%20logs.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>我们在NextRec的官方仓库下提供了详细的上手文档，其中在<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/tree/main/tutorials"><code>tutorials/</code></a> 目录下，我们提供了多个示例，覆盖排序、召回、多任务、数据处理等场景：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/blob/main/tutorials/movielen_ranking_deepfm.py">movielen_ranking_deepfm.py</a> - movielen 100k数据集上的 DeepFM 模型训练示例</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/blob/main/tutorials/example_ranking_din.py">example_ranking_din.py</a> - 电商数据集上的DIN 深度兴趣网络训练示例</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/blob/main/tutorials/example_multitask.py">example_multitask.py</a> - 电商数据集上的ESMM多任务学习训练示例</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/blob/main/tutorials/example_match_dssm.py">movielen_match_dssm.py</a> - 基于movielen 100k数据集训练的 DSSM 召回模型示例</li>
+</ul>
+<p>如果想了解更多NextRec框架的细节，我们还提供了Jupyter notebook来帮助你了解：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/blob/main//tutorials/notebooks/zh/Hands%20on%20nextrec.ipynb">如何上手NextRec框架</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/blob/main//tutorials/notebooks/zh/Hands%20on%20dataprocessor.ipynb">如何使用数据处理器进行数据预处理</a></li>
+</ul>
+<blockquote>
+<p>当前版本[0.3.1]，召回模型模块尚不完善，可能存在一些兼容性问题或意外报错，如果遇到问题，欢迎开发者在<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/issues">Issue区</a>提出问题。</p>
+</blockquote>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>最后，感谢正在看这篇文章的你关注到NextRec，无论你是推荐算法工程师，对推荐算法感兴趣的学生，还是相关从业者，都是recommender社区的重要一员。</p>
+<p>NextRec是一个尚在成长期的框架，作为开发者，还缺少很多相关的开发经验，因此，我们欢迎任何形式的贡献，包括代码提交，提出issue等等，期待和大家一起在这个领域学习和成长！</p>
+<p>2025&#x2F;11&#x2F;30 于苏州</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="category-chain-item">推荐系统</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
+      
+        <a href="/tags/NextRec/" class="print-no-link">#NextRec</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/12/21/%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%AD%A6%E4%B9%A0%EF%BC%9A%E9%80%9A%E8%BF%87Grad-Norm%E8%B0%83%E6%95%B4%E5%A4%9Aloss%E6%9D%83%E9%87%8D/" title="多任务学习：通过Grad Norm调整多loss权重">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">多任务学习：通过Grad Norm调整多loss权重</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/09/20/%E5%A4%9A%E4%BB%BB%E5%8A%A1%E5%AD%A6%E4%B9%A0%EF%BC%9AAdaTT/" title="多任务学习：AdaTT">
+                        <span class="hidden-mobile">多任务学习：AdaTT</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            <!-- Remark42 评论系统 -->
+<div id="remark42"></div>
+
+<script>
+  var remark_config = {
+    host: 'https://comments.zerolovesea.top',
+    site_id: 'zerolovesea.top',
+    url: window.location.origin + window.location.pathname,
+  };
+</script>
+
+<script>
+  (function(c) {
+    for (var i = 0; i < c.length; i++) {
+      var d = document, s = d.createElement('script');
+      s.src = remark_config.host + c[i];
+      s.defer = true;
+      (d.head || d.body).appendChild(s);
+    }
+  })(['/web/embed.js']);
+</script>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+  
+  <!-- 时间显示部分 -->
+  <div>
+    <span id="timeDate">载入天数...</span>
+    <span id="times">载入时分秒...</span>
+    <script>
+      var now = new Date();
+      function createtime(){
+        var grt= new Date("12/27/2023 00:00:00");
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24;
+        dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum);
+        hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){
+          hnum = "0" + hnum;
+        }
+        minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes);
+        if(String(mnum).length ==1 ){
+          mnum = "0" + mnum;
+        }
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds);
+        if(String(snum).length ==1 ){
+          snum = "0" + snum;
+        }
+        document.getElementById("timeDate").innerHTML = "🚀 for&nbsp"+dnum+"&nbspdays";
+        document.getElementById("times").innerHTML = hnum + "&nbsphr&nbsp" + mnum + "&nbspmin&nbsp" + snum + "&nbspsec";
+      }
+      setInterval("createtime()",250);
+    </script>
+  </div>
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
