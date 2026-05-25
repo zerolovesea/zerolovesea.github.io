@@ -24,14 +24,14 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="介绍一下最近自己写的推荐算法框架。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta property="og:image" content="http://example.com/img/rec.png">
 <meta property="article:published_time" content="2025-11-30T04:18:41.000Z">
-<meta property="article:modified_time" content="2025-12-21T00:44:45.739Z">
+<meta property="article:modified_time" content="2026-05-25T06:53:21.988Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="NextRec">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
   
   
   
@@ -162,6 +162,30 @@
           
           
             <li class="nav-item">
+              <a class="nav-link" href="/ideas/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>碎碎念</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/projects/" target="_self">
+                <i class="iconfont icon-code"></i>
+                <span>Project</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
               <a class="nav-link" href="/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
@@ -201,18 +225,6 @@
               <a class="nav-link" href="/databases/" target="_self">
                 <i class="iconfont icon-books"></i>
                 <span>书单</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/quote/" target="_self">
-                <i class="iconfont icon-pen"></i>
-                <span>写给自己</span>
               </a>
             </li>
           
@@ -372,20 +384,20 @@
 <h2 id="NextRec项目架构"><a href="#NextRec项目架构" class="headerlink" title="NextRec项目架构"></a>NextRec项目架构</h2><p>推荐模型就像“搭积木”，Embedding → MLP → Attention → Experts → Towers，这些模块几乎所有主流模型都涵盖。但在论文实现上，各个模型的代码里特征声明方式五花八门；不同模型间难以组合复用。</p>
 <p>NextRec 的思路是<strong>统一 FeatureSpec → EmbeddingLayer → Backbone → Tower → Serving 流程</strong>，让所有模型像拼模块一样组合。此外，模型拆成独立模块，架构与训练目标解耦，模型只负责描述自己的架构。</p>
 <p>NextRec 不只是研究框架，也包含了完整的训练流程（callback、metrics、session 管理），流式推理（支持 path-based inference）和模型存储&#x2F;加载一致化。下面这个流程图简单描述了NextRec的设计架构。</p>
-<p><img src="https://images.zerolovesea.top/blog/nextrec_diagram_zh.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/nextrec_diagram_zh.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="快速使用NextRec训练一个-DIN-模型"><a href="#快速使用NextRec训练一个-DIN-模型" class="headerlink" title="快速使用NextRec训练一个 DIN 模型"></a>快速使用NextRec训练一个 DIN 模型</h2><p>开发者可以通过<code>pip install nextrec</code>快速安装NextRec的最新版本，环境要求为Python 3.10+，截止2025年11月30日，NextRec的最新版本为0.3.1。</p>
 <p>我们在NextRec的官方<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec">github仓库</a>里提供了详细的上手指南和配套数据集，帮助您熟悉框架的不同功能。在<code>datasets/</code>路径下提供了一个来自电商场景的脱敏数据集子集，数据示例如下：</p>
-<p><img src="https://images.zerolovesea.top/blog/test%20data.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/test%20data.png" srcset="/img/loading.gif" lazyload></p>
 <p>接下来我们将用一个简短的示例，展示如何使用NextRec训练一个DIN模型。DIN(Deep Interest Network)来自于阿里妈妈2018年KDD最佳论文模型，用于CTR预估场景。你也可以直接执行<code>python tutorials/example_ranking_din.py</code>来执行训练推理代码。</p>
 <p>开始训练以后，你可以在<code>nextrec_logs/din_tutorial</code>路径下查看详细的训练日志。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd<br><span class="hljs-keyword">from</span> nextrec.models.ranking.din <span class="hljs-keyword">import</span> DIN<br><span class="hljs-keyword">from</span> nextrec.basic.features <span class="hljs-keyword">import</span> DenseFeature, SparseFeature, SequenceFeature<br><br>df = pd.read_csv(<span class="hljs-string">&#x27;dataset/ranking_task.csv&#x27;</span>)<br><br><span class="hljs-keyword">for</span> col <span class="hljs-keyword">in</span> df.columns <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;sequence&#x27;</span> <span class="hljs-keyword">in</span> col: <span class="hljs-comment"># csv默认将列表读取成文本，我们需要将其转化为对象</span><br>    df[col] = df[col].apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">eval</span>(x) <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(x, <span class="hljs-built_in">str</span>) <span class="hljs-keyword">else</span> x)<br><br><span class="hljs-comment"># 我们需要将不同特征进行定义</span><br>dense_features = [DenseFeature(name=<span class="hljs-string">f&#x27;dense_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span>, input_dim=<span class="hljs-number">1</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">8</span>)]<br><br>sparse_features = [SparseFeature(name=<span class="hljs-string">&#x27;user_id&#x27;</span>, embedding_name=<span class="hljs-string">&#x27;user_emb&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;user_id&#x27;</span>].<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>), SparseFeature(name=<span class="hljs-string">&#x27;item_id&#x27;</span>, embedding_name=<span class="hljs-string">&#x27;item_emb&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;item_id&#x27;</span>].<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>),]<br><br>sparse_features.extend([SparseFeature(name=<span class="hljs-string">f&#x27;sparse_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span>, embedding_name=<span class="hljs-string">f&#x27;sparse_<span class="hljs-subst">&#123;i&#125;</span>_emb&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">f&#x27;sparse_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span>].<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>)])<br><br>sequence_features = [<br>    SequenceFeature(name=<span class="hljs-string">&#x27;sequence_0&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;sequence_0&#x27;</span>].apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">max</span>(x)).<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">32</span>, padding_idx=<span class="hljs-number">0</span>, embedding_name=<span class="hljs-string">&#x27;item_emb&#x27;</span>),<br>    SequenceFeature(name=<span class="hljs-string">&#x27;sequence_1&#x27;</span>, vocab_size=<span class="hljs-built_in">int</span>(df[<span class="hljs-string">&#x27;sequence_1&#x27;</span>].apply(<span class="hljs-keyword">lambda</span> x: <span class="hljs-built_in">max</span>(x)).<span class="hljs-built_in">max</span>() + <span class="hljs-number">1</span>), embedding_dim=<span class="hljs-number">16</span>, padding_idx=<span class="hljs-number">0</span>, embedding_name=<span class="hljs-string">&#x27;sparse_0_emb&#x27;</span>),]<br><br>mlp_params = &#123;<br>    <span class="hljs-string">&quot;dims&quot;</span>: [<span class="hljs-number">256</span>, <span class="hljs-number">128</span>, <span class="hljs-number">64</span>],<br>    <span class="hljs-string">&quot;activation&quot;</span>: <span class="hljs-string">&quot;relu&quot;</span>,<br>    <span class="hljs-string">&quot;dropout&quot;</span>: <span class="hljs-number">0.3</span>,<br>&#125;<br><br>model = DIN(<br>    dense_features=dense_features,<br>    sparse_features=sparse_features,<br>    sequence_features=sequence_features,<br>    mlp_params=mlp_params,<br>    attention_hidden_units=[<span class="hljs-number">80</span>, <span class="hljs-number">40</span>],<br>    attention_activation=<span class="hljs-string">&#x27;sigmoid&#x27;</span>,<br>    attention_use_softmax=<span class="hljs-literal">True</span>,<br>    target=[<span class="hljs-string">&#x27;label&#x27;</span>],                                     <span class="hljs-comment"># 目标变量</span><br>    device=<span class="hljs-string">&#x27;mps&#x27;</span>,                                         <br>    embedding_l1_reg=<span class="hljs-number">1e-6</span>,<br>    embedding_l2_reg=<span class="hljs-number">1e-5</span>,<br>    dense_l1_reg=<span class="hljs-number">1e-5</span>,<br>    dense_l2_reg=<span class="hljs-number">1e-4</span>,<br>    session_id=<span class="hljs-string">&quot;din_tutorial&quot;</span>,                            <span class="hljs-comment"># 实验id，用于存放训练日志</span><br>)<br><br><span class="hljs-comment"># 编译模型，设置优化器和损失函数</span><br>model.<span class="hljs-built_in">compile</span>(<br>            optimizer = <span class="hljs-string">&quot;adam&quot;</span>,<br>            optimizer_params = &#123;<span class="hljs-string">&quot;lr&quot;</span>: <span class="hljs-number">1e-3</span>, <span class="hljs-string">&quot;weight_decay&quot;</span>: <span class="hljs-number">1e-5</span>&#125;,<br>            loss = <span class="hljs-string">&quot;focal&quot;</span>,<br>            loss_params=&#123;<span class="hljs-string">&quot;gamma&quot;</span>: <span class="hljs-number">2.0</span>, <span class="hljs-string">&quot;alpha&quot;</span>: <span class="hljs-number">0.25</span>&#125;,<br>        )<br><br>model.fit(<br>    train_data=df,<br>    metrics=[<span class="hljs-string">&#x27;auc&#x27;</span>, <span class="hljs-string">&#x27;gauc&#x27;</span>, <span class="hljs-string">&#x27;logloss&#x27;</span>],  <span class="hljs-comment"># 添加需要查看的指标</span><br>    epochs=<span class="hljs-number">3</span>,<br>    batch_size=<span class="hljs-number">512</span>,<br>    shuffle=<span class="hljs-literal">True</span>,<br>    user_id_column=<span class="hljs-string">&#x27;user_id&#x27;</span>             <span class="hljs-comment"># 用于计算GAUC的id列 </span><br>)<br><br><span class="hljs-comment"># 训练完成后进行指标评估</span><br>metrics = model.evaluate(<br>    df,<br>    metrics=[<span class="hljs-string">&#x27;auc&#x27;</span>, <span class="hljs-string">&#x27;gauc&#x27;</span>, <span class="hljs-string">&#x27;logloss&#x27;</span>],<br>    batch_size=<span class="hljs-number">512</span>,<br>    user_id_column=<span class="hljs-string">&#x27;user_id&#x27;</span><br>)<br><br><span class="hljs-comment"># 也可以直接推理新数据集，输入支持dict，dataframe，pathlike</span><br>predictions = model.predict(df, batch_size=<span class="hljs-number">512</span>)<br></code></pre></td></tr></table></figure>
 
 <p>NextRec拥有统一的日志管理，在训练开始前，NextRec会为你输出以下信息：分别是特征配置Feature Configuration，用于记录特征的维度等信息；模型参数Model Parameters，用于记录模型的架构，和参数量统计；训练参数Training Configuration，用于记录本次训练的超参数等配置项。</p>
-<p><img src="https://images.zerolovesea.top/blog/Feature%20Configuration.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://images.zerolovesea.top/blog/Model%20Parameters.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://images.zerolovesea.top/blog/Training%20Configuration.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/Feature%20Configuration.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/Model%20Parameters.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/Training%20Configuration.png" srcset="/img/loading.gif" lazyload></p>
 <p>开始训练后，则会根据配置的指标，输出每个epoch的评估指标。训练过程中，训练日志会在nextrec_logs&#x2F;session_id路径下生成，并且同步保存特征信息，模型checkpoint等相关文件。</p>
-<p><img src="https://images.zerolovesea.top/blog/Training%20logs.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/Training%20logs.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <h2 id="使用教程"><a href="#使用教程" class="headerlink" title="使用教程"></a>使用教程</h2><p>我们在NextRec的官方仓库下提供了详细的上手文档，其中在<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec/tree/main/tutorials"><code>tutorials/</code></a> 目录下，我们提供了多个示例，覆盖排序、召回、多任务、数据处理等场景：</p>
 <ul>

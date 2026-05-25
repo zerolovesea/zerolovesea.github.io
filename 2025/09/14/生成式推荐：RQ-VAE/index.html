@@ -24,15 +24,15 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="RQ-VAE的原理学习。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta property="og:image" content="http://example.com/img/rec.png">
 <meta property="article:published_time" content="2025-09-14T00:49:03.000Z">
-<meta property="article:modified_time" content="2025-09-14T06:08:05.476Z">
+<meta property="article:modified_time" content="2026-05-25T06:53:21.974Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="生成式推荐">
 <meta property="article:tag" content="RQ-VAE">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
   
   
   
@@ -163,6 +163,30 @@
           
           
             <li class="nav-item">
+              <a class="nav-link" href="/ideas/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>碎碎念</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/projects/" target="_self">
+                <i class="iconfont icon-code"></i>
+                <span>Project</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
               <a class="nav-link" href="/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
@@ -202,18 +226,6 @@
               <a class="nav-link" href="/databases/" target="_self">
                 <i class="iconfont icon-books"></i>
                 <span>书单</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/quote/" target="_self">
-                <i class="iconfont icon-pen"></i>
-                <span>写给自己</span>
               </a>
             </li>
           
@@ -384,7 +396,7 @@
 <h3 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h3><p>将Chat老师生成了python代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> torch.nn <span class="hljs-keyword">as</span> nn<br><span class="hljs-keyword">import</span> torch.nn.functional <span class="hljs-keyword">as</span> F<br><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> Dataset, DataLoader<br><br><span class="hljs-comment"># 1. 示例文本数据</span><br>texts = [<br>    <span class="hljs-string">&quot;hello world&quot;</span>,<br>    <span class="hljs-string">&quot;machine learning&quot;</span>,<br>    <span class="hljs-string">&quot;deep learning&quot;</span>,<br>    <span class="hljs-string">&quot;hello machine&quot;</span>,<br>    <span class="hljs-string">&quot;world of learning&quot;</span><br>]<br><br><span class="hljs-comment"># 构建简单词表</span><br>vocab = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">set</span>(<span class="hljs-string">&quot; &quot;</span>.join(texts).split()))<br>word2idx = &#123;w: i <span class="hljs-keyword">for</span> i, w <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(vocab)&#125;<br>idx2word = &#123;i: w <span class="hljs-keyword">for</span> w, i <span class="hljs-keyword">in</span> word2idx.items()&#125;<br>vocab_size = <span class="hljs-built_in">len</span>(vocab)<br><br><span class="hljs-comment"># 文本 -&gt; one-hot 向量</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">text_to_bow</span>(<span class="hljs-params">text</span>):<br>    vec = torch.zeros(vocab_size)<br>    <span class="hljs-keyword">for</span> w <span class="hljs-keyword">in</span> text.split():<br>        vec[word2idx[w]] = <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> vec<br><br>dataset = torch.stack([text_to_bow(t) <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> texts])<br><br>train_loader = DataLoader(dataset, batch_size=<span class="hljs-number">2</span>, shuffle=<span class="hljs-literal">True</span>)<br><br><span class="hljs-comment"># 2. 文本 VAE 模型</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TextVAE</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, input_dim, hidden_dim=<span class="hljs-number">32</span>, latent_dim=<span class="hljs-number">16</span></span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-comment"># 编码器</span><br>        self.fc1 = nn.Linear(input_dim, hidden_dim)<br>        self.fc_mu = nn.Linear(hidden_dim, latent_dim)<br>        self.fc_logvar = nn.Linear(hidden_dim, latent_dim)<br>        <span class="hljs-comment"># 解码器</span><br>        self.fc2 = nn.Linear(latent_dim, hidden_dim)<br>        self.fc3 = nn.Linear(hidden_dim, input_dim)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">encode</span>(<span class="hljs-params">self, x</span>):<br>        h = F.relu(self.fc1(x))<br>        <span class="hljs-keyword">return</span> self.fc_mu(h), self.fc_logvar(h)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">reparameterize</span>(<span class="hljs-params">self, mu, logvar</span>):<br>        std = torch.exp(<span class="hljs-number">0.5</span> * logvar)<br>        eps = torch.randn_like(std)<br>        <span class="hljs-keyword">return</span> mu + eps * std<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">decode</span>(<span class="hljs-params">self, z</span>):<br>        h = F.relu(self.fc2(z))<br>        <span class="hljs-keyword">return</span> torch.sigmoid(self.fc3(h))  <span class="hljs-comment"># 输出每个词的概率</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        mu, logvar = self.encode(x)<br>        z = self.reparameterize(mu, logvar)<br>        x_recon = self.decode(z)<br>        <span class="hljs-keyword">return</span> x_recon, mu, logvar<br><br><span class="hljs-comment"># 3. 损失函数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">vae_loss</span>(<span class="hljs-params">x, x_recon, mu, logvar</span>):<br>    recon_loss = F.binary_cross_entropy(x_recon, x, reduction=<span class="hljs-string">&#x27;sum&#x27;</span>)<br>    kl_loss = -<span class="hljs-number">0.5</span> * torch.<span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span> + logvar - mu.<span class="hljs-built_in">pow</span>(<span class="hljs-number">2</span>) - logvar.exp())<br>    <span class="hljs-keyword">return</span> recon_loss + kl_loss<br><br><span class="hljs-comment"># 4. 训练</span><br>device = <span class="hljs-string">&quot;cuda&quot;</span> <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;cpu&quot;</span><br>model = TextVAE(input_dim=vocab_size).to(device)<br>optimizer = torch.optim.Adam(model.parameters(), lr=<span class="hljs-number">1e-2</span>)<br><br>num_epochs = <span class="hljs-number">50</span><br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>    model.train()<br>    total_loss = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> train_loader:<br>        x = x.to(device)<br>        optimizer.zero_grad()<br>        x_recon, mu, logvar = model(x)<br>        loss = vae_loss(x, x_recon, mu, logvar)<br>        loss.backward()<br>        optimizer.step()<br>        total_loss += loss.item()<br>    <span class="hljs-keyword">if</span> (epoch+<span class="hljs-number">1</span>) % <span class="hljs-number">10</span> == <span class="hljs-number">0</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Epoch <span class="hljs-subst">&#123;epoch+<span class="hljs-number">1</span>&#125;</span>, Loss: <span class="hljs-subst">&#123;total_loss/<span class="hljs-built_in">len</span>(dataset):<span class="hljs-number">.4</span>f&#125;</span>&quot;</span>)<br><br><span class="hljs-comment"># 5. 生成新文本</span><br>model.<span class="hljs-built_in">eval</span>()<br><span class="hljs-keyword">with</span> torch.no_grad():<br>    z = torch.randn(<span class="hljs-number">3</span>, <span class="hljs-number">16</span>).to(device)  <span class="hljs-comment"># 从标准正态采样</span><br>    x_gen = model.decode(z).cpu()<br>    <span class="hljs-keyword">for</span> i, probs <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(x_gen):<br>        <span class="hljs-comment"># 输出概率大于0.5的词</span><br>        words = [idx2word[j] <span class="hljs-keyword">for</span> j, p <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(probs) <span class="hljs-keyword">if</span> p &gt; <span class="hljs-number">0.5</span>]<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Generated text <span class="hljs-subst">&#123;i+<span class="hljs-number">1</span>&#125;</span>: <span class="hljs-subst">&#123;<span class="hljs-string">&#x27; &#x27;</span>.join(words)&#125;</span>&quot;</span>)<br><br></code></pre></td></tr></table></figure>
 
-<p><img src="https://images.zerolovesea.top/blog/250914-2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/250914-2.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="RQ-VAE（Residual-Quantized-VAE）"><a href="#RQ-VAE（Residual-Quantized-VAE）" class="headerlink" title="RQ-VAE（Residual Quantized VAE）"></a>RQ-VAE（Residual Quantized VAE）</h2><p>VAE已经将输入的高维embedding降低为了一定程度上的低维embedding，不过要对所有item都保存这个向量，对工业的数据存储压力依旧很大，因此希望对这个输出再进行一次压缩，将连续向量压缩为离散低维向量，这就是RQ-VAE试图解决的问题。这里的RQ指的是向量量化（Vector Quantization, VQ）和残差编码（Residual Encoding）。RQ-VAE试图对Item保存为索引ID，计算时通过ID → 查表 → 点积的方式进行召回。</p>
 <h3 id="RQ-VAE的结构"><a href="#RQ-VAE的结构" class="headerlink" title="RQ-VAE的结构"></a>RQ-VAE的结构</h3><p>RQ-VAE通过离散码本（Codebook）索引的组合向量来表示原来的VAE embedding。</p>
 <p>我对于码本的理解，是对语义嵌入的一次嵌入，只不过这次嵌入的输出是包含语义信息的向量，输入则是语义id（sid）。刚好和文本嵌入相反，文本嵌入输入离散的token，输出连续的embedding，codebook接收带语义信息的embedding，输出语义embedding的语义id。这样不需要直接存embedding，而是通过一个码本就可以解决大规模embedding的存储问题。</p>

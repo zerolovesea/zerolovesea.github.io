@@ -24,16 +24,16 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="Kaggle Playground S4 Ep5的相关特征工程。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/data_mining.jpg">
+<meta property="og:image" content="http://example.com/img/data_mining.jpg">
 <meta property="article:published_time" content="2024-06-15T11:38:53.000Z">
-<meta property="article:modified_time" content="2025-05-28T15:04:47.545Z">
+<meta property="article:modified_time" content="2026-05-25T06:53:21.981Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="Kaggle">
 <meta property="article:tag" content="数据挖掘">
 <meta property="article:tag" content="特征工程">
 <meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://images.zerolovesea.top/blog/data_mining.jpg">
+<meta name="twitter:image" content="http://example.com/img/data_mining.jpg">
   
   
   
@@ -164,6 +164,30 @@
           
           
             <li class="nav-item">
+              <a class="nav-link" href="/ideas/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>碎碎念</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/projects/" target="_self">
+                <i class="iconfont icon-code"></i>
+                <span>Project</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
               <a class="nav-link" href="/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
@@ -203,18 +227,6 @@
               <a class="nav-link" href="/databases/" target="_self">
                 <i class="iconfont icon-books"></i>
                 <span>书单</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/quote/" target="_self">
-                <i class="iconfont icon-pen"></i>
-                <span>写给自己</span>
               </a>
             </li>
           
@@ -514,7 +526,7 @@
 <h2 id="目标分布"><a href="#目标分布" class="headerlink" title="目标分布"></a>目标分布</h2><p>初始的特征主要是一些环境&#x2F;城市化相关的特征，我们观察一下目标变量的分布。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python">plt.figure(figsize=(<span class="hljs-number">6</span>, <span class="hljs-number">2</span>))<br>plt.hist(train.FloodProbability, bins=np.linspace(<span class="hljs-number">0.2825</span>, <span class="hljs-number">0.7275</span>, <span class="hljs-number">90</span>), density=<span class="hljs-literal">True</span>)<br>plt.ylabel(<span class="hljs-string">&#x27;density&#x27;</span>)<br>plt.xlabel(<span class="hljs-string">&#x27;FloodProbability&#x27;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
 
-<p><img src="https://images.zerolovesea.top/blog/240615-1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240615-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>目标变量是一个离散值，然而只有83个Unique values，范围在0.285至0.725。且所有数值都是0.005的倍数。</p>
 <p><strong>目标变量属于泊松分布</strong></p>
 <p>使用单样本 K-S 检验能够检验样本是否来自某一分布。我们使用 <code>scipy.stats</code> 包中的 <code>ks_2samp</code> 函数来执行 Kolmogorov-Smirnov 检验，并使用 <code>numpy</code> 来生成泊松分布随机样本。</p>
@@ -524,11 +536,11 @@
 
 <h2 id="特征分布"><a href="#特征分布" class="headerlink" title="特征分布"></a>特征分布</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">features = df_train.drop(<span class="hljs-string">&#x27;FloodProbability&#x27;</span>,axis=<span class="hljs-number">1</span>).columns<br>_, axs = plt.subplots(<span class="hljs-number">5</span>, <span class="hljs-number">4</span>, figsize=(<span class="hljs-number">12</span>, <span class="hljs-number">12</span>))<br><span class="hljs-keyword">for</span> col, ax <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(features, axs.ravel()):<br>    vc = train[col].value_counts() / <span class="hljs-built_in">len</span>(train)<br>    ax.bar(vc.index, vc)<br>    vc = test[col].value_counts() / <span class="hljs-built_in">len</span>(test)<br>    ax.bar(vc.index, vc, alpha=<span class="hljs-number">0.6</span>)<br>    ax.set_title(col)<br>    ax.xaxis.set_major_locator(MaxNLocator(integer=<span class="hljs-literal">True</span>)) <span class="hljs-comment"># only integer labels</span><br>plt.tight_layout()<br>plt.show()<br></code></pre></td></tr></table></figure>
 
-<p><img src="https://images.zerolovesea.top/blog/240615-2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240615-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>大部分特征都呈现右偏分布，即长尾出现在右边。此外，所有特征都是离散值。</p>
 <h2 id="相关性"><a href="#相关性" class="headerlink" title="相关性"></a>相关性</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs python">cc = np.corrcoef(train[corr_features], rowvar=<span class="hljs-literal">False</span>)<br>plt.figure(figsize=(<span class="hljs-number">11</span>, <span class="hljs-number">11</span>))<br>sns.heatmap(cc, center=<span class="hljs-number">0</span>, annot=<span class="hljs-literal">True</span>, fmt=<span class="hljs-string">&#x27;.1f&#x27;</span>,<br>            xticklabels=corr_features, yticklabels=corr_features)<br>plt.title(<span class="hljs-string">&#x27;Correlation matrix&#x27;</span>)<br>plt.show()<br></code></pre></td></tr></table></figure>
 
-<p><img src="https://images.zerolovesea.top/blog/240615-3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240615-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>从相关系数上来看，特征之间没有相关性，但所有特征都与目标相关。</p>
 <h2 id="共线性"><a href="#共线性" class="headerlink" title="共线性"></a>共线性</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> statsmodels.stats.outliers_influence <span class="hljs-keyword">import</span> variance_inflation_factor<br><span class="hljs-keyword">from</span> statsmodels.tools.tools <span class="hljs-keyword">import</span> add_constant<br><br>df_train_with_const = add_constant(df_train) <br><br>vif_data = pd.DataFrame()<br>vif_data[<span class="hljs-string">&quot;feature&quot;</span>] = df_train_with_const.columns<br>vif_data[<span class="hljs-string">&quot;VIF&quot;</span>] = [variance_inflation_factor(df_train_with_const.values, i) <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(df_train_with_const.shape[<span class="hljs-number">1</span>])]<br><br><span class="hljs-built_in">print</span>(vif_data)<br></code></pre></td></tr></table></figure>
 
@@ -538,7 +550,7 @@
 <p>这一点也可以通过PCA分析来进行确认：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">pca = PCA()<br>pca.fit(train[features])<br>plt.figure(figsize=(<span class="hljs-number">3</span>, <span class="hljs-number">2.5</span>))<br>plt.plot(pca.explained_variance_ratio_.cumsum())<br>plt.gca().xaxis.set_major_locator(MaxNLocator(integer=<span class="hljs-literal">True</span>)) <span class="hljs-comment"># only integer labels</span><br>plt.title(<span class="hljs-string">&#x27;Principal Components Analysis&#x27;</span>)<br>plt.xlabel(<span class="hljs-string">&#x27;component#&#x27;</span>)<br>plt.ylabel(<span class="hljs-string">&#x27;explained variance ratio&#x27;</span>)<br>plt.yticks([<span class="hljs-number">0</span>, <span class="hljs-number">1</span>])<br>plt.show()<br></code></pre></td></tr></table></figure>
 
-<p><img src="https://images.zerolovesea.top/blog/240615-4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240615-4.png" srcset="/img/loading.gif" lazyload></p>
 <p>基本上是一条直线，没有显著的特征能够解释大部分方差。</p>
 <h1 id="特征工程"><a href="#特征工程" class="headerlink" title="特征工程"></a>特征工程</h1><p>一些社区内的特征工程：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">transform</span>(<span class="hljs-params">dataframe: pd.DataFrame</span>) -&gt; pd.DataFrame:<br>    df_copy = dataframe.copy()<br>    features = df_copy.columns.tolist()<br><br>    <span class="hljs-comment"># 计算所有特征的平均值，并乘以 0.1</span><br>    df_copy[<span class="hljs-string">&#x27;mean_features&#x27;</span>] = <span class="hljs-number">0.1</span> * df_copy[features].mean(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的标准差</span><br>    df_copy[<span class="hljs-string">&#x27;std_features&#x27;</span>] = df_copy[features].std(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的最大值</span><br>    df_copy[<span class="hljs-string">&#x27;max_features&#x27;</span>] = df_copy[features].<span class="hljs-built_in">max</span>(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的最小值</span><br>    df_copy[<span class="hljs-string">&#x27;min_features&#x27;</span>] = df_copy[features].<span class="hljs-built_in">min</span>(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算所有特征的中位数，并乘以 0.1</span><br>    df_copy[<span class="hljs-string">&#x27;median_features&#x27;</span>] = <span class="hljs-number">0.1</span> * df_copy[features].median(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 假设 NUMERIC_COLS 是一个包含数值列名的列表</span><br>    <span class="hljs-comment"># 计算数值列的总和</span><br>    NUMERIC_COLS = features  <span class="hljs-comment"># 如果所有列都是数值列</span><br>    df_copy[<span class="hljs-string">&#x27;sum_features&#x27;</span>] = df_copy[NUMERIC_COLS].<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 排序数值列并创建新列</span><br>    sorted_features = [<span class="hljs-string">f&#x27;sort_<span class="hljs-subst">&#123;i&#125;</span>&#x27;</span> <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> np.arange(<span class="hljs-built_in">len</span>(NUMERIC_COLS))]<br>    df_copy[sorted_features] = np.sort(df_copy[NUMERIC_COLS], axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 计算四分位数</span><br>    df_copy[<span class="hljs-string">&#x27;q1&#x27;</span>] = df_copy[features].quantile(<span class="hljs-number">0.25</span>, axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;q2&#x27;</span>] = df_copy[features].quantile(<span class="hljs-number">0.50</span>, axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;q3&#x27;</span>] = df_copy[features].quantile(<span class="hljs-number">0.75</span>, axis=<span class="hljs-number">1</span>)<br><br>    <span class="hljs-comment"># 删除原始特征列</span><br>    df_copy = df_copy.drop(features, axis=<span class="hljs-number">1</span>)<br>    <br>    <span class="hljs-comment"># 一些特征交叉</span><br>    df_copy[<span class="hljs-string">&#x27;ClimateAnthropogenicInteraction&#x27;</span>] = (df[<span class="hljs-string">&#x27;MonsoonIntensity&#x27;</span>] + df[<span class="hljs-string">&#x27;ClimateChange&#x27;</span>]) * (df[<span class="hljs-string">&#x27;Deforestation&#x27;</span>] + df[<span class="hljs-string">&#x27;Urbanization&#x27;</span>] + df[<span class="hljs-string">&#x27;AgriculturalPractices&#x27;</span>] + df[<span class="hljs-string">&#x27;Encroachments&#x27;</span>])<br>    df_copy[<span class="hljs-string">&#x27;InfrastructurePreventionInteraction&#x27;</span>] = (df[<span class="hljs-string">&#x27;DamsQuality&#x27;</span>] + df[<span class="hljs-string">&#x27;DrainageSystems&#x27;</span>] + df[<span class="hljs-string">&#x27;DeterioratingInfrastructure&#x27;</span>]) * (df[<span class="hljs-string">&#x27;RiverManagement&#x27;</span>] + df[<span class="hljs-string">&#x27;IneffectiveDisasterPreparedness&#x27;</span>] + df[<span class="hljs-string">&#x27;InadequatePlanning&#x27;</span>])<br><br>    <span class="hljs-comment"># 计算统计特征</span><br>    df_copy[<span class="hljs-string">&#x27;sum&#x27;</span>] = df[features].<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;std&#x27;</span>] = df[features].std(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;mean&#x27;</span>] = df[features].mean(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;max&#x27;</span>] = df[features].<span class="hljs-built_in">max</span>(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;min&#x27;</span>] = df[features].<span class="hljs-built_in">min</span>(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;mode&#x27;</span>] = df[features].mode(axis=<span class="hljs-number">1</span>)[<span class="hljs-number">0</span>]  <span class="hljs-comment"># 注意：mode 返回的是 DataFrame，需要取第一个值</span><br>    df_copy[<span class="hljs-string">&#x27;median&#x27;</span>] = df[features].median(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;skew&#x27;</span>] = df[features].skew(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;kurt&#x27;</span>] = df[features].kurt(axis=<span class="hljs-number">1</span>)<br>    df_copy[<span class="hljs-string">&#x27;entropy&#x27;</span>] = df[num_cols].apply(<span class="hljs-keyword">lambda</span> x: -<span class="hljs-number">1</span>*(x*np.log(x)).<span class="hljs-built_in">sum</span>(), axis=<span class="hljs-number">1</span>)<br>    <br>    <span class="hljs-keyword">return</span> df_copy<br><br></code></pre></td></tr></table></figure>

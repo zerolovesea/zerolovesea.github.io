@@ -24,16 +24,16 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="Deep Crossing的原理，设计理念及Python实现。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta property="og:image" content="http://example.com/img/rec.png">
 <meta property="article:published_time" content="2024-08-17T01:51:19.000Z">
-<meta property="article:modified_time" content="2025-05-29T00:43:47.974Z">
+<meta property="article:modified_time" content="2026-05-25T06:53:21.974Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="特征工程">
-<meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="推荐系统">
 <meta property="article:tag" content="Deep Crossing">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://images.zerolovesea.top/blog/rec.png">
+<meta name="twitter:image" content="http://example.com/img/rec.png">
   
   
   
@@ -164,6 +164,30 @@
           
           
             <li class="nav-item">
+              <a class="nav-link" href="/ideas/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>碎碎念</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/projects/" target="_self">
+                <i class="iconfont icon-code"></i>
+                <span>Project</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
               <a class="nav-link" href="/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
@@ -203,18 +227,6 @@
               <a class="nav-link" href="/databases/" target="_self">
                 <i class="iconfont icon-books"></i>
                 <span>书单</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/quote/" target="_self">
-                <i class="iconfont icon-pen"></i>
-                <span>写给自己</span>
               </a>
             </li>
           
@@ -362,10 +374,10 @@
 </a></p>
 <h1 id="论文解读"><a href="#论文解读" class="headerlink" title="论文解读"></a>论文解读</h1><p>看名字就知道它要解决的是人工组合特征的问题。通过构建网络来实现特征的深度交叉。在Deep Crossing中，支持文本，分类，ID，数值这样的特征。</p>
 <p>Deep Crossing的网络架构如下：</p>
-<p><img src="https://images.zerolovesea.top/blog/240818-1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240818-1.png" srcset="/img/loading.gif" lazyload></p>
 <p>核心是四个部分：Embedding层用于嵌入特征，Stacking层用于将嵌入层简单的concat在一起，随后通过多个Residual模块提取特征。最后利用一个Scoring层来进行打分，也就是最后得到的logit值。通过对logit值进行排序，实现投放广告的排序。</p>
 <p>原文中，微软使用的特征如下所示：</p>
-<p><img src="https://images.zerolovesea.top/blog/240818-2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240818-2.png" srcset="/img/loading.gif" lazyload></p>
 <p>对于一些关键的概念也进行了解释：</p>
 <table>
 <thead>
@@ -419,7 +431,7 @@
 <p>这也是原图中展示的Campaign ID 10001维度的由来。</p>
 <p>文章对特征嵌入没有讲的很明确，翻阅了很多网上的解释，我对这一部分依旧不是很理解。原文针对自己的场景有一些tricks，整体的思想就是将高维稀疏矩阵嵌入为低维稠密矩阵。</p>
 <p>嵌入层之后经过Stacking层的拼接，直接传到残差层。</p>
-<p><img src="https://images.zerolovesea.top/blog/240818-3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/240818-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>针对ResNet中的残差模块，将原本的卷积核替换为了普通的MLP层。经过多层残差后，输出一个score，用于评估用户是否会点击对应的广告。</p>
 <h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1><p>用pytorch实现一下代码，假设特征工程和预处理已经结束，我们需要实现数据集类，模型，训练&#x2F;预测代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomDataset</span>(<span class="hljs-title class_ inherited__">Dataset</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, X, y=<span class="hljs-literal">None</span></span>):<br>        self.X = X  <span class="hljs-comment"># Dataframe</span><br>        self.y = y<br>        <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__len__</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">len</span>(self.X)<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__getitem__</span>(<span class="hljs-params">self, index</span>):<br>        X_item = torch.tensor(self.X.iloc[index].values, dtype=torch.float32)<br>        <span class="hljs-keyword">if</span> self.y <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            y_item = torch.tensor(self.y.iloc[index], dtype=torch.float32)<br>            <span class="hljs-keyword">return</span> X_item, y_item<br>        <span class="hljs-keyword">return</span> X_item<br>        <br>        <br>train_dataset = CustomDataset(X_train, y_train)<br>test_dataset = CustomDataset(X_test, y_test)<br><br>train_loader = DataLoader(train_dataset, batch_size=<span class="hljs-number">32</span>, shuffle=<span class="hljs-literal">True</span>)<br>test_loader = DataLoader(test_dataset, batch_size=<span class="hljs-number">32</span>, shuffle=<span class="hljs-literal">False</span>)<br></code></pre></td></tr></table></figure>
@@ -469,9 +481,9 @@
       
         <a href="/tags/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/" class="print-no-link">#特征工程</a>
       
-        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
-      
         <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" class="print-no-link">#机器学习</a>
+      
+        <a href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/" class="print-no-link">#推荐系统</a>
       
         <a href="/tags/Deep-Crossing/" class="print-no-link">#Deep Crossing</a>
       

@@ -24,17 +24,17 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="记录一次云服务器的购买，部署和改造。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250601-1.png">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250601-2.png">
-<meta property="og:image" content="https://images.zerolovesea.top/blog/250601-3.png">
+<meta property="og:image" content="http://example.com/250601-1.png">
+<meta property="og:image" content="http://example.com/250601-2.png">
+<meta property="og:image" content="http://example.com/250601-3.png">
 <meta property="article:published_time" content="2025-06-01T09:22:15.000Z">
-<meta property="article:modified_time" content="2025-06-07T10:16:37.749Z">
+<meta property="article:modified_time" content="2026-05-25T06:48:56.905Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="瞎折腾">
 <meta property="article:tag" content="Nginx">
 <meta property="article:tag" content="反向代理">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://images.zerolovesea.top/blog/250601-1.png">
+<meta name="twitter:image" content="http://example.com/250601-1.png">
   
   
   
@@ -165,6 +165,30 @@
           
           
             <li class="nav-item">
+              <a class="nav-link" href="/ideas/" target="_self">
+                <i class="iconfont icon-pen"></i>
+                <span>碎碎念</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/projects/" target="_self">
+                <i class="iconfont icon-code"></i>
+                <span>Project</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
               <a class="nav-link" href="/archives/" target="_self">
                 <i class="iconfont icon-archive-fill"></i>
                 <span>归档</span>
@@ -204,18 +228,6 @@
               <a class="nav-link" href="/databases/" target="_self">
                 <i class="iconfont icon-books"></i>
                 <span>书单</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/quote/" target="_self">
-                <i class="iconfont icon-pen"></i>
-                <span>写给自己</span>
               </a>
             </li>
           
@@ -364,9 +376,9 @@
 <p>首先就是大陆服务器的限制问题，导致docker的官方镜像源没办法拉，虽然可以用阿里云的加速源解决，但是还是有部分镜像在国内镜像源始终无法拉取。</p>
 <p>其次是致命的访问问题，我在服务器上部署了几个应用，但是在安全组端口策略和防火墙策略已经放开的情况下，始终无法访问。这里附上我提的工单，不得不提，阿里云的售后服务效率很高，本以为假期无法回复，想不到迅速就给出了解答。</p>
 <p>在解答的过程中，注意到是代理的问题，由于我的电脑和主机长年开着代理，导致访问时会出现阻塞，使用一个国际服务器在一定程度上可以解决这个问题。</p>
-<p><img src="https://images.zerolovesea.top/blog/250601-1.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://images.zerolovesea.top/blog/250601-2.png" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://images.zerolovesea.top/blog/250601-3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/250601-1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/250601-2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/250601-3.png" srcset="/img/loading.gif" lazyload></p>
 <p>亚太服务器中，香港和新加坡都是不错的选择。前者在国内访问速度更快，后者比前者要便宜300块钱，并且对国际访问更友好，权衡之下最终决定购入香港服务器。</p>
 <h2 id="域名绑定与Nginx反向代理"><a href="#域名绑定与Nginx反向代理" class="headerlink" title="域名绑定与Nginx反向代理"></a>域名绑定与Nginx反向代理</h2><p>Nginx反代在<a target="_blank" rel="noopener" href="https://www.zerolovesea.top/2024/04/27/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9ANginx%E4%BA%86%E8%A7%A3%E4%B8%8E%E5%85%A5%E9%97%A8/">这篇博客</a>里简单介绍过，这里记录一下这次服务器部署的服务。首先，我在服务器上起了一个web服务，指向0.0.0.0:4444端口，在安全组策略配置过以后，可以通过IP:4444直接访问到这个服务，但是这显然不安全。</p>
 <p>由于我有一个zerolovesea.top的域名，我希望将这个服务绑定在service.zerolovesea.top上，这样通过访问这个域名可以直接使用这个服务。首先需要在阿里云域名–&gt;域名解析处添加一条A类型的主机记录，主机记录命名为se rvice，记录值为服务器ip。这样当访问service.zerolovesea.top时，就会跳转到服务器ip。</p>

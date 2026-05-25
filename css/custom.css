@@ -1,3 +1,333 @@
 html, body, .markdown-body, p {
     font-family: 'Noto Serif SC';
   }
+
+.about-title {
+  margin: 0.5rem 0 1.8rem;
+  color: var(--text-color, #333);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.about-emphasis {
+  color: #d777b1;
+  font-weight: 800;
+}
+
+.about-skill {
+  display: inline-flex;
+  align-items: center;
+  min-width: 8.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.about-skill-name {
+  display: inline-block;
+  min-width: 6.8rem;
+}
+
+.about-skill-main {
+  color: #d777b1;
+  font-weight: 800;
+}
+
+.about-level {
+  color: #6f7a8a;
+  font-weight: 700;
+}
+
+.about-social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.25rem 0 1rem;
+}
+
+.about-social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid rgba(127, 127, 127, 0.22);
+  border-radius: 999px;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.about-social-links a:hover {
+  color: #d777b1;
+  border-color: rgba(215, 119, 177, 0.55);
+  background: rgba(215, 119, 177, 0.08);
+  text-decoration: none;
+}
+
+.about-social-icon {
+  opacity: 0.75;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+}
+
+.about-mail {
+  color: #d777b1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight: 700;
+}
+
+.projects-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.25rem 0 1rem;
+}
+
+.projects-lead {
+  margin: -0.5rem 0 2.2rem;
+  color: #7a8494;
+  font-size: 1.05rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.projects-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.projects-github {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.42rem 0.85rem;
+  border: 1px solid rgba(63, 126, 214, 0.28);
+  border-radius: 999px;
+  background: rgba(63, 126, 214, 0.08);
+  color: #3f7ed6;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.projects-github:hover {
+  border-color: rgba(63, 126, 214, 0.52);
+  background: rgba(63, 126, 214, 0.14);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.projects-section {
+  margin: 2.5rem 0 3rem;
+}
+
+.projects-heading {
+  position: relative;
+  height: 4.7rem;
+  margin: 0 0 0.65rem;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.projects-heading span {
+  position: absolute;
+  left: -0.15rem;
+  top: 0;
+  color: transparent;
+  font-size: clamp(2.8rem, 8vw, 5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  opacity: 0.28;
+  -webkit-text-stroke: 1.4px #aaa;
+  text-stroke: 1.4px #aaa;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.8rem;
+}
+
+.project-card {
+  display: flex;
+  min-height: 7rem;
+  padding: 0.85rem 1rem 1rem;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.project-card:hover {
+  background: rgba(127, 127, 127, 0.08);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.project-card.is-muted:hover {
+  transform: none;
+}
+
+.project-name {
+  margin-bottom: 0.35rem;
+  color: var(--text-color, #333);
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+
+.project-desc {
+  margin: 0;
+  color: #7a8494;
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.ideas-page {
+  margin: 0;
+  padding: 0.4rem 0 0;
+}
+
+.ideas-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ideas-item {
+  margin: 2.7rem 0;
+  padding: 0;
+}
+
+.ideas-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.ideas-avatar {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line-color);
+  background: var(--board-bg-color);
+  box-shadow: 0 0 0 3px var(--board-bg-color);
+}
+
+.ideas-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.ideas-author {
+  color: var(--post-heading-color);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ideas-date {
+  color: var(--sec-text-color);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.ideas-body {
+  margin: -0.35rem 0 0 3.5rem;
+}
+
+.ideas-bubble {
+  display: inline-block;
+  max-width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border-top-left-radius: 0.18rem;
+  border: 1px solid var(--line-color);
+  background: var(--link-hover-bg-color);
+  color: var(--post-text-color);
+  overflow: auto;
+}
+
+.ideas-bubble p {
+  margin: 0.35rem 0;
+}
+
+.ideas-bubble p:first-child {
+  margin-top: 0;
+}
+
+.ideas-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+.ideas-bubble ul {
+  margin: 0.4rem 0 0.65rem 1.2rem;
+  padding: 0;
+}
+
+.ideas-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 180px));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.ideas-images img {
+  width: 180px;
+  height: 140px;
+  margin: 0;
+  border-radius: 0.55rem;
+  object-fit: cover;
+}
+
+.ideas-highlight {
+  color: #d777b1;
+  font-weight: 800;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-user-color-scheme]) .ideas-avatar,
+  [data-user-color-scheme="dark"] .ideas-avatar {
+    border-color: var(--line-color);
+    box-shadow: 0 0 0 3px rgba(67, 82, 102, 0.35);
+  }
+
+  :root:not([data-user-color-scheme]) .ideas-bubble,
+  [data-user-color-scheme="dark"] .ideas-bubble {
+    background: rgba(54, 65, 81, 0.72);
+    border-color: rgba(104, 117, 130, 0.55);
+    color: var(--post-text-color);
+  }
+}
+
+@media (max-width: 576px) {
+  .projects-heading {
+    height: 3.5rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ideas-item {
+    margin: 2.25rem 0;
+  }
+
+  .ideas-meta {
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .ideas-body {
+    margin-left: 0;
+    margin-top: 0.75rem;
+  }
+
+  .ideas-bubble {
+    display: block;
+  }
+}
