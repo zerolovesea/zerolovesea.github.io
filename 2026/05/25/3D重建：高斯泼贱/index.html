@@ -24,16 +24,16 @@
 <meta property="og:site_name" content="我不是算法工程师">
 <meta property="og:description" content="3D重建的发展史，简单了解和原理学习。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://zerolovesea.top/20260525-1.png">
-<meta property="og:image" content="https://zerolovesea.top/20260525-2.png">
-<meta property="og:image" content="https://zerolovesea.top/20260528-1.jpg">
+<meta property="og:image" content="https://zerolovesea.top/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260525-1.png">
+<meta property="og:image" content="https://zerolovesea.top/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260525-2.png">
+<meta property="og:image" content="https://zerolovesea.top/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260528-1.jpg">
 <meta property="article:published_time" content="2026-05-25T08:24:26.000Z">
 <meta property="article:modified_time" content="2026-05-28T07:05:11.758Z">
 <meta property="article:author" content="Yang Zhou">
 <meta property="article:tag" content="3D重建">
 <meta property="article:tag" content="计算机视觉">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://zerolovesea.top/20260525-1.png">
+<meta name="twitter:image" content="https://zerolovesea.top/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260525-1.png">
   
   
   
@@ -382,8 +382,8 @@
 <p>得到两个照片后，需要进行极线校准。因为我们知道左边照片上的一个点，肯定对应在右照片上的某个延展线上，这个线就叫极线。这是为了更好计算，知道左边的一个点，只需要在右边的极线上找另外一个点。对齐以后，任务就变成了给左边的每个像素，在右边的极线上找最相似的位置。</p>
 <p>现在有了焦距，基线和视差，可以通过焦距乘基线后，除以视差，这样就还原得到了一个点的深度。</p>
 <p>做了简单的<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/3d-reconstruction/blob/main/stereo-matching/stereo_depth_matching.ipynb">demo</a>来实现双目深度匹配。通过给定校准过后的双目图，双目基线，焦距等参数，会将原始双目图返回一个深度图和点云图。</p>
-<p><img src="/20260525-1.png" srcset="/img/loading.gif" lazyload alt="深度图"></p>
-<p><img src="/20260525-2.png" srcset="/img/loading.gif" lazyload alt="点云图"></p>
+<p><img src="/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260525-1.png" srcset="/img/loading.gif" lazyload alt="深度图"></p>
+<p><img src="/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260525-2.png" srcset="/img/loading.gif" lazyload alt="点云图"></p>
 <blockquote>
 <p>双目匹配在2000年初比较火，但双目匹配的效果受匹配精度影响，实际应用上有很多限制。</p>
 </blockquote>
@@ -418,7 +418,7 @@
 <p>这样完成了两个图片的3D点映射，随后在多个照片上做同样操作就会得到更多稀疏的特征点。</p>
 <p>在完成后还需要一个全局优化，以避免其中每个环节中的误差。这个优化方法被称为<strong>Bundle Adjustment</strong>。它将前面生成的3D点映射再投影回照片，和原照片对比差异，直到差异最小时完成优化。</p>
 <p>最后网图总结一下：</p>
-<p><img src="/20260528-1.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2026/05/25/3D%E9%87%8D%E5%BB%BA%EF%BC%9A%E9%AB%98%E6%96%AF%E6%B3%BC%E8%B4%B1/20260528-1.jpg" srcset="/img/loading.gif" lazyload></p>
 <p>先了解到这，本来以为不难，但是越看发现要了解的公式和原理越多，比我想象的深度要深的多，以后慢慢再看下去。</p>
 <p>2026&#x2F;5&#x2F;28 于苏州</p>
 

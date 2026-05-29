@@ -384,7 +384,7 @@
 <h2 id="NextRec项目架构"><a href="#NextRec项目架构" class="headerlink" title="NextRec项目架构"></a>NextRec项目架构</h2><p>推荐模型就像“搭积木”，Embedding → MLP → Attention → Experts → Towers，这些模块几乎所有主流模型都涵盖。但在论文实现上，各个模型的代码里特征声明方式五花八门；不同模型间难以组合复用。</p>
 <p>NextRec 的思路是<strong>统一 FeatureSpec → EmbeddingLayer → Backbone → Tower → Serving 流程</strong>，让所有模型像拼模块一样组合。此外，模型拆成独立模块，架构与训练目标解耦，模型只负责描述自己的架构。</p>
 <p>NextRec 不只是研究框架，也包含了完整的训练流程（callback、metrics、session 管理），流式推理（支持 path-based inference）和模型存储&#x2F;加载一致化。下面这个流程图简单描述了NextRec的设计架构。</p>
-<p><img src="/nextrec_diagram_zh.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2025/11/30/NextRec%EF%BC%9A%E9%AB%98%E6%95%88%EF%BC%8C%E6%A8%A1%E5%9D%97%E5%8C%96%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6/nextrec_diagram_zh.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="快速使用NextRec训练一个-DIN-模型"><a href="#快速使用NextRec训练一个-DIN-模型" class="headerlink" title="快速使用NextRec训练一个 DIN 模型"></a>快速使用NextRec训练一个 DIN 模型</h2><p>开发者可以通过<code>pip install nextrec</code>快速安装NextRec的最新版本，环境要求为Python 3.10+，截止2025年11月30日，NextRec的最新版本为0.3.1。</p>
 <p>我们在NextRec的官方<a target="_blank" rel="noopener" href="https://github.com/zerolovesea/NextRec">github仓库</a>里提供了详细的上手指南和配套数据集，帮助您熟悉框架的不同功能。在<code>datasets/</code>路径下提供了一个来自电商场景的脱敏数据集子集，数据示例如下：</p>
 <p><img src="/test%20data.png" srcset="/img/loading.gif" lazyload></p>

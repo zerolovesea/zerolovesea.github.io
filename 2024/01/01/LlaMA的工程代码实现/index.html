@@ -370,7 +370,7 @@
               <div class="markdown-body">
                 
                 <p>前面讲了一下LlaMA1的架构，现在看一下官方是如何实现它的。</p>
-<p><img src="/240101-6.png" srcset="/img/loading.gif" lazyload alt="transformers库中实现的LlaMA架构"></p>
+<p><img src="/2024/01/01/LlaMA%E7%9A%84%E5%B7%A5%E7%A8%8B%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/240101-6.png" srcset="/img/loading.gif" lazyload alt="transformers库中实现的LlaMA架构"></p>
 <p>观察模型架构，可以看到模型由几个比较关键的层组成：是LlaMA自己的Decoder层，一共有40层，每一层包含了自注意力层，旋转位置编码和一个MLP层。MLP层中包含了SiLU激活层，一个前置和一个后置的RMS均方归一化层。在最后输出时又加了一个RMS归一层。</p>
 <h1 id="Tokenizer"><a href="#Tokenizer" class="headerlink" title="Tokenizer"></a>Tokenizer</h1><p>分词器的实现主要使用了sentencepiece这个库，具体的实现方式是BPE算法。</p>
 <blockquote>
